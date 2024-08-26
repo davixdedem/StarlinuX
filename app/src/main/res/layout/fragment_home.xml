@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/black"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.home.HomeFragment">
+
+    <include
+        layout="@layout/fragment_system_info"
+        android:id="@+id/fragment_system_included"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <include
+        layout="@layout/fragment_network"
+        android:id="@+id/fragment_network_included"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <include
+        layout="@layout/fragment_vpn"
+        android:id="@+id/fragment_vpn_included"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:id="@+id/home_main_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="10sp"
+        android:layout_marginLeft="10sp"
+        android:layout_marginRight="10sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/sbc_text_name"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/sbc_name"
+                android:alpha="0.5"
+                android:textColor="@color/teal_200"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/sbc_btn_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5sp"
+                android:textSize="15sp"
+                android:text="@string/closed_angular_symbol"
+                android:textColor="@color/teal_700" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/sbc_text_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sbc_status_disconnected"
+                android:textColor="@color/white"
+                android:textSize="30sp" />
+
+            <ImageView
+                android:id="@+id/board_status_icon"
+                android:layout_marginTop="5dp"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/offline_dot" />
+
+        </LinearLayout>
+
+        <WebView
+            android:id="@+id/webView"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            tools:ignore="WebViewLayout" >
+
+        </WebView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <include
+                android:visibility="gone"
+                android:id="@+id/layout_ip_addresses"
+                layout="@layout/layout_split_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <include
+                android:id="@+id/layout_dns"
+                layout="@layout/layout_standard_card"
+                android:layout_marginTop="5sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_marginTop="10sp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="5sp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/vpn_image_icon"
+                        android:layout_width="50sp"
+                        app:tint="@color/white"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/vpn" />
+
+                    <TextView
+                        android:id="@+id/vpn_section_text"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="10sp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="@string/vpn_section_name"
+                        android:textAlignment="textStart"
+                        android:textColor="@color/white"
+                        tools:ignore="RtlCompat" />
+
+                    <TextView
+                        android:id="@+id/vpn_section_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="10sp"
+                        android:layout_weight="0"
+                        android:gravity="center"
+                        android:text=">"
+                        android:textAlignment="textEnd"
+                        android:textColor="@color/white"
+                        android:textSize="20sp"
+                        tools:ignore="RtlCompat" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="25sp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/dmz_image_icon"
+                        android:layout_width="50sp"
+                        android:layout_height="match_parent"
+                        app:tint="@color/white"
+                        android:src="@drawable/dmz" />
+
+                    <TextView
+                        android:id="@+id/dmz_section_text"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="10sp"
+                        android:layout_weight="1"
+                        android:alpha="0.5"
+                        android:gravity="center"
+                        android:text="@string/dmz_section_name"
+                        android:textAlignment="textStart"
+                        android:textColor="@color/white"
+                        tools:ignore="RtlCompat" />
+
+                    <TextView
+                        android:id="@+id/dmz_section_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10sp"
+                        android:layout_weight="0"
+                        android:gravity="center"
+                        android:text=">"
+                        android:textAlignment="textEnd"
+                        android:textColor="@color/white"
+                        android:textSize="20sp"
+                        tools:ignore="RtlCompat" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="25sp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/ddns_image_icon"
+                        app:tint="@color/white"
+                        android:layout_width="50sp"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ddns" />
+
+                    <TextView
+                        android:id="@+id/ddns_section_text"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="10sp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:alpha="0.5"
+                        android:text="@string/ddns_section_name"
+                        android:textAlignment="textStart"
+                        android:textColor="@color/white"
+                        tools:ignore="RtlCompat" />
+
+                    <TextView
+                        android:id="@+id/ddns_section_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10sp"
+                        android:layout_weight="0"
+                        android:gravity="center"
+                        android:text=">"
+                        android:textAlignment="textEnd"
+                        android:textColor="@color/white"
+                        android:textSize="20sp"
+                        tools:ignore="RtlCompat" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="25sp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/pw_image_icon"
+                        android:layout_width="50dp"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/domain"
+                        app:tint="@color/white" />
+
+                    <TextView
+                        android:id="@+id/pw_section_text"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="10sp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:alpha="0.5"
+                        android:text="@string/port_forwarding_section_name"
+                        android:textAlignment="textStart"
+                        android:textColor="@color/white"
+                        tools:ignore="RtlCompat" />
+
+                    <TextView
+                        android:id="@+id/pw_section_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10sp"
+                        android:layout_weight="0"
+                        android:gravity="center"
+                        android:text=">"
+                        android:textAlignment="textEnd"
+                        android:textColor="@color/white"
+                        android:textSize="20sp"
+                        tools:ignore="RtlCompat" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="25sp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/network_image_icon"
+                        android:layout_width="50sp"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/network"
+                        app:tint="@color/white" />
+
+                    <TextView
+                        android:id="@+id/network_text"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="10sp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="@string/network_section_name"
+                        android:alpha="0.5"
+                        android:textAlignment="textStart"
+                        android:textColor="@color/white"
+                        tools:ignore="RtlCompat" />
+
+                    <TextView
+                        android:id="@+id/network_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10sp"
+                        android:layout_weight="0"
+                        android:gravity="center"
+                        android:text=">"
+                        android:textAlignment="textEnd"
+                        android:textColor="@color/white"
+                        android:textSize="20sp"
+                        tools:ignore="RtlCompat" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="25sp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/settings_image_icon"
+                        android:layout_width="50sp"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/settings"
+                        app:tint="@color/white" />
+
+                    <TextView
+                        android:id="@+id/textView4"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="10sp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="@string/settings_section_name"
+                        android:textAlignment="textStart"
+                        android:textColor="@color/white"
+                        tools:ignore="RtlCompat" />
+
+                    <TextView
+                        android:id="@+id/settings_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10sp"
+                        android:layout_weight="0"
+                        android:gravity="center"
+                        android:text=">"
+                        android:textAlignment="textEnd"
+                        android:textColor="@color/white"
+                        android:textSize="20sp"
+                        tools:ignore="RtlCompat" />
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="25sp"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:id="@+id/support_image_icon"
+                        android:layout_width="50sp"
+                        android:layout_height="match_parent"
+                        app:tint="@color/white"
+                        android:src="@drawable/community" />
+
+                    <TextView
+                        android:id="@+id/support_section_text"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="10sp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="@string/support_section_name"
+                        android:textAlignment="textStart"
+                        android:textColor="@color/white"
+                        tools:ignore="RtlCompat" />
+
+                    <TextView
+                        android:id="@+id/support_btn"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10sp"
+                        android:layout_weight="0"
+                        android:gravity="center"
+                        android:text=">"
+                        android:textAlignment="textEnd"
+                        android:textColor="@color/white"
+                        android:textSize="20sp"
+                        tools:ignore="RtlCompat" />
+
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

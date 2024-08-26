@@ -1,0 +1,49 @@
+<resources>
+    <string name="app_name">Pi Starlink</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+
+    <string name="sbc_name">Raspberry Pi</string>
+    <string name="sbc_status_online">Online</string>
+    <string name="sbc_status_offline">Offline</string>
+    <string name="sbc_status_disconnected">Disconnected</string>
+
+    <string name="vpn_section_name">Virtual Private Network (VPN)</string>
+    <string name="port_forwarding_section_name">Port Forwarding</string>
+    <string name="dmz_section_name">Demilitarized zone(DMZ)</string>
+    <string name="ddns_section_name">Dynamic DNS (DDNS)</string>
+    <string name="settings_section_name">Settings</string>
+    <string name="support_section_name">Support</string>
+    <string name="network_section_name">Network</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_card_name">Title</string>
+    <string name="description_card_name">Description</string>
+    <string name="username_name">Username</string>
+    <string name="system_board">Status</string>
+    <string name="closed_angular_symbol">">"</string>
+    <string name="system">System</string>
+    <string name="memory">Memory</string>
+    <string name="storage">Storage</string>
+    <string name="router_page">For more information, login into <a href="http://192.168.1.1">Router\'\s Panel</a>.</string>
+    <string name="openvpn_page">For more information, visit <a href="http://192.168.1.1">OpenVPN For Android</a>.</string>
+    <string name="dhcp_title">DHCP</string>
+    <string name="dhcp6_title">DHCP6</string>
+    <string name="vpn_title">VPN</string>
+    <string name="connected_devices">Connected Devices</string>
+    <string name="profiles">Profile</string>
+    <string name="connection_title">Connection:</string>
+    <string name="currently_no_devices_connected">Currently no devices connected.</string>
+    <string name="disconnected">DISCONNECTED</string>
+    <string name="connected">CONNECTED</string>
+    <string name="loading_status">Trying to connect…</string>
+
+</resources>

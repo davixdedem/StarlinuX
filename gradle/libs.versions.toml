@@ -1,0 +1,71 @@
+[versions]
+agp = "8.5.0"
+cardview = "1.0.0"
+core = "1.45.0"
+externalAidlLibrary = "1.0"
+filamentAndroid = "1.53.5"
+gltfioAndroid = "1.36.0"
+gradle = "8.0.2"
+gradleVersion = "8.0.0"
+kotlin = "1.9.0"
+coreKtx = "1.10.1"
+junit = "4.13.2"
+junitVersion = "1.1.5"
+espressoCore = "3.5.1"
+appcompat = "1.6.1"
+material = "1.10.0"
+constraintlayout = "2.1.4"
+lifecycleLivedataKtx = "2.6.1"
+lifecycleViewmodelKtx = "2.6.1"
+moshi = "1.12.0"
+navigationFragmentKtx = "2.6.0"
+navigationUiKtx = "2.6.0"
+okhttp = "4.9.3"
+rajawali = "1.1.970"
+runtimeSavedInstanceState = "1.0.0-alpha11"
+firebaseCrashlyticsBuildtools = "3.0.2"
+coreVersion = "1.17.1"
+sceneform = "1.23.0"
+sceneformUx = "1.17.1"
+filamentAndroidVersion = "1.17.1"
+constraintlayoutCore = "1.0.4"
+slidetoact = "0.11.0"
+slidetoconfirm = "1.0.2"
+
+[libraries]
+androidx-cardview = { module = "androidx.cardview:cardview", version.ref = "cardview" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+core = { module = "com.google.ar:core", version.ref = "core" }
+external-aidl-library = { module = "com.example:external-aidl-library", version.ref = "externalAidlLibrary" }
+filament-android = { module = "com.google.android.filament:filament-android", version.ref = "filamentAndroid" }
+filament-utils-android = { module = "com.google.android.filament:filament-utils-android", version.ref = "gltfioAndroid" }
+gltfio-android = { module = "com.google.android.filament:gltfio-android", version.ref = "gltfioAndroid" }
+gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
+gradle-v800 = { module = "com.android.tools.build:gradle", version.ref = "gradleVersion" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycleLivedataKtx" }
+androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
+androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
+androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
+moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+rajawali = { module = "org.rajawali3d:rajawali", version.ref = "rajawali" }
+androidx-runtime-saved-instance-state = { group = "androidx.compose.runtime", name = "runtime-saved-instance-state", version.ref = "runtimeSavedInstanceState" }
+firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
+sceneform = { module = "com.gorisse.thomas.sceneform:sceneform", version.ref = "sceneform" }
+sceneform-core = { group = "com.google.ar.sceneform", name = "core", version.ref = "coreVersion" }
+sceneform-ux = { group = "com.google.ar.sceneform.ux", name = "sceneform-ux", version.ref = "sceneformUx" }
+sceneform-filament-android = { group = "com.google.ar.sceneform", name = "filament-android", version.ref = "filamentAndroidVersion" }
+androidx-constraintlayout-core = { group = "androidx.constraintlayout", name = "constraintlayout-core", version.ref = "constraintlayoutCore" }
+slidetoact = { module = "com.ncorti:slidetoact", version.ref = "slidetoact" }
+slidetoconfirm = { module = "com.github.chinalwb:slidetoconfirm", version.ref = "slidetoconfirm" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+

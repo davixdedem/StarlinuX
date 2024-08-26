@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/black"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="10sp"
+        android:layout_marginLeft="10sp"
+        android:layout_marginRight="10sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/exit_image"
+                android:layout_marginTop="5dp"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/cross"
+                app:tint="@color/teal_200" />
+
+            <TextView
+                android:id="@+id/title_sbc_info"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="@string/vpn_title"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="20sp"
+            android:layout_marginLeft="5sp"
+            android:layout_marginRight="5sp"
+            android:layout_weight="1"
+            android:orientation="vertical" >
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:id="@+id/setup_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10sp"
+                        android:text="Configuration"
+                        android:textColor="@color/teal_700"
+                        android:textSize="15sp" />
+
+                    <com.ncorti.slidetoact.SlideToActView
+                        android:id="@+id/vpn_config_active_slide"
+                        android:layout_marginTop="5sp"
+                        android:elevation="6dp"
+                        app:area_margin="3dp"
+                        app:border_radius="4dp"
+                        app:slider_locked="true"
+                        android:layout_width="match_parent"
+                        app:inner_color="@color/white"
+                        app:outer_color="@color/teal_900"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="textEnd"
+                        app:bounce_on_start="true"
+                        app:text="Slide to set up" />
+
+                    <TextView
+                        android:id="@+id/vpn_config_status"
+                        android:visibility="gone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20sp"
+                        android:layout_marginBottom="20sp"
+                        android:textAlignment="center"
+                        android:textColor="@color/white" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/system_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10sp"
+                            android:layout_marginTop="10sp"
+                            android:text="@string/connection_title"
+                            android:textColor="@color/teal_700"
+                            android:textSize="15sp" />
+
+                        <TextView
+                            android:id="@+id/vpn_status_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10sp"
+                            android:layout_marginTop="10sp"
+                            android:text="@string/disconnected"
+                            android:textColor="@color/teal_700"
+                            android:textSize="15sp" />
+
+                    </LinearLayout>
+
+                    <com.ncorti.slidetoact.SlideToActView
+                        android:id="@+id/vpn_active_slide"
+                        android:layout_marginTop="5sp"
+                        android:elevation="6dp"
+                        app:area_margin="3dp"
+                        app:border_radius="4dp"
+                        android:layout_width="match_parent"
+                        app:inner_color="@color/white"
+                        app:outer_color="@color/teal_900"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="textEnd"
+                        app:slider_locked="true"
+                        app:text="Slide to active" />
+
+                    <LinearLayout
+                        android:id="@+id/network_card_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="5dp"/>
+
+                    <TextView
+                        android:id="@+id/memory_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10sp"
+                        android:layout_marginTop="10sp"
+                        android:text="@string/connected_devices"
+                        android:textColor="@color/teal_700"
+                        android:textSize="15sp" />
+
+                    <LinearLayout
+                        android:id="@+id/vpn_card_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="10dp"/>
+
+                    <TextView
+                        android:id="@+id/no_connected_device"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10sp"
+                        android:layout_marginTop="10sp"
+                        android:textAlignment="center"
+                        android:text="@string/currently_no_devices_connected"
+                        android:textColor="@color/teal_700"
+                        android:textSize="15sp" />
+
+                    <LinearLayout
+                        android:id="@+id/network_card6_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="10dp"/>
+
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_marginTop="10sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="center"
+                        android:layout_gravity="center"
+                        android:textColor="@color/white"
+                        android:text="@string/openvpn_page"
+                        android:linksClickable="true" />
+
+                </LinearLayout>
+
+            </ScrollView>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
