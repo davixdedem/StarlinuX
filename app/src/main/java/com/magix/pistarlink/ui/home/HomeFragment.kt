@@ -8,10 +8,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
 import android.os.IBinder
-import android.os.Looper
-import android.os.Message
 import android.os.RemoteException
 import android.util.Log
 import android.view.LayoutInflater
@@ -49,6 +46,7 @@ import java.io.InputStreamReader
 import android.animation.ObjectAnimator
 import com.magix.pistarlink.databinding.FragmentHomeBinding
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.inputmethod.InputMethodManager
 
 
 class HomeFragment : Fragment() {
@@ -58,7 +56,7 @@ class HomeFragment : Fragment() {
 
     /*Init*/
     private lateinit var openWRTApi: OpenWRTApi
-    private lateinit var luciToken : String
+    private lateinit var luciToken: String
     private lateinit var job: Job
     private var canCallHomeAPi = false
     private var isBoardReachable = false
@@ -69,9 +67,16 @@ class HomeFragment : Fragment() {
     private var isVpnConnected = false
     private var myOpenVPNIPv4Addr = ""
     private val profileName = "Pi-Starlink"
-    private val msgUpdateState: Int = 0
     private val icsOpenvpnPermission: Int = 7
     private val vpnDevices = mutableListOf<DhcpLease>()
+
+    /*Ddns*/
+    private var isHostnameEditing : Boolean = false
+    private var isUsernameEditing : Boolean = false
+    private var isPasswordEditing : Boolean = false
+    private var hostnameInitialText : String = ""
+    private var usernameInitialText : String = ""
+    private var passwordInitialText : String = ""
 
     /*Define a Data Class for Network Lease*/
     data class DhcpLease(
@@ -79,6 +84,7 @@ class HomeFragment : Fragment() {
         val ipaddr: String,
         val macAddr: String,
     )
+
     private val dhcpLeases = mutableListOf<DhcpLease>()
     private val dhcp6Leases = mutableListOf<DhcpLease>()
 
@@ -88,13 +94,21 @@ class HomeFragment : Fragment() {
     private val baseUrl = "http://192.168.1.1"
     private val systemBoardCommand = "ubus call system board"
     private val systemBoardInformationCommand = "ubus call system info"
-    private val getIPv6addressCommand = "ip -6 addr show dev eth0 | grep inet6 | awk '{ print \$2 }' | awk -F'/' '{ print \$1 }' | grep '^2a0d' | head -n 1; ip -4 addr show dev eth0 | grep inet | awk '{ print \$2 }' | awk -F'/' '{ print \$1 }' | head -n 1"
+    private val getIPv6addressCommand =
+        "ip -6 addr show dev eth0 | grep inet6 | awk '{ print \$2 }' | awk -F'/' '{ print \$1 }' | grep '^2a0d' | head -n 1; ip -4 addr show dev eth0 | grep inet | awk '{ print \$2 }' | awk -F'/' '{ print \$1 }' | head -n 1"
     private val getConnectedDevices = "ubus call luci-rpc getDHCPLeases"
     private val getOpenVPNConnectedDevicesCommand = "bash /root/scripts/openvpn_devices.sh"
     private val setupVPNCommand = "bash /root/scripts/openvpn_configure_callback.sh"
     private val checkVPNConfigStatusCommand = "cat /root/scripts/vpn_config_status"
     private val fetchVPNConfigurationFileCommand = "cat /etc/openvpn/"
     private val setConfigAsFetched = "echo '0' > /root/scripts/vpn_config_status "
+    private val getDDNSConfig =
+        "echo \\\"{\\\\\\\"lookup_host\\\\\\\":\\\\\\\"\$(uci get ddns.myddns_ipv6.lookup_host)\\\\\\\", \\\\\\\"username\\\\\\\":\\\\\\\"\$(uci get ddns.myddns_ipv6.username)\\\\\\\", \\\\\\\"password\\\\\\\":\\\\\\\"\$(uci get ddns.myddns_ipv6.password)\\\\\\\"}\\\""
+    private val setDDNSHostname = "uci set ddns.myddns_ipv6.lookup_host="
+    private val setDDNSDomain = "uci set ddns.myddns_ipv6.domain="
+    private val setDDNSUsername = "uci set ddns.myddns_ipv6.username="
+    private val setDDNSPassword = "uci set ddns.myddns_ipv6.password="
+    private val commitDDNSCommand  = "uci commit ddns"
 
     /*Configurations*/
     private val onlineStatus = "Online"
@@ -118,7 +132,7 @@ class HomeFragment : Fragment() {
         val root: View = binding.root
 
         /*Init the OpenWRTApi class*/
-        openWRTApi = OpenWRTApi(baseUrl,username,password)
+        openWRTApi = OpenWRTApi(baseUrl, username, password)
 
         /*Try to login to Luci on time*/
         performLoginAndUpdate(true)
@@ -140,7 +154,7 @@ class HomeFragment : Fragment() {
         webView.loadUrl("file:///android_asset/index.html")
 
         /*Binding Raspberry Pi info buttons*/
-        binding.sbcTextName.setOnClickListener{
+        binding.sbcTextName.setOnClickListener {
             if (isBoardReachable) {
                 /*Call the OpenWRT Api in order to popule the system board information*/
                 callOpenWRTApi()
@@ -153,7 +167,7 @@ class HomeFragment : Fragment() {
                 binding.fragmentSystemIncluded.root.visibility = View.VISIBLE
             }
         }
-        binding.sbcBtnInfo.setOnClickListener{
+        binding.sbcBtnInfo.setOnClickListener {
             /*Handle its view visibility*/
             binding.homeMainLayout.visibility = View.GONE
             binding.fragmentSystemIncluded.root.visibility = View.VISIBLE
@@ -191,12 +205,14 @@ class HomeFragment : Fragment() {
                     /*Apply opacity effect when pressed*/
                     view.alpha = 0.5f
                 }
+
                 MotionEvent.ACTION_UP -> {
                     /*Revert back to original opacity*/
                     view.alpha = 1.0f
                     /*Call performClick to trigger the click event*/
                     view.performClick()
                 }
+
                 MotionEvent.ACTION_CANCEL -> {
                     /*Revert back to original opacity if the action was canceled*/
                     view.alpha = 1.0f
@@ -207,7 +223,7 @@ class HomeFragment : Fragment() {
         }
 
         /*Binding system info exit info button*/
-        binding.fragmentSystemIncluded.exitImage.setOnClickListener{
+        binding.fragmentSystemIncluded.exitImage.setOnClickListener {
             binding.homeMainLayout.visibility = View.VISIBLE
             binding.fragmentSystemIncluded.root.visibility = View.GONE
         }
@@ -219,12 +235,14 @@ class HomeFragment : Fragment() {
                     /*Apply opacity effect when pressed*/
                     view.alpha = 0.5f
                 }
+
                 MotionEvent.ACTION_UP -> {
                     /*Revert back to original opacity*/
                     view.alpha = 1.0f
                     /*Call performClick to trigger the click event*/
                     view.performClick()
                 }
+
                 MotionEvent.ACTION_CANCEL -> {
                     /*Revert back to original opacity if the action was canceled*/
                     view.alpha = 1.0f
@@ -287,7 +305,7 @@ class HomeFragment : Fragment() {
         }
 
         /*Binding Network buttons*/
-        binding.networkText.setOnClickListener{
+        binding.networkText.setOnClickListener {
             if (isBoardReachable) {
                 /*Handle its view visibility*/
                 binding.homeMainLayout.visibility = View.GONE
@@ -299,7 +317,7 @@ class HomeFragment : Fragment() {
                 callOpenWRTNetwork()
             }
         }
-        binding.networkBtn.setOnClickListener{
+        binding.networkBtn.setOnClickListener {
             if (isBoardReachable) {
                 /*Handle its view visibility*/
                 binding.homeMainLayout.visibility = View.GONE
@@ -308,7 +326,7 @@ class HomeFragment : Fragment() {
         }
 
         /*Binding Network exit info button*/
-        binding.fragmentNetworkIncluded.exitImage.setOnClickListener{
+        binding.fragmentNetworkIncluded.exitImage.setOnClickListener {
             binding.homeMainLayout.visibility = View.VISIBLE
             binding.fragmentNetworkIncluded.root.visibility = View.GONE
 
@@ -323,12 +341,14 @@ class HomeFragment : Fragment() {
                     /*Apply opacity effect when pressed*/
                     view.alpha = 0.5f
                 }
+
                 MotionEvent.ACTION_UP -> {
                     /*Revert back to original opacity*/
                     view.alpha = 1.0f
                     /*Call performClick to trigger the click event*/
                     view.performClick()
                 }
+
                 MotionEvent.ACTION_CANCEL -> {
                     /*Revert back to original opacity if the action was canceled*/
                     view.alpha = 1.0f
@@ -347,12 +367,14 @@ class HomeFragment : Fragment() {
                     /*Apply opacity effect when pressed*/
                     view.alpha = 0.5f
                 }
+
                 MotionEvent.ACTION_UP -> {
                     /*Revert back to original opacity*/
                     view.alpha = 1.0f
                     /*Call performClick to trigger the click event*/
                     view.performClick()
                 }
+
                 MotionEvent.ACTION_CANCEL -> {
                     /*Revert back to original opacity if the action was canceled*/
                     view.alpha = 1.0f
@@ -367,12 +389,14 @@ class HomeFragment : Fragment() {
                     /*Apply opacity effect when pressed*/
                     view.alpha = 0.5f
                 }
+
                 MotionEvent.ACTION_UP -> {
                     /*Revert back to original opacity*/
                     view.alpha = 1.0f
                     /*Call performClick to trigger the click event*/
                     view.performClick()
                 }
+
                 MotionEvent.ACTION_CANCEL -> {
                     /*Revert back to original opacity if the action was canceled*/
                     view.alpha = 1.0f
@@ -383,7 +407,7 @@ class HomeFragment : Fragment() {
         }
 
         /*Binding Vpn buttons*/
-        binding.vpnSectionText.setOnClickListener{
+        binding.vpnSectionText.setOnClickListener {
             /*Handle its view visibility*/
             binding.homeMainLayout.visibility = View.GONE
             binding.fragmentVpnIncluded.root.visibility = View.VISIBLE
@@ -395,7 +419,7 @@ class HomeFragment : Fragment() {
 
             getOpenVPNConnectedDevices()
         }
-        binding.vpnSectionBtn.setOnClickListener{
+        binding.vpnSectionBtn.setOnClickListener {
             /*Handle its view visibility*/
             binding.homeMainLayout.visibility = View.GONE
             binding.fragmentVpnIncluded.root.visibility = View.VISIBLE
@@ -411,7 +435,7 @@ class HomeFragment : Fragment() {
         }
 
         /*Binding Vpn exit info button*/
-        binding.fragmentVpnIncluded.exitImage.setOnClickListener{
+        binding.fragmentVpnIncluded.exitImage.setOnClickListener {
             binding.homeMainLayout.visibility = View.VISIBLE
             binding.fragmentVpnIncluded.root.visibility = View.GONE
 
@@ -429,12 +453,14 @@ class HomeFragment : Fragment() {
                     /*Apply opacity effect when pressed*/
                     view.alpha = 0.5f
                 }
+
                 MotionEvent.ACTION_UP -> {
                     /*Revert back to original opacity*/
                     view.alpha = 1.0f
                     /*Call performClick to trigger the click event*/
                     view.performClick()
                 }
+
                 MotionEvent.ACTION_CANCEL -> {
                     /*Revert back to original opacity if the action was canceled*/
                     view.alpha = 1.0f
@@ -445,32 +471,367 @@ class HomeFragment : Fragment() {
         }
 
         /*Binding configuration slide button*/
-        binding.fragmentVpnIncluded.vpnConfigActiveSlide.onSlideCompleteListener = object : SlideToActView.OnSlideCompleteListener {
-            override fun onSlideComplete(view: SlideToActView) {
-                Log.d("OpenVPN","Configuration slide completed")
-                if (isBoardReachable) {
-                    setupVPN()
+        binding.fragmentVpnIncluded.vpnConfigActiveSlide.onSlideCompleteListener =
+            object : SlideToActView.OnSlideCompleteListener {
+                override fun onSlideComplete(view: SlideToActView) {
+                    Log.d("OpenVPN", "Configuration slide completed")
+                    if (isBoardReachable) {
+                        setupVPN()
+                    } else {
+                        binding.fragmentVpnIncluded.vpnConfigStatus.text =
+                            "Pi-Starlink is unreachable. Please connect to its Wi-Fi."
+                        binding.fragmentVpnIncluded.vpnConfigStatus.visibility = View.VISIBLE
+                    }
                 }
-                else{
-                    binding.fragmentVpnIncluded.vpnConfigStatus.text = "Pi-Starlink is unreachable. Please connect to its Wi-Fi."
-                    binding.fragmentVpnIncluded.vpnConfigStatus.visibility = View.VISIBLE
+            }
+
+        /*Binding activation slide button*/
+        binding.fragmentVpnIncluded.vpnActiveSlide.onSlideCompleteListener =
+            object : SlideToActView.OnSlideCompleteListener {
+                override fun onSlideComplete(view: SlideToActView) {
+                    Log.d("OpenVPN", "Slide activation completed: $profileUUID")
+                    if (!isVpnConnected) {
+                        profileUUID?.let { connectVPN(it) }
+                    } else {
+                        disconnectVPN()
+                    }
                 }
+            }
+        /*** END - VPN FRAGMENT ***/
+
+        /*** START - DDNS FRAGMENT ***/
+        /*Applying effect to DNS buttons*/
+        binding.ddnsSectionText.setOnTouchListener { view, motionEvent ->
+            if (isBoardReachable) {
+                when (motionEvent.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        /*Apply opacity effect when pressed*/
+                        view.alpha = 0.5f
+                    }
+
+                    MotionEvent.ACTION_UP -> {
+                        /*Revert back to original opacity*/
+                        view.alpha = 1.0f
+                        /*Call performClick to trigger the click event*/
+                        view.performClick()
+                    }
+
+                    MotionEvent.ACTION_CANCEL -> {
+                        /*Revert back to original opacity if the action was canceled*/
+                        view.alpha = 1.0f
+                    }
+                }
+            }
+            /*Return true to indicate that the event has been handled*/
+            return@setOnTouchListener true
+        }
+        binding.ddnsSectionBtn.setOnTouchListener { view, motionEvent ->
+            when (motionEvent.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    /*Apply opacity effect when pressed*/
+                    view.alpha = 0.5f
+                }
+
+                MotionEvent.ACTION_UP -> {
+                    /*Revert back to original opacity*/
+                    view.alpha = 1.0f
+                    /*Call performClick to trigger the click event*/
+                    view.performClick()
+                }
+
+                MotionEvent.ACTION_CANCEL -> {
+                    /*Revert back to original opacity if the action was canceled*/
+                    view.alpha = 1.0f
+                }
+            }
+            /*Return true to indicate that the event has been handled*/
+            return@setOnTouchListener true
+        }
+
+        /*Binding DNS buttons*/
+        binding.ddnsSectionText.setOnClickListener {
+            if (isBoardReachable) {
+                /*Handle its view visibility*/
+                binding.homeMainLayout.visibility = View.GONE
+                binding.fragmentDdnsIncluded.root.visibility = View.VISIBLE
+
+                /*Pause main call API*/
+                canCallHomeAPi = false
+
+                /*Update resources*/
+                getDDNSConfiguration()
+            }
+        }
+        binding.ddnsSectionBtn.setOnClickListener {
+            if (isBoardReachable) {
+                /*Handle its view visibility*/
+                binding.homeMainLayout.visibility = View.GONE
+                binding.fragmentDdnsIncluded.root.visibility = View.VISIBLE
+
+                /*Pause main call API*/
+                canCallHomeAPi = false
+
+                /*Update resources*/
+                getDDNSConfiguration()
             }
         }
 
-        /*Binding activation slide button*/
-        binding.fragmentVpnIncluded.vpnActiveSlide.onSlideCompleteListener = object : SlideToActView.OnSlideCompleteListener {
-            override fun onSlideComplete(view: SlideToActView) {
-                Log.d("OpenVPN","Slide activation completed: $profileUUID")
-                if (!isVpnConnected) {
-                    profileUUID?.let { connectVPN(it) }
+        /*Binding DDNS exit info button*/
+        binding.fragmentDdnsIncluded.exitImage.setOnClickListener {
+            binding.homeMainLayout.visibility = View.VISIBLE
+            binding.fragmentDdnsIncluded.root.visibility = View.GONE
+
+            /*Pause main call API*/
+            canCallHomeAPi = true
+
+            /*Populating home resources*/
+            performLoginAndUpdate()
+        }
+
+        /*Applying effect at Vpn exit button*/
+        binding.fragmentDdnsIncluded.exitImage.setOnTouchListener { view, motionEvent ->
+            when (motionEvent.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    /*Apply opacity effect when pressed*/
+                    view.alpha = 0.5f
                 }
-                else{
-                    disconnectVPN()
+
+                MotionEvent.ACTION_UP -> {
+                    /*Revert back to original opacity*/
+                    view.alpha = 1.0f
+                    /*Call performClick to trigger the click event*/
+                    view.performClick()
+                }
+
+                MotionEvent.ACTION_CANCEL -> {
+                    /*Revert back to original opacity if the action was canceled*/
+                    view.alpha = 1.0f
                 }
             }
+            /*Return true to indicate that the event has been handled*/
+            return@setOnTouchListener true
         }
-        /*** END - VPN FRAGMENT ***/
+
+        /*Binding DDNS hostname pencil, check and close button*/
+        val hostnameEditText = binding.fragmentDdnsIncluded.cardLayoutHostname.cardDescription
+        binding.fragmentDdnsIncluded.cardLayoutHostname.editValueImage.setOnClickListener {
+
+            if (isHostnameEditing) {
+                /*Let the close button be visible*/
+                binding.fragmentDdnsIncluded.cardLayoutHostname.closeValueImage.visibility = View.GONE
+
+                // When editing is complete
+                hostnameEditText.isFocusable = false
+                hostnameEditText.isFocusableInTouchMode = false
+                hostnameEditText.isClickable = false
+                hostnameEditText.clearFocus()
+
+                // Hide the keyboard
+                val imm =
+                    requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(hostnameEditText.windowToken, 0)
+
+                // Change the icon to pencil
+                binding.fragmentDdnsIncluded.cardLayoutHostname.editValueImage.setImageResource(R.drawable.pen)
+
+                /*Sync the new hostname with the router*/
+                setDDNSConfiguration(setDDNSHostname, hostnameEditText.text.toString())
+                setDDNSConfiguration(setDDNSDomain, hostnameEditText.text.toString())
+
+                /*Update the initial value*/
+                hostnameInitialText = hostnameEditText.text.toString()
+
+
+            } else {
+                /*Let the close button be visible*/
+                binding.fragmentDdnsIncluded.cardLayoutHostname.closeValueImage.visibility = View.VISIBLE
+
+                // When editing is enabled
+                hostnameEditText.isFocusable = true
+                hostnameEditText.isFocusableInTouchMode = true
+                hostnameEditText.isClickable = true
+                hostnameEditText.requestFocus()
+
+                // Optionally, show the keyboard
+                val imm =
+                    requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.showSoftInput(hostnameEditText, InputMethodManager.SHOW_IMPLICIT)
+
+                // Change the icon to check
+                binding.fragmentDdnsIncluded.cardLayoutHostname.editValueImage.setImageResource(R.drawable.check)
+            }
+
+            // Toggle the state
+            isHostnameEditing = !isHostnameEditing
+        }
+        binding.fragmentDdnsIncluded.cardLayoutHostname.closeValueImage.setOnClickListener {
+            hostnameEditText.setText(hostnameInitialText)
+            /*Let the close button be visible*/
+            binding.fragmentDdnsIncluded.cardLayoutHostname.closeValueImage.visibility = View.GONE
+
+            // When editing is complete
+            hostnameEditText.isFocusable = false
+            hostnameEditText.isFocusableInTouchMode = false
+            hostnameEditText.isClickable = false
+            hostnameEditText.clearFocus()
+
+            // Hide the keyboard
+            val imm =
+                requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(hostnameEditText.windowToken, 0)
+
+            // Change the icon to pencil
+            binding.fragmentDdnsIncluded.cardLayoutHostname.editValueImage.setImageResource(R.drawable.pen)
+
+            isHostnameEditing = false
+        }
+
+        /*Binding DDNS username pencil, check and close button*/
+        val usernameEditText = binding.fragmentDdnsIncluded.cardLayoutUsername.cardDescription
+        binding.fragmentDdnsIncluded.cardLayoutUsername.editValueImage.setOnClickListener {
+
+            if (isUsernameEditing) {
+                /*Let the close button be visible*/
+                binding.fragmentDdnsIncluded.cardLayoutUsername.closeValueImage.visibility = View.GONE
+
+                // When editing is complete
+                usernameEditText.isFocusable = false
+                usernameEditText.isFocusableInTouchMode = false
+                usernameEditText.isClickable = false
+                usernameEditText.clearFocus()
+
+                // Hide the keyboard
+                val imm =
+                    requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(usernameEditText.windowToken, 0)
+
+                // Change the icon to pencil
+                binding.fragmentDdnsIncluded.cardLayoutUsername.editValueImage.setImageResource(R.drawable.pen)
+
+                /*Sync the new hostname with the router*/
+                setDDNSConfiguration(setDDNSUsername, usernameEditText.text.toString())
+
+                /*Update the initial value*/
+                usernameInitialText = usernameEditText.text.toString()
+
+
+            } else {
+                /*Let the close button be visible*/
+                binding.fragmentDdnsIncluded.cardLayoutUsername.closeValueImage.visibility = View.VISIBLE
+
+                // When editing is enabled
+                usernameEditText.isFocusable = true
+                usernameEditText.isFocusableInTouchMode = true
+                usernameEditText.isClickable = true
+                usernameEditText.requestFocus()
+
+                // Optionally, show the keyboard
+                val imm =
+                    requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.showSoftInput(usernameEditText, InputMethodManager.SHOW_IMPLICIT)
+
+                // Change the icon to check
+                binding.fragmentDdnsIncluded.cardLayoutUsername.editValueImage.setImageResource(R.drawable.check)
+            }
+
+            // Toggle the state
+            isUsernameEditing = !isUsernameEditing
+        }
+        binding.fragmentDdnsIncluded.cardLayoutUsername.closeValueImage.setOnClickListener {
+            usernameEditText.setText(usernameInitialText)
+            /*Let the close button be visible*/
+            binding.fragmentDdnsIncluded.cardLayoutUsername.closeValueImage.visibility = View.GONE
+
+            // When editing is complete
+            usernameEditText.isFocusable = false
+            usernameEditText.isFocusableInTouchMode = false
+            usernameEditText.isClickable = false
+            usernameEditText.clearFocus()
+
+            // Hide the keyboard
+            val imm =
+                requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(usernameEditText.windowToken, 0)
+
+            // Change the icon to pencil
+            binding.fragmentDdnsIncluded.cardLayoutUsername.editValueImage.setImageResource(R.drawable.pen)
+
+            isUsernameEditing = false
+        }
+
+        /*Binding DDNS password pencil, check and close button*/
+        val passwordEditText = binding.fragmentDdnsIncluded.cardLayoutPassword.cardDescription
+        binding.fragmentDdnsIncluded.cardLayoutPassword.editValueImage.setOnClickListener {
+
+            if (isPasswordEditing) {
+                /*Let the close button be visible*/
+                binding.fragmentDdnsIncluded.cardLayoutPassword.closeValueImage.visibility = View.GONE
+
+                // When editing is complete
+                passwordEditText.isFocusable = false
+                passwordEditText.isFocusableInTouchMode = false
+                passwordEditText.isClickable = false
+                passwordEditText.clearFocus()
+
+                /*Hide the keyboard*/
+                val imm =
+                    requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(passwordEditText.windowToken, 0)
+
+                /*Change the icon to pencil*/
+                binding.fragmentDdnsIncluded.cardLayoutPassword.editValueImage.setImageResource(R.drawable.pen)
+
+                /*Sync the new hostname with the router*/
+                setDDNSConfiguration(setDDNSPassword, passwordEditText.text.toString())
+
+                /*Update the initial value*/
+                passwordInitialText = passwordEditText.text.toString()
+
+
+            } else {
+                /*Let the close button be visible*/
+                binding.fragmentDdnsIncluded.cardLayoutPassword.closeValueImage.visibility = View.VISIBLE
+
+                /*When editing is enabled*/
+                passwordEditText.isFocusable = true
+                passwordEditText.isFocusableInTouchMode = true
+                passwordEditText.isClickable = true
+                passwordEditText.requestFocus()
+
+                /*Optionally, show the keyboard*/
+                val imm =
+                    requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.showSoftInput(passwordEditText, InputMethodManager.SHOW_IMPLICIT)
+
+                /*Change the icon to check*/
+                binding.fragmentDdnsIncluded.cardLayoutPassword.editValueImage.setImageResource(R.drawable.check)
+            }
+
+            /*Toggle the state*/
+            isPasswordEditing = !isPasswordEditing
+        }
+        binding.fragmentDdnsIncluded.cardLayoutPassword.closeValueImage.setOnClickListener {
+            passwordEditText.setText(passwordInitialText)
+            /*Let the close button be visible*/
+            binding.fragmentDdnsIncluded.cardLayoutPassword.closeValueImage.visibility = View.GONE
+
+            // When editing is complete
+            passwordEditText.isFocusable = false
+            passwordEditText.isFocusableInTouchMode = false
+            passwordEditText.isClickable = false
+            passwordEditText.clearFocus()
+
+            // Hide the keyboard
+            val imm =
+                requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(passwordEditText.windowToken, 0)
+
+            // Change the icon to pencil
+            binding.fragmentDdnsIncluded.cardLayoutPassword.editValueImage.setImageResource(R.drawable.pen)
+
+            isPasswordEditing = false
+        }
+        /*** END - DDNS FRAGMENT ***/
 
         /*Updating resources on time*/
         job = CoroutineScope(Dispatchers.IO).launch {
@@ -576,9 +937,9 @@ class HomeFragment : Fragment() {
         binding.dmzSectionBtn.alpha = alphaValue*/
 
         /*DDNS*/
-/*        binding.ddnsSectionText.alpha = alphaValue
+        binding.ddnsSectionText.alpha = alphaValue
         binding.ddnsImageIcon.alpha = alphaValue
-        binding.ddnsSectionBtn.alpha = alphaValue*/
+        binding.ddnsSectionBtn.alpha = alphaValue
 
         /*Port Forwarding*/
 /*        binding.pwSectionText.alpha = alphaValue
@@ -990,6 +1351,93 @@ class HomeFragment : Fragment() {
                     binding.fragmentVpnIncluded.vpnConfigStatus.visibility = View.VISIBLE
                     binding.fragmentVpnIncluded.setupTitle.text = "CONFIGURATION: COMPLETED"
                     binding.fragmentVpnIncluded.vpnConfigStatus.text = "VPN configuration is complete, use the slider below to connect."
+                }
+            },
+            onFailure = { error ->
+                /* Handle the failure, update UI on the main thread */
+                activity?.runOnUiThread {
+                    Log.d("OpenVPN", error)
+                }
+            }
+        )
+    }
+
+    /*Get DDNS configuration*/
+    private fun getDDNSConfiguration() {
+        if (!::luciToken.isInitialized) {
+            Log.w(openWRTTag, "luciToken is null or empty. Aborting the operation.")
+            return
+        }
+        openWRTApi.executeCommand(
+            getDDNSConfig,
+            luciToken,
+            onSuccess = { response ->
+                activity?.runOnUiThread {
+                    Log.d("OpenVPN", response.toString())
+                    val resultString = response.optString("result").trim()
+                    Log.d("OpenVPN","DDNS configuration: $resultString")
+
+                    /*Update resources*/
+                    /* Assuming the resultString is in JSON format */
+                    try {
+                        val jsonResult = JSONObject(resultString)
+
+                        /* Update resources */
+                        /* Hostname */
+                        val hostname = jsonResult.optString("lookup_host")
+                        binding.fragmentDdnsIncluded.cardLayoutHostname.cardTitle.text = "Hostname"
+                        binding.fragmentDdnsIncluded.cardLayoutHostname.cardDescription.setText(hostname)
+                        hostnameInitialText = hostname
+
+                        /* Username */
+                        val username = jsonResult.optString("username")
+                        binding.fragmentDdnsIncluded.cardLayoutUsername.cardTitle.text = "Username"
+                        binding.fragmentDdnsIncluded.cardLayoutUsername.cardDescription.setText(username)
+                        usernameInitialText = username
+
+                        /* Password */
+                        val password = jsonResult.optString("password")
+                        binding.fragmentDdnsIncluded.cardLayoutPassword.cardTitle.text = "Password"
+                        binding.fragmentDdnsIncluded.cardLayoutPassword.cardDescription.setText(password)
+                        passwordInitialText = password
+
+                    } catch (e: JSONException) {
+                        Log.e("OpenVPN", "Failed to parse JSON: ${e.message}")
+                    }
+                }
+            },
+            onFailure = { error ->
+                /* Handle the failure, update UI on the main thread */
+                activity?.runOnUiThread {
+                    Log.d("OpenVPN", error)
+                }
+            }
+        )
+    }
+
+    /*Set DDNS configuration*/
+    private fun setDDNSConfiguration(command: String, value: String){
+        if (!::luciToken.isInitialized) {
+            Log.w(openWRTTag, "luciToken is null or empty. Aborting the operation.")
+            return
+        }
+        openWRTApi.executeCommand(
+            "$command$value&&$commitDDNSCommand",
+            luciToken,
+            onSuccess = { response ->
+                activity?.runOnUiThread {
+                    Log.d("OpenVPN", response.toString())
+                    val resultString = response.optString("result").trim()
+                    Log.d("OpenVPN","DDNS configuration has been set: $resultString")
+
+                    /*Update resources*/
+                    /* Assuming the resultString is in JSON format */
+                    try {
+                        val jsonResult = JSONObject(resultString)
+
+                    } catch (e: JSONException) {
+                        Log.e("OpenVPN", "Failed to parse JSON: ${e.message}")
+                    }
                 }
             },
             onFailure = { error ->

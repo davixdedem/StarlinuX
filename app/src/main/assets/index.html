@@ -14,101 +14,131 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.119/examples/js/loaders/OBJLoader.js"></script>
     <!-- Include OrbitControls from Three.js examples -->
     <script src="https://cdn.jsdelivr.net/npm/three@0.119/examples/js/controls/OrbitControls.js"></script>
+    <!-- Include MTLLoader from Three.js examples -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.119.1/examples/js/loaders/MTLLoader.js"></script>
 </head>
 <body>
-<script>
-    // Create the scene
-    const scene = new THREE.Scene();
+<script type="module">
+    let camera, scene, renderer;
 
-    // Create a camera
-    const camera = new THREE.PerspectiveCamera(8, window.innerWidth / window.innerHeight, 0.1, 5000);
-    camera.position.z = 500;
-    camera.position.y = 400;
-    camera.position.x = -400;
+    init();
 
-    // Create a renderer and attach it to the document
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+    function init() {
 
-    // Add a light to the scene
-    const light = new THREE.PointLight(0xffffff, 1, 500);
-    light.position.set(10, 130, 10);
-    scene.add(light);
-
-    // Add a plane to the scene
-    const planeGeometry = new THREE.PlaneGeometry(500, 500); // Plane size: 1000x1000 units
-    const planeMaterial = new THREE.MeshPhongMaterial({ color: 0x999999, depthWrite: false });
-    const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-
-    // Rotate the plane to be horizontal
-    plane.rotation.x = -Math.PI / 2;
-
-    // Position the plane below the object (adjust height as needed)
-    plane.position.y = -50;
-
-    // Add the plane to the scene
-    //scene.add(plane);
-
-    // Variable to hold the loaded object
-    let loadedObject = null;
-
-    // Load and display the OBJ file
-    const loader = new THREE.OBJLoader();
-
-    loader.load('raspberrypi.obj', (object) => {
-        // Set the loaded object to the variable
-        loadedObject = object;
-
-        // Add the loaded object to the scene
-        scene.add(loadedObject);
-
-        // Initial position and rotation of the object
-        loadedObject.position.set(-30, -20, 0);
-        loadedObject.rotation.x = 0;
-        loadedObject.rotation.y = 0;
-
-    },
-    // onProgress callback
-    (xhr) => {
-        console.log((xhr.loaded / xhr.total * 100) + '% loaded');
-    },
-    // onError callback
-    (error) => {
-        console.error('An error occurred while loading the OBJ file.', error);
-    });
-
-    // Set up OrbitControls
-    const controls = new THREE.OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
-    controls.dampingFactor = 0.10;
-    controls.enableZoom = false;
-    controls.enablePan = false;
-    controls.minPolarAngle = 1;
-	controls.maxPolarAngle = 1.5;
-    controls.maxAzimuthAngle = 0;
-    controls.minAzimuthAngle = -2;
+        camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 20 );
+        camera.position.z = 4;
+        camera.position.y = 2;
+        camera.position.x = 1;
 
 
-    // Animation loop
-    function animate() {
-        requestAnimationFrame(animate);
+        // scene
+        scene = new THREE.Scene();
 
-        // Update controls
-        controls.update();
+        const ambientLight = new THREE.AmbientLight( 0xffffff );
+        //scene.add( ambientLight );
 
-        // Render the scene
-        renderer.render(scene, camera);
+        const pointLight = new THREE.PointLight( 0xffffff, 1 );
+        camera.add( pointLight );
+        scene.add( camera );
+
+        // model
+
+        const onProgress = function ( xhr ) {
+
+            if ( xhr.lengthComputable ) {
+
+                const percentComplete = xhr.loaded / xhr.total * 100;
+                console.log( percentComplete.toFixed( 2 ) + '% downloaded' );
+
+            }
+
+        };
+
+        new THREE.MTLLoader()
+            .setPath( 'male02/' )
+            .load( 'pistarlink_model.mtl', function ( materials ) {
+
+                materials.preload();
+
+                new THREE.OBJLoader()
+                    .setMaterials( materials )
+                    .setPath( 'male02/' )
+                    .load( 'pistarlink_model.obj', function ( object ) {
+
+                        object.position.y = - 0.50;
+                        object.scale.setScalar( 0.01 );
+                        scene.add( object );
+
+                    }, onProgress );
+
+            } );
+
+        //
+
+        renderer = new THREE.WebGLRenderer( { antialias: true } );
+        renderer.setPixelRatio( window.devicePixelRatio );
+        renderer.setSize( window.innerWidth, window.innerHeight );
+        renderer.setAnimationLoop( animate );
+        document.body.appendChild( renderer.domElement );
+
+        //
+
+        const controls = new THREE.OrbitControls( camera, renderer.domElement );
+        controls.enableZoom = false;
+        controls.enablePan = false;
+
+        controls.minDistance = 4.5;
+        controls.maxDistance = 4.5;
+
+        //
+
+        window.addEventListener( 'resize', onWindowResize );
+
     }
 
-    animate();
+    function onWindowResize() {
 
-    // Handle window resizing
-    window.addEventListener('resize', () => {
-        renderer.setSize(window.innerWidth, window.innerHeight);
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
-    });
+
+        renderer.setSize( window.innerWidth, window.innerHeight );
+
+    }
+
+    function addLaserBeam(scene, startPosition, endPosition, color) {
+        const beamLength = startPosition.distanceTo(endPosition);
+        const beamGeometry = new THREE.CylinderGeometry(0.01, 0.01, beamLength, 32);
+
+        const beamMaterial = new THREE.MeshBasicMaterial({ color: color, emissive: color });
+        const laserBeam = new THREE.Mesh(beamGeometry, beamMaterial);
+
+        // Position the beam in the middle of the start and end points
+        const midPoint = startPosition.clone().lerp(endPosition, 0.5);
+        laserBeam.position.copy(midPoint);
+
+        // Rotate the laser beam to point from startPosition to endPosition
+        laserBeam.lookAt(endPosition);
+        laserBeam.rotateX(Math.PI / 2);
+
+        scene.add(laserBeam);
+
+        // Optional: Add a light source at the start position
+        const pointLight = new THREE.PointLight(color, 1, 1);
+        pointLight.position.copy(startPosition);
+        scene.add(pointLight);
+    }
+
+    // Example usage in your existing code
+    const startPosition = new THREE.Vector3(0, 1, 0);  // Start of the laser beam
+    const endPosition = new THREE.Vector3(0, 1, -2);   // End of the laser beam
+    const laserColor = 0xffffff;                       // White color for the laser
+    //addLaserBeam(scene, startPosition, endPosition, laserColor);
+
+    function animate() {
+
+        renderer.render( scene, camera );
+
+        }
 </script>
 </body>
 </html>

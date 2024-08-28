@@ -33,7 +33,7 @@
     <string name="system">System</string>
     <string name="memory">Memory</string>
     <string name="storage">Storage</string>
-    <string name="router_page">For more information, login into <a href="http://192.168.1.1">Router\'\s Panel</a>.</string>
+    <string name="router_page">For more information, log in into <a href="http://192.168.1.1">http://192.168.1.1</a>.</string>
     <string name="openvpn_page">For more information, visit <a href="http://192.168.1.1">OpenVPN For Android</a>.</string>
     <string name="dhcp_title">DHCP</string>
     <string name="dhcp6_title">DHCP6</string>
@@ -45,5 +45,9 @@
     <string name="disconnected">DISCONNECTED</string>
     <string name="connected">CONNECTED</string>
     <string name="loading_status">Trying to connect…</string>
+    <string name="how_to_setup_a_ddns">Setting up a DDNS allows you to assign a static FQDN to your network.</string>
+    <string name="setup_a_new_ddns_key">Setup a new DDNS key, you\'ll receive a <b>username</b> and <b>password</b>.</string>
+    <string name="register_and_sign_up">Register and sign up at <a href="https://my.noip.com/">https://my.noip.com/</a>.</string>
+    <string name="fill_out_the_form">Fill out the form below with the hostname and your <b>DDNS key</b> credentials.</string>
 
 </resources>
