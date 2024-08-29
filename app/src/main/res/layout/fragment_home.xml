@@ -36,6 +36,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <include
+        layout="@layout/fragment_port_forwarding"
+        android:id="@+id/fragment_port_forwarding_included"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <LinearLayout
         android:id="@+id/home_main_layout"

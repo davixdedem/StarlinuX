@@ -49,5 +49,7 @@
     <string name="setup_a_new_ddns_key">Setup a new DDNS key, you\'ll receive a <b>username</b> and <b>password</b>.</string>
     <string name="register_and_sign_up">Register and sign up at <a href="https://my.noip.com/">https://my.noip.com/</a>.</string>
     <string name="fill_out_the_form">Fill out the form below with the hostname and your <b>DDNS key</b> credentials.</string>
+    <string name="port_forwarding_section">Port Forwarding</string>
+    <string name="rules">RULES</string>
 
 </resources>

@@ -109,6 +109,7 @@ class HomeFragment : Fragment() {
     private val setDDNSUsername = "uci set ddns.myddns_ipv6.username="
     private val setDDNSPassword = "uci set ddns.myddns_ipv6.password="
     private val commitDDNSCommand  = "uci commit ddns"
+    private val getRedirectFirewallRulesCommand  = "bash /root/scripts/port_forwarding_configurations.sh"
 
     /*Configurations*/
     private val onlineStatus = "Online"
@@ -833,6 +834,114 @@ class HomeFragment : Fragment() {
         }
         /*** END - DDNS FRAGMENT ***/
 
+        /*** START - PORT FORWARDING FRAGMENT ***/
+        /*Applying effect to PF buttons*/
+        binding.pwSectionText.setOnTouchListener { view, motionEvent ->
+            if (isBoardReachable) {
+                when (motionEvent.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        /*Apply opacity effect when pressed*/
+                        view.alpha = 0.5f
+                    }
+
+                    MotionEvent.ACTION_UP -> {
+                        /*Revert back to original opacity*/
+                        view.alpha = 1.0f
+                        /*Call performClick to trigger the click event*/
+                        view.performClick()
+                    }
+
+                    MotionEvent.ACTION_CANCEL -> {
+                        /*Revert back to original opacity if the action was canceled*/
+                        view.alpha = 1.0f
+                    }
+                }
+            }
+            /*Return true to indicate that the event has been handled*/
+            return@setOnTouchListener true
+        }
+        binding.pwSectionBtn.setOnTouchListener { view, motionEvent ->
+            when (motionEvent.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    /*Apply opacity effect when pressed*/
+                    view.alpha = 0.5f
+                }
+
+                MotionEvent.ACTION_UP -> {
+                    /*Revert back to original opacity*/
+                    view.alpha = 1.0f
+                    /*Call performClick to trigger the click event*/
+                    view.performClick()
+                }
+
+                MotionEvent.ACTION_CANCEL -> {
+                    /*Revert back to original opacity if the action was canceled*/
+                    view.alpha = 1.0f
+                }
+            }
+            /*Return true to indicate that the event has been handled*/
+            return@setOnTouchListener true
+        }
+
+        /*Binding PF buttons*/
+        binding.pwSectionText.setOnClickListener {
+            if (isBoardReachable) {
+                /*Handle its view visibility*/
+                binding.homeMainLayout.visibility = View.GONE
+                binding.fragmentPortForwardingIncluded.root.visibility = View.VISIBLE
+
+                /*Pause main call API*/
+                canCallHomeAPi = false
+
+            }
+        }
+        binding.pwSectionBtn.setOnClickListener {
+            if (isBoardReachable) {
+                /*Handle its view visibility*/
+                binding.homeMainLayout.visibility = View.GONE
+                binding.fragmentPortForwardingIncluded.root.visibility = View.VISIBLE
+
+                /*Pause main call API*/
+                canCallHomeAPi = false
+
+            }
+        }
+
+        /*Binding PF exit info button*/
+        binding.fragmentPortForwardingIncluded.exitImage.setOnClickListener {
+            binding.homeMainLayout.visibility = View.VISIBLE
+            binding.fragmentPortForwardingIncluded.root.visibility = View.GONE
+
+            /*Pause main call API*/
+            canCallHomeAPi = true
+
+        }
+
+        /*Applying effect at Vpn exit button*/
+        binding.fragmentPortForwardingIncluded.exitImage.setOnTouchListener { view, motionEvent ->
+            when (motionEvent.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    /*Apply opacity effect when pressed*/
+                    view.alpha = 0.5f
+                }
+
+                MotionEvent.ACTION_UP -> {
+                    /*Revert back to original opacity*/
+                    view.alpha = 1.0f
+                    /*Call performClick to trigger the click event*/
+                    view.performClick()
+                }
+
+                MotionEvent.ACTION_CANCEL -> {
+                    /*Revert back to original opacity if the action was canceled*/
+                    view.alpha = 1.0f
+                }
+            }
+            /*Return true to indicate that the event has been handled*/
+            return@setOnTouchListener true
+        }
+        /*** END - PORT FORWARDING FRAGMENT ***/
+
         /*Updating resources on time*/
         job = CoroutineScope(Dispatchers.IO).launch {
             while (isActive) {
@@ -942,9 +1051,9 @@ class HomeFragment : Fragment() {
         binding.ddnsSectionBtn.alpha = alphaValue
 
         /*Port Forwarding*/
-/*        binding.pwSectionText.alpha = alphaValue
+        binding.pwSectionText.alpha = alphaValue
         binding.pwImageIcon.alpha = alphaValue
-        binding.pwSectionBtn.alpha = alphaValue*/
+        binding.pwSectionBtn.alpha = alphaValue
 
         /*Network*/
         binding.networkText.alpha = alphaValue
@@ -1183,6 +1292,47 @@ class HomeFragment : Fragment() {
 
                     /* Adding the network devices cards */
                     addVpnCards()
+                }
+            },
+            onFailure = { error ->
+                /* Handle the failure, update UI on the main thread */
+                activity?.runOnUiThread {
+                    Log.d(openWRTTag, error)
+                }
+            }
+        )
+    }
+
+    /* Get VPN connected devices */
+    private fun getPortForwarding() {
+        if (!::luciToken.isInitialized) {
+            Log.w(openWRTTag, "luciToken is null or empty. Aborting the operation.")
+            return
+        }
+
+        openWRTApi.executeCommand(
+            getRedirectFirewallRulesCommand,
+            luciToken,
+            onSuccess = { response ->
+                /* Handle the successful response, update UI on the main thread */
+                activity?.runOnUiThread {
+                    Log.d(openWRTTag, response.toString())
+
+                    /* Parsing the JSON Object */
+                    try {
+                        val resultString = response.optString("result")
+                        Log.d("OpenVPN", "resultString: $resultString")
+
+                        val jsonObject = JSONObject(resultString)
+
+                    } catch (e: JSONException) {
+                        e.printStackTrace()
+                        Log.e(openWRTTag, "Error parsing JSON: ${e.message}")
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        Log.e(openWRTTag, "Unexpected error: ${e.message}")
+                    }
+
                 }
             },
             onFailure = { error ->
