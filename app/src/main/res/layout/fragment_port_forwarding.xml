@@ -81,23 +81,24 @@
                             android:orientation="vertical" >
 
                             <TextView
-                                android:id="@+id/vpn_config_status"
+                                android:id="@+id/pf_config_status"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="20sp"
                                 android:layout_marginBottom="20sp"
-                                android:text="There are no active rules at the moment."
+                                android:text="@string/no_active_rules"
                                 android:textAlignment="center"
                                 android:textColor="@color/white" />
+
+                            <LinearLayout
+                                android:id="@+id/pf_card_container"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="10dp" />
+
                         </LinearLayout>
                     </ScrollView>
-
-                    <LinearLayout
-                        android:id="@+id/network_card_container"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="10dp"/>
 
                     <TextView
                         android:id="@+id/textView"

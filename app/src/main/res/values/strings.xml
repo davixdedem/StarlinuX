@@ -51,5 +51,8 @@
     <string name="fill_out_the_form">Fill out the form below with the hostname and your <b>DDNS key</b> credentials.</string>
     <string name="port_forwarding_section">Port Forwarding</string>
     <string name="rules">RULES</string>
+    <string name="on">ON</string>
+    <string name="off">OFF</string>
+    <string name="no_active_rules">There are no rules at the moment.</string>
 
 </resources>

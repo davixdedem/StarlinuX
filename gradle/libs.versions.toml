@@ -31,6 +31,7 @@ filamentAndroidVersion = "1.17.1"
 constraintlayoutCore = "1.0.4"
 slidetoact = "0.11.0"
 slidetoconfirm = "1.0.2"
+switchButton = "0.0.3"
 
 [libraries]
 androidx-cardview = { module = "androidx.cardview:cardview", version.ref = "cardview" }
@@ -64,6 +65,7 @@ sceneform-filament-android = { group = "com.google.ar.sceneform", name = "filame
 androidx-constraintlayout-core = { group = "androidx.constraintlayout", name = "constraintlayout-core", version.ref = "constraintlayoutCore" }
 slidetoact = { module = "com.ncorti:slidetoact", version.ref = "slidetoact" }
 slidetoconfirm = { module = "com.github.chinalwb:slidetoconfirm", version.ref = "slidetoconfirm" }
+switch-button = { module = "com.github.zcweng:switch-button", version.ref = "switchButton" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

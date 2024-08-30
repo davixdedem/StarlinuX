@@ -12,7 +12,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -25,7 +25,7 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:visibility="invisible"
                 android:padding="0dp">
@@ -44,42 +44,23 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:gravity="center_vertical"
-                android:padding="5sp">
+                android:padding="5dp">
 
                 <TextView
+                    android:id="@+id/title_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Allow IPv6 HTTP"
+                    android:text="@string/description_card_name"
                     android:gravity="center"
                     android:textColor="@color/white"
                     android:textSize="15sp" />
 
-                <com.google.android.material.button.MaterialButtonToggleGroup
-                    android:id="@+id/toggleGroup"
+                <com.suke.widget.SwitchButton
+                    android:id="@+id/switch_button"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:checkedButton="@id/btn_one_way"
-                    app:singleSelection="true">
-
-                    <Button
-                        style="@style/CustomOutlinedButton"
-                        android:id="@+id/btn_one_way"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:textColor="@android:color/white"
-                        android:text="ON" />
-
-                    <Button
-                        style="@style/CustomOutlinedButton"
-                        android:id="@+id/btn_round"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:textColor="@color/teal_700"
-                        android:layout_height="wrap_content"
-                        android:text="OFF" />
-
-                </com.google.android.material.button.MaterialButtonToggleGroup>
+                    android:layout_weight="1"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_height="match_parent"/>
 
             </LinearLayout>
 
@@ -98,12 +79,7 @@
                     android:textColor="@color/white"
                     android:textSize="18sp" />
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="fdb7:3e6b:bfff:0:9940:82e6:f16f:8b6d"
-                    android:textColor="@color/teal_700"
-                    android:textSize="13sp" />
+
 
             </LinearLayout>
         </LinearLayout>
@@ -126,6 +102,7 @@
                     android:orientation="horizontal">
 
                     <TextView
+                        android:id="@+id/external_port_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="left"
@@ -140,15 +117,18 @@
                     android:layout_height="match_parent"
                     android:orientation="horizontal">
 
-                    <TextView
+                    <EditText
+                        android:id="@+id/external_port_description"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="9005"
+                        android:text="@string/description_card_name"
                         android:textColor="@color/teal_700"
+                        android:inputType="number"
+                        android:background="@null"
                         android:textSize="14sp" />
 
                     <ImageView
-                        android:id="@+id/close_value_image"
+                        android:id="@+id/close_external_value_image"
                         android:visibility="gone"
                         android:layout_width="20sp"
                         android:layout_height="20sp"
@@ -159,9 +139,9 @@
                         app:tint="@color/white" />
 
                     <ImageView
-                        android:id="@+id/edit_value_image"
+                        android:id="@+id/edit_external_value_image"
                         android:layout_width="20sp"
-                        android:layout_height="15sp"
+                        android:layout_height="20sp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="5sp"
                         android:layout_marginEnd="16dp"
@@ -183,6 +163,7 @@
                     android:orientation="horizontal">
 
                     <TextView
+                        android:id="@+id/destination_port_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="left"
@@ -197,14 +178,18 @@
                     android:layout_height="match_parent"
                     android:orientation="horizontal">
 
-                    <TextView
+                    <EditText
+                        android:id="@+id/destination_port_description"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="9005"
+                        android:text="@string/description_card_name"
                         android:textColor="@color/teal_700"
+                        android:inputType="number"
+                        android:background="@null"
                         android:textSize="14sp" />
 
                     <ImageView
+                        android:id="@+id/close_destination_value_image"
                         android:layout_width="20sp"
                         android:layout_height="20sp"
                         android:layout_gravity="center_vertical"
@@ -216,8 +201,9 @@
                         app:tint="@color/white" />
 
                     <ImageView
+                        android:id="@+id/edit_destination_value_image"
                         android:layout_width="20sp"
-                        android:layout_height="15sp"
+                        android:layout_height="20sp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="5sp"
                         android:layout_marginEnd="16dp"
@@ -240,13 +226,27 @@
                     android:orientation="horizontal">
 
                     <TextView
+                        android:id="@+id/target_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Target IPv6"
                         android:textColor="@color/white"
                         android:textSize="18sp" />
 
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+                    <Spinner
+                        android:id="@+id/target_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
                     <ImageView
+                        android:id="@+id/close_target_value_image"
                         android:layout_width="20sp"
                         android:layout_height="20sp"
                         android:layout_gravity="center_vertical"
@@ -258,27 +258,16 @@
                         app:tint="@color/white" />
 
                     <ImageView
+                        android:id="@+id/edit_target_value_image"
+                        android:visibility="gone"
                         android:layout_width="20sp"
-                        android:layout_height="15sp"
+                        android:layout_height="20sp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginStart="5sp"
                         android:layout_marginEnd="16dp"
                         android:layout_weight="0"
                         app:srcCompat="@drawable/pen"
                         app:tint="@color/white" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="fdb7:3e6b:bfff:0:9940:82e6:f16f:8b6d"
-                        android:textColor="@color/teal_700"
-                        android:textSize="13sp" />
 
                 </LinearLayout>
 

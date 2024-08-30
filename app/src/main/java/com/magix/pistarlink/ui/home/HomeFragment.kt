@@ -23,7 +23,6 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.magix.pistarlink.OpenWRTApi
-import com.magix.pistarlink.R
 import com.ncorti.slidetoact.SlideToActView
 import de.blinkt.openvpn.api.IOpenVPNAPIService
 import de.blinkt.openvpn.api.IOpenVPNStatusCallback
@@ -47,6 +46,11 @@ import android.animation.ObjectAnimator
 import com.magix.pistarlink.databinding.FragmentHomeBinding
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
+import android.widget.EditText
+import android.widget.Spinner
+import com.suke.widget.SwitchButton
+import com.magix.pistarlink.R
 
 
 class HomeFragment : Fragment() {
@@ -85,8 +89,19 @@ class HomeFragment : Fragment() {
         val macAddr: String,
     )
 
+    /*Define a Data Class for Port Forwarding*/
+    data class PortForwardingCard(
+        val id: String,
+        val title: String,
+        val externalPort: String,
+        val destinationPort: String,
+        val ipv6Target: String,
+        val enabled: String
+    )
+
     private val dhcpLeases = mutableListOf<DhcpLease>()
     private val dhcp6Leases = mutableListOf<DhcpLease>()
+    private val pfRules = mutableListOf<PortForwardingCard>()
 
     /*Luci configurations*/
     private val username = "root"
@@ -109,6 +124,7 @@ class HomeFragment : Fragment() {
     private val setDDNSUsername = "uci set ddns.myddns_ipv6.username="
     private val setDDNSPassword = "uci set ddns.myddns_ipv6.password="
     private val commitDDNSCommand  = "uci commit ddns"
+    private val commitFirewallCommand  = "uci commit firewall"
     private val getRedirectFirewallRulesCommand  = "bash /root/scripts/port_forwarding_configurations.sh"
 
     /*Configurations*/
@@ -315,7 +331,16 @@ class HomeFragment : Fragment() {
                 /*Pause main call API*/
                 canCallHomeAPi = false
 
-                callOpenWRTNetwork()
+                callOpenWRTNetwork { jsonObject ->
+                    jsonObject?.let {
+                        // Handle the JSON data
+                        Log.d("OpenWRTNetwork", it.toString())
+                    } ?: run {
+                        // Handle the error case
+                        Log.e("OpenWRTNetwork", "Failed to retrieve data")
+                    }
+                }
+
             }
         }
         binding.networkBtn.setOnClickListener {
@@ -428,7 +453,15 @@ class HomeFragment : Fragment() {
             /*Pause main call API*/
             canCallHomeAPi = false
 
-            callOpenWRTNetwork()
+            callOpenWRTNetwork { jsonObject ->
+                jsonObject?.let {
+                    // Handle the JSON data
+                    Log.d("OpenWRTNetwork", it.toString())
+                } ?: run {
+                    // Handle the error case
+                    Log.e("OpenWRTNetwork", "Failed to retrieve data")
+                }
+            }
 
             updateVPNLayout()
 
@@ -893,6 +926,8 @@ class HomeFragment : Fragment() {
                 /*Pause main call API*/
                 canCallHomeAPi = false
 
+                /*Call the API and update resources*/
+                callOpenWRTPortForwarding()
             }
         }
         binding.pwSectionBtn.setOnClickListener {
@@ -904,6 +939,8 @@ class HomeFragment : Fragment() {
                 /*Pause main call API*/
                 canCallHomeAPi = false
 
+                /*Call the API and update resources*/
+                callOpenWRTPortForwarding()
             }
         }
 
@@ -1157,10 +1194,11 @@ class HomeFragment : Fragment() {
         )
     }
 
-    /* Call the OpenWRT in order to get connected devices*/
-    private fun callOpenWRTNetwork() {
+    /* Call OpenWRT in order to get */
+    private fun callOpenWRTNetwork(onResult: (JSONObject?) -> Unit) {
         if (!::luciToken.isInitialized) {
             Log.w(openWRTTag, "luciToken is null or empty. Aborting the operation.")
+            onResult(null)
             return
         }
 
@@ -1168,65 +1206,161 @@ class HomeFragment : Fragment() {
             getConnectedDevices,
             luciToken,
             onSuccess = { response ->
-                /*Handle the successful response, update UI on the main thread*/
+                /* Handle the successful response */
                 activity?.runOnUiThread {
-                    Log.d(openWRTTag,response.toString())
+                    Log.d(openWRTTag, response.toString())
 
-                    /*Emptying the cards*/
-                    dhcpLeases.clear()
-                    dhcp6Leases.clear()
-                    val parentLayout = view?.findViewById<LinearLayout>(R.id.network_card_container)
-                    val parentLayout6 = view?.findViewById<LinearLayout>(R.id.network_card6_container)
-                    parentLayout?.removeAllViews()
-                    parentLayout6?.removeAllViews()
-
-                    /*Parsing the JSON Object*/
+                    /* Parsing the JSON Object */
                     try {
                         val resultString = response.optString("result")
                         val jsonObject = JSONObject(resultString)
 
-                        /*Append the network devices into the JSONArray for each IPv4 device*/
-                        val leasesArray: JSONArray = jsonObject.getJSONArray("dhcp_leases")
-                        for (i in 0 until leasesArray.length()) {
-                            val leaseObject = leasesArray.getJSONObject(i)
-                            val lease = DhcpLease(
-                                hostname = leaseObject.getString("hostname"),
-                                ipaddr = leaseObject.getString("ipaddr"),
-                                macAddr = leaseObject.getString("macaddr"),
-                            )
-                            dhcpLeases.add(lease)
-                        }
+                        /* Return the parsed JSON object */
+                        onResult(jsonObject)
 
-                        /*Append the network devices into the JSONArray for each IPv6 device*/
-                        val leases6Array: JSONArray = jsonObject.getJSONArray("dhcp6_leases")
-                        Log.d("OpenWRT Dhcp6","$leases6Array")
-                        for (i in 0 until leases6Array.length()) {
-                            val lease6Object = leases6Array.getJSONObject(i)
-                            val lease6 = lease6Object?.getString("ip6addr")?.let {
-                                DhcpLease(
-                                    hostname = lease6Object.optString("hostname").takeIf { it.isNotEmpty() }
-                                        ?: lease6Object.optString("macaddr").takeIf { it.isNotEmpty() }
-                                        ?: "Unknown",
-                                    ipaddr = it,
-                                    macAddr = lease6Object.optString("macaddr", ""),
+                        /* (Optional) You can still update the UI if needed */
+                        updateNetworkUI(jsonObject)
+
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        onResult(null)
+                    }
+                }
+            },
+            onFailure = { error ->
+                /* Handle the failure */
+                activity?.runOnUiThread {
+                    Log.d(openWRTTag, error)
+                    onResult(null)
+                }
+            }
+        )
+    }
+
+    /* Update the network resources*/
+    private fun updateNetworkUI(jsonObject: JSONObject) {
+        /* Emptying the cards */
+        dhcpLeases.clear()
+        dhcp6Leases.clear()
+        val parentLayout = view?.findViewById<LinearLayout>(R.id.network_card_container)
+        val parentLayout6 = view?.findViewById<LinearLayout>(R.id.network_card6_container)
+        parentLayout?.removeAllViews()
+        parentLayout6?.removeAllViews()
+
+        /* Parsing and updating the UI with the network devices */
+        try {
+            /* Append the network devices into the JSONArray for each IPv4 device */
+            val leasesArray: JSONArray = jsonObject.getJSONArray("dhcp_leases")
+            for (i in 0 until leasesArray.length()) {
+                val leaseObject = leasesArray.getJSONObject(i)
+                val lease = DhcpLease(
+                    hostname = leaseObject.getString("hostname"),
+                    ipaddr = leaseObject.getString("ipaddr"),
+                    macAddr = leaseObject.getString("macaddr"),
+                )
+                dhcpLeases.add(lease)
+            }
+
+            /* Append the network devices into the JSONArray for each IPv6 device */
+            val leases6Array: JSONArray = jsonObject.getJSONArray("dhcp6_leases")
+            Log.d("OpenWRT Dhcp6", "$leases6Array")
+            for (i in 0 until leases6Array.length()) {
+                val lease6Object = leases6Array.getJSONObject(i)
+                val lease6 = lease6Object?.getString("ip6addr")?.let {
+                    DhcpLease(
+                        hostname = lease6Object.optString("hostname").takeIf { it.isNotEmpty() }
+                            ?: lease6Object.optString("macaddr").takeIf { it.isNotEmpty() }
+                            ?: "Unknown",
+                        ipaddr = it,
+                        macAddr = lease6Object.optString("macaddr", ""),
+                    )
+                }
+                if (lease6 != null) {
+                    dhcp6Leases.add(lease6)
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        /* Adding the network devices cards */
+        addNetworkCards()
+    }
+
+    /* Call the OpenWRT in order to get port forwarding rules */
+    private fun callOpenWRTPortForwarding() {
+        if (!::luciToken.isInitialized) {
+            Log.w(openWRTTag, "luciToken is null or empty. Aborting the operation.")
+            return
+        }
+
+        openWRTApi.executeCommand(
+            getRedirectFirewallRulesCommand,
+            luciToken,
+            onSuccess = { response ->
+                /* Handle the successful response, update UI on the main thread */
+                activity?.runOnUiThread {
+                    Log.d(openWRTTag, response.toString())
+
+                    /* Emptying the cards */
+                    pfRules.clear()
+                    val parentLayout = view?.findViewById<LinearLayout>(R.id.pf_card_container)
+                    parentLayout?.removeAllViews()
+
+                    /* Parsing the JSON Object */
+                    try {
+                        val resultString = response.optString("result")
+
+                        // Split the response string by newline to handle multiple JSON objects
+                        val jsonStrings = resultString.trim().split("\n")
+
+                        if (jsonStrings.isNotEmpty()) {
+                            /* Hide the rules status */
+                            binding.fragmentPortForwardingIncluded.pfConfigStatus.visibility = View.GONE
+
+                            // Iterate over each JSON string and parse it as a JSONObject
+                            for (jsonStr in jsonStrings) {
+                                val jsonObject = JSONObject(jsonStr)
+
+                                /* Create a PortForwardingCard using the JSON data */
+                                val lease = PortForwardingCard(
+                                    id = jsonObject.optString("id"),
+                                    title = jsonObject.optString("name"),
+                                    externalPort = jsonObject.optString("src_dport"),
+                                    destinationPort = jsonObject.optString("dest_port"),
+                                    ipv6Target = jsonObject.optString("dest_ip"),
+                                    enabled = jsonObject.optString("enabled")
                                 )
+                                pfRules.add(lease)
                             }
-                            if (lease6 != null) {
-                                dhcp6Leases.add(lease6)
-                            }
+                        } else {
+                            binding.fragmentPortForwardingIncluded.pfConfigStatus.visibility = View.VISIBLE
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
 
-                    /*Adding the network devices cards*/
-                    addNetworkCards()
+                    /* Get DHCv6 data*/
+                    callOpenWRTNetwork { jsonObject ->
+                        jsonObject?.let {
+                            // Handle the JSON data
+                            Log.d("OpenWRTNetwork", it.toString())
+
+                            addPortForwardingCards(it)
+
+                        } ?: run {
+                            // Handle the error case
+                            Log.e("OpenWRTNetwork", "Failed to retrieve data")
+                        }
+                    }
+                    
+                    /* Adding the network devices cards */
                 }
             },
             onFailure = { error ->
-                /*Handle the failure, update UI on the main thread*/
+                /* Handle the failure, update UI on the main thread */
                 activity?.runOnUiThread {
-                    Log.d(openWRTTag,error)
+                    Log.d(openWRTTag, error)
                 }
             }
         )
@@ -1292,47 +1426,6 @@ class HomeFragment : Fragment() {
 
                     /* Adding the network devices cards */
                     addVpnCards()
-                }
-            },
-            onFailure = { error ->
-                /* Handle the failure, update UI on the main thread */
-                activity?.runOnUiThread {
-                    Log.d(openWRTTag, error)
-                }
-            }
-        )
-    }
-
-    /* Get VPN connected devices */
-    private fun getPortForwarding() {
-        if (!::luciToken.isInitialized) {
-            Log.w(openWRTTag, "luciToken is null or empty. Aborting the operation.")
-            return
-        }
-
-        openWRTApi.executeCommand(
-            getRedirectFirewallRulesCommand,
-            luciToken,
-            onSuccess = { response ->
-                /* Handle the successful response, update UI on the main thread */
-                activity?.runOnUiThread {
-                    Log.d(openWRTTag, response.toString())
-
-                    /* Parsing the JSON Object */
-                    try {
-                        val resultString = response.optString("result")
-                        Log.d("OpenVPN", "resultString: $resultString")
-
-                        val jsonObject = JSONObject(resultString)
-
-                    } catch (e: JSONException) {
-                        e.printStackTrace()
-                        Log.e(openWRTTag, "Error parsing JSON: ${e.message}")
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        Log.e(openWRTTag, "Unexpected error: ${e.message}")
-                    }
-
                 }
             },
             onFailure = { error ->
@@ -1755,6 +1848,170 @@ class HomeFragment : Fragment() {
         }
     }
 
+    /*Adding port forwarding cards at the view based on the array*/
+    private fun addPortForwardingCards(dhcp6: JSONObject) {
+        val parentLayout = view?.findViewById<LinearLayout>(R.id.pf_card_container)
+
+        // Assuming `leases6Array` is already defined
+        val leases6Array: JSONArray = dhcp6.getJSONArray("dhcp6_leases")
+        val ipv6Addresses = mutableListOf<String>()
+
+        for (i in 0 until leases6Array.length()) {
+            val leaseObject = leases6Array.getJSONObject(i)
+
+            // Get the primary IPv6 address
+            val primaryIp6 = leaseObject.optString("ip6addr")
+            if (primaryIp6.isNotEmpty()) {
+                ipv6Addresses.add(primaryIp6)
+            }
+            // Get the array of additional IPv6 addresses
+            val ip6addrsArray = leaseObject.optJSONArray("ip6addrs")
+            if (ip6addrsArray != null) {
+                for (j in 0 until ip6addrsArray.length()) {
+                    val ip6addr = ip6addrsArray.getString(j).split("/")[0] // Remove the subnet part
+                    ipv6Addresses.add(ip6addr)
+                }
+            }
+        }
+        Log.d("OpenWRT", "IPv6: $ipv6Addresses")
+
+        for (lease in pfRules) {
+            val inflater = LayoutInflater.from(context)
+            val cardView = inflater.inflate(R.layout.layout_card_port_forwarding, parentLayout, false)
+
+            cardView.findViewById<TextView>(R.id.title_text).text = lease.title
+            cardView.findViewById<TextView>(R.id.external_port_description).text = lease.externalPort
+            cardView.findViewById<TextView>(R.id.destination_port_description).text = lease.destinationPort
+
+            val switchButton = cardView.findViewById<View>(R.id.switch_button) as SwitchButton
+            switchButton.isChecked = lease.enabled == "1"
+
+            // External Port Editing Logic
+            var initialExtPortValue = lease.externalPort
+            var isExternalPortEditing = false
+            val externalPortEditImage = cardView.findViewById<ImageView>(R.id.edit_external_value_image)
+            val externalPortCloseImage = cardView.findViewById<ImageView>(R.id.close_external_value_image)
+            val externalPortEditText = cardView.findViewById<EditText>(R.id.external_port_description)
+
+            externalPortEditImage.setOnClickListener {
+                if (isExternalPortEditing) {
+                    externalPortCloseImage.visibility = View.GONE
+
+                    externalPortEditText.isFocusable = false
+                    externalPortEditText.isFocusableInTouchMode = false
+                    externalPortEditText.isClickable = false
+                    externalPortEditText.clearFocus()
+
+                    val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(externalPortEditText.windowToken, 0)
+
+                    externalPortEditImage.setImageResource(R.drawable.pen)
+
+                    initialExtPortValue = externalPortEditText.text.toString()
+                } else {
+                    externalPortCloseImage.visibility = View.VISIBLE
+
+                    externalPortEditText.isFocusable = true
+                    externalPortEditText.isFocusableInTouchMode = true
+                    externalPortEditText.isClickable = true
+                    externalPortEditText.requestFocus()
+
+                    val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.showSoftInput(externalPortEditText, InputMethodManager.SHOW_IMPLICIT)
+
+                    externalPortEditImage.setImageResource(R.drawable.check)
+                }
+                isExternalPortEditing = !isExternalPortEditing
+            }
+
+            externalPortCloseImage.setOnClickListener {
+                externalPortEditText.setText(initialExtPortValue)
+                externalPortCloseImage.visibility = View.GONE
+
+                externalPortEditText.isFocusable = false
+                externalPortEditText.isFocusableInTouchMode = false
+                externalPortEditText.isClickable = false
+                externalPortEditText.clearFocus()
+
+                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(externalPortEditText.windowToken, 0)
+
+                externalPortEditImage.setImageResource(R.drawable.pen)
+
+                isExternalPortEditing = false
+            }
+
+            // Destination Port Editing Logic
+            var initialDestPortValue = lease.destinationPort
+            var isDestinationPortEditing = false
+            val destinationPortEditImage = cardView.findViewById<ImageView>(R.id.edit_destination_value_image)
+            val destinationPortCloseImage = cardView.findViewById<ImageView>(R.id.close_destination_value_image)
+            val destinationPortEditText = cardView.findViewById<EditText>(R.id.destination_port_description)
+
+            destinationPortEditImage.setOnClickListener {
+                if (isDestinationPortEditing) {
+                    destinationPortCloseImage.visibility = View.GONE
+
+                    destinationPortEditText.isFocusable = false
+                    destinationPortEditText.isFocusableInTouchMode = false
+                    destinationPortEditText.isClickable = false
+                    destinationPortEditText.clearFocus()
+
+                    val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.hideSoftInputFromWindow(destinationPortEditText.windowToken, 0)
+
+                    destinationPortEditImage.setImageResource(R.drawable.pen)
+
+                    initialDestPortValue = destinationPortEditText.text.toString()
+                } else {
+                    destinationPortCloseImage.visibility = View.VISIBLE
+
+                    destinationPortEditText.isFocusable = true
+                    destinationPortEditText.isFocusableInTouchMode = true
+                    destinationPortEditText.isClickable = true
+                    destinationPortEditText.requestFocus()
+
+                    val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.showSoftInput(destinationPortEditText, InputMethodManager.SHOW_IMPLICIT)
+
+                    destinationPortEditImage.setImageResource(R.drawable.check)
+                }
+                isDestinationPortEditing = !isDestinationPortEditing
+            }
+
+            destinationPortCloseImage.setOnClickListener {
+                destinationPortEditText.setText(initialDestPortValue)
+                destinationPortCloseImage.visibility = View.GONE
+
+                destinationPortEditText.isFocusable = false
+                destinationPortEditText.isFocusableInTouchMode = false
+                destinationPortEditText.isClickable = false
+                destinationPortEditText.clearFocus()
+
+                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(destinationPortEditText.windowToken, 0)
+
+                destinationPortEditImage.setImageResource(R.drawable.pen)
+
+                isDestinationPortEditing = false
+            }
+
+            // Spinner setup for target IP addresses
+            val targetIpSpinner = cardView.findViewById<Spinner>(R.id.target_description)
+            val adapter = ArrayAdapter(requireContext(), R.layout.spinner_item, ipv6Addresses)
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            targetIpSpinner.adapter = adapter
+
+            // Set the selected IP address if it's available in lease.targetIp
+            val selectedIpPosition = ipv6Addresses.indexOf(lease.ipv6Target)
+            if (selectedIpPosition >= 0) {
+                targetIpSpinner.setSelection(selectedIpPosition)
+            }
+
+            parentLayout?.addView(cardView)
+        }
+    }
+
     /*Adding network cards at the view based on the array*/
     private fun addVpnCards() {
         val parentLayout = view?.findViewById<LinearLayout>(R.id.vpn_card_container)
@@ -2120,6 +2377,7 @@ class FileHelper(private val context: Context) {
         }
     }
 }
+
 
 
 
