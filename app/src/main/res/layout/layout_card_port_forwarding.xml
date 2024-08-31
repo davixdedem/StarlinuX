@@ -31,8 +31,8 @@
                 android:padding="0dp">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:text="External Port"
                     android:textColor="@color/white"
                     android:textSize="18sp" />
@@ -43,8 +43,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:gravity="center_vertical"
-                android:padding="5dp">
+                android:padding="10dp">
 
                 <TextView
                     android:id="@+id/title_text"
@@ -57,9 +56,12 @@
 
                 <com.suke.widget.SwitchButton
                     android:id="@+id/switch_button"
-                    android:layout_width="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_gravity="center_horizontal"
+                    app:sb_button_color="@color/teal_700"
+                    app:sb_shadow_color="@color/teal_700"
+                    app:sb_uncheck_color="@color/teal_700"
+                    app:sb_checkline_color="@color/teal_700"
+                    android:outlineAmbientShadowColor="@color/teal_700"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"/>
 
             </LinearLayout>
@@ -73,7 +75,7 @@
 
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:gravity="left"
                     android:text="Target IPv6"
                     android:textColor="@color/white"
@@ -103,12 +105,22 @@
 
                     <TextView
                         android:id="@+id/external_port_title"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:gravity="left"
                         android:text="External Port"
                         android:textColor="@color/white"
                         android:textSize="18sp" />
+
+                    <ImageView
+                        android:id="@+id/delete_rule"
+                        android:layout_width="match_parent"
+                        android:layout_height="20sp"
+                        android:layout_marginTop="1sp"
+                        android:layout_weight="4"
+                        app:srcCompat="@drawable/delete"
+                        app:tint="@color/teal_700" />
 
                 </LinearLayout>
 

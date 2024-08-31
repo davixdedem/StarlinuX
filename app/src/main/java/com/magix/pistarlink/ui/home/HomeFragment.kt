@@ -2,10 +2,8 @@ package com.magix.pistarlink.ui.home
 
 import kotlin.math.pow
 import android.app.Activity
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.ServiceConnection
 import android.graphics.Color
 import android.os.Bundle
 import android.os.IBinder
@@ -23,14 +21,10 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.magix.pistarlink.OpenWRTApi
-import com.ncorti.slidetoact.SlideToActView
-import de.blinkt.openvpn.api.IOpenVPNAPIService
-import de.blinkt.openvpn.api.IOpenVPNStatusCallback
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 import org.json.JSONArray
 import java.io.File
 import kotlin.math.log10
@@ -38,20 +32,28 @@ import java.io.IOException
 import org.json.JSONObject
 import org.json.JSONException
 import java.io.BufferedReader
+import android.widget.Spinner
+import com.magix.pistarlink.R
+import android.widget.EditText
 import java.io.FileInputStream
 import java.io.FileOutputStream
-import kotlinx.coroutines.launch
 import java.io.InputStreamReader
+import kotlinx.coroutines.launch
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import kotlinx.coroutines.isActive
+import com.suke.widget.SwitchButton
+import android.content.ComponentName
 import android.animation.ObjectAnimator
+import android.content.ServiceConnection
+import com.ncorti.slidetoact.SlideToActView
+import de.blinkt.openvpn.api.IOpenVPNAPIService
+import android.view.inputmethod.InputMethodManager
+import de.blinkt.openvpn.api.IOpenVPNStatusCallback
 import com.magix.pistarlink.databinding.FragmentHomeBinding
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.inputmethod.InputMethodManager
-import android.widget.ArrayAdapter
-import android.widget.EditText
-import android.widget.Spinner
-import com.suke.widget.SwitchButton
-import com.magix.pistarlink.R
-
+import android.webkit.JavascriptInterface
+import android.webkit.WebChromeClient
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
@@ -63,7 +65,8 @@ class HomeFragment : Fragment() {
     private lateinit var luciToken: String
     private lateinit var job: Job
     private var canCallHomeAPi = false
-    private var isBoardReachable = false
+    public var isBoardReachable = false
+    private var isLaserAdded = false
 
     /*Vpn*/
     private var mService: IOpenVPNAPIService? = null
@@ -124,8 +127,13 @@ class HomeFragment : Fragment() {
     private val setDDNSUsername = "uci set ddns.myddns_ipv6.username="
     private val setDDNSPassword = "uci set ddns.myddns_ipv6.password="
     private val commitDDNSCommand  = "uci commit ddns"
-    private val commitFirewallCommand  = "uci commit firewall"
     private val getRedirectFirewallRulesCommand  = "bash /root/scripts/port_forwarding_configurations.sh"
+    private val setPortForwardingNameCommand = "uci set firewall.@redirect['%s'].name='%s'"
+    private val setPortForwardingExternalPortCommand = "uci set firewall.@redirect['%s'].src_dport='%s'"
+    private val setPortForwardingDestinationPortCommand = "uci set firewall.@redirect['%s'].dest_port='%s'"
+    private val setPortForwardingTargetIPCommand = "uci set firewall.@redirect['%s'].dest_ip='%s'"
+    private val setPortForwardingEnabledCommand = "uci set firewall.@redirect['%s'].enabled='%s'"
+    private val commitFirewallCommand  = "uci commit firewall"
 
     /*Configurations*/
     private val onlineStatus = "Online"
@@ -160,6 +168,7 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        /** START - WEB VIEW**/
         webView = view.findViewById(R.id.webView)
         webView.settings.apply {
             javaScriptEnabled = true
@@ -169,6 +178,14 @@ class HomeFragment : Fragment() {
         webView.settings.javaScriptEnabled = true
         webView.webViewClient = WebViewClient()
         webView.loadUrl("file:///android_asset/index.html")
+        webView.webViewClient = WebViewClient()
+        webView.webChromeClient = WebChromeClient()
+        val jsInterface = context?.let { JavaScriptInterface(it, this) }
+        /*Connect the Javascript interface to the Web view*/
+        if (jsInterface != null) {
+            webView.addJavascriptInterface(jsInterface, "AndroidFunction")
+        }
+        /** END - WEB VIEW**/
 
         /*Binding Raspberry Pi info buttons*/
         binding.sbcTextName.setOnClickListener {
@@ -1061,6 +1078,7 @@ class HomeFragment : Fragment() {
     /*Updates the board status resources*/
     private fun updateBoardStatus(isOnline: Boolean) {
         isBoardReachable = isOnline
+        //trigLaserBeam(isOnline)
 
         val icon: ImageView = binding.boardStatusIcon
         val alphaValue = if (isOnline) 1.0F else 0.5F
@@ -1321,7 +1339,6 @@ class HomeFragment : Fragment() {
                             // Iterate over each JSON string and parse it as a JSONObject
                             for (jsonStr in jsonStrings) {
                                 val jsonObject = JSONObject(jsonStr)
-
                                 /* Create a PortForwardingCard using the JSON data */
                                 val lease = PortForwardingCard(
                                     id = jsonObject.optString("id"),
@@ -1692,6 +1709,31 @@ class HomeFragment : Fragment() {
         )
     }
 
+    /*Set DDNS configuration*/
+    private fun setFirewallConfiguration(command: String, id: String, value: String){
+        if (!::luciToken.isInitialized) {
+            Log.w(openWRTTag, "luciToken is null or empty. Aborting the operation.")
+            return
+        }
+        val composedCmd = String.format(command, id, value) + " && " + commitFirewallCommand
+        Log.d("OpenWRT","Composed command: $composedCmd")
+        openWRTApi.executeCommand(
+            composedCmd ,
+            luciToken,
+            onSuccess = { response ->
+                activity?.runOnUiThread {
+                    Log.d("OpenVPN", response.toString())
+                }
+            },
+            onFailure = { error ->
+                /* Handle the failure, update UI on the main thread */
+                activity?.runOnUiThread {
+                    Log.d("OpenVPN", error)
+                }
+            }
+        )
+    }
+
     /*Updating the system board information*/
     private fun updateSystemBoardInformation(data: JSONObject){
         val resultString = data.optString("result")
@@ -1854,7 +1896,7 @@ class HomeFragment : Fragment() {
 
         // Assuming `leases6Array` is already defined
         val leases6Array: JSONArray = dhcp6.getJSONArray("dhcp6_leases")
-        val ipv6Addresses = mutableListOf<String>()
+        val ipv6Addresses = mutableSetOf<String>()
 
         for (i in 0 until leases6Array.length()) {
             val leaseObject = leases6Array.getJSONObject(i)
@@ -1879,12 +1921,23 @@ class HomeFragment : Fragment() {
             val inflater = LayoutInflater.from(context)
             val cardView = inflater.inflate(R.layout.layout_card_port_forwarding, parentLayout, false)
 
+            ipv6Addresses.add(lease.ipv6Target)
+            val ipv6AddressList = ipv6Addresses.toList()
+
             cardView.findViewById<TextView>(R.id.title_text).text = lease.title
             cardView.findViewById<TextView>(R.id.external_port_description).text = lease.externalPort
             cardView.findViewById<TextView>(R.id.destination_port_description).text = lease.destinationPort
 
-            val switchButton = cardView.findViewById<View>(R.id.switch_button) as SwitchButton
+            val switchButton = cardView.findViewById<SwitchButton>(R.id.switch_button)
             switchButton.isChecked = lease.enabled == "1"
+            switchButton.setOnCheckedChangeListener { _, isChecked ->
+                // Handle the checked state change
+                if (isChecked) {
+                    setFirewallConfiguration(setPortForwardingEnabledCommand,lease.id,"1")
+                } else {
+                    setFirewallConfiguration(setPortForwardingEnabledCommand,lease.id,"0")
+                }
+            }
 
             // External Port Editing Logic
             var initialExtPortValue = lease.externalPort
@@ -1908,6 +1961,8 @@ class HomeFragment : Fragment() {
                     externalPortEditImage.setImageResource(R.drawable.pen)
 
                     initialExtPortValue = externalPortEditText.text.toString()
+
+                    setFirewallConfiguration(setPortForwardingExternalPortCommand,lease.id,initialExtPortValue)
                 } else {
                     externalPortCloseImage.visibility = View.VISIBLE
 
@@ -1963,6 +2018,8 @@ class HomeFragment : Fragment() {
                     destinationPortEditImage.setImageResource(R.drawable.pen)
 
                     initialDestPortValue = destinationPortEditText.text.toString()
+
+                    setFirewallConfiguration(setPortForwardingDestinationPortCommand,lease.id,initialDestPortValue)
                 } else {
                     destinationPortCloseImage.visibility = View.VISIBLE
 
@@ -1998,15 +2055,38 @@ class HomeFragment : Fragment() {
 
             // Spinner setup for target IP addresses
             val targetIpSpinner = cardView.findViewById<Spinner>(R.id.target_description)
-            val adapter = ArrayAdapter(requireContext(), R.layout.spinner_item, ipv6Addresses)
+            val adapter = ArrayAdapter(requireContext(), R.layout.spinner_item, ipv6AddressList)
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             targetIpSpinner.adapter = adapter
 
             // Set the selected IP address if it's available in lease.targetIp
-            val selectedIpPosition = ipv6Addresses.indexOf(lease.ipv6Target)
+            val selectedIpPosition = ipv6AddressList.indexOf(lease.ipv6Target)
             if (selectedIpPosition >= 0) {
                 targetIpSpinner.setSelection(selectedIpPosition)
             }
+
+            var isInitialSelection = true
+            targetIpSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                    // Check if this is the initial setup call
+                    if (isInitialSelection) {
+                        isInitialSelection = false
+                        return
+                    }
+
+                    // Get the selected item
+                    val selectedItem = parent.getItemAtPosition(position).toString()
+                    // Handle the selected item
+                    println("Selected item: $selectedItem")
+
+                    setFirewallConfiguration(setPortForwardingTargetIPCommand,lease.id,selectedItem)
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>) {
+                    // Handle the case when no item is selected (optional)
+                }
+            }
+
 
             parentLayout?.addView(cardView)
         }
@@ -2357,7 +2437,7 @@ class BlinkAnimator(private val imageView: ImageView, private val duration: Long
     }
 }
 
-/* Class to handle local files */
+/** Class to handle local files **/
 class FileHelper(private val context: Context) {
 
     fun saveFileToInternalStorage(fileContent: String, fileName: String) {
@@ -2377,6 +2457,23 @@ class FileHelper(private val context: Context) {
         }
     }
 }
+
+/** Javascript interface
+ *
+ */
+class JavaScriptInterface(
+    private val context: Context,
+    private val homeFragment: HomeFragment
+) {
+
+    @JavascriptInterface
+    fun getConnectionStatus(): Boolean {
+        Log.d("Webview", "getConnectionStatus has been called from Javascript")
+        val someVariable = homeFragment.isBoardReachable
+        return someVariable
+    }
+}
+
 
 
 

@@ -18,8 +18,9 @@
     <script src="https://cdn.jsdelivr.net/npm/three@0.119.1/examples/js/loaders/MTLLoader.js"></script>
 </head>
 <body>
-<script type="module">
+<script>
     let camera, scene, renderer;
+    let laserBeam, pointLight; // Declare laserBeam and pointLight globally
 
     init();
 
@@ -29,7 +30,6 @@
         camera.position.z = 4;
         camera.position.y = 2;
         camera.position.x = 1;
-
 
         // scene
         scene = new THREE.Scene();
@@ -42,75 +42,56 @@
         scene.add( camera );
 
         // model
-
         const onProgress = function ( xhr ) {
-
             if ( xhr.lengthComputable ) {
-
                 const percentComplete = xhr.loaded / xhr.total * 100;
                 console.log( percentComplete.toFixed( 2 ) + '% downloaded' );
-
             }
-
         };
 
         new THREE.MTLLoader()
             .setPath( 'male02/' )
             .load( 'pistarlink_model.mtl', function ( materials ) {
-
                 materials.preload();
-
                 new THREE.OBJLoader()
                     .setMaterials( materials )
                     .setPath( 'male02/' )
                     .load( 'pistarlink_model.obj', function ( object ) {
-
                         object.position.y = - 0.50;
                         object.scale.setScalar( 0.01 );
                         scene.add( object );
-
                     }, onProgress );
-
             } );
-
-        //
 
         renderer = new THREE.WebGLRenderer( { antialias: true } );
         renderer.setPixelRatio( window.devicePixelRatio );
         renderer.setSize( window.innerWidth, window.innerHeight );
         renderer.setAnimationLoop( animate );
         document.body.appendChild( renderer.domElement );
-
-        //
-
         const controls = new THREE.OrbitControls( camera, renderer.domElement );
         controls.enableZoom = false;
         controls.enablePan = false;
-
         controls.minDistance = 4.5;
         controls.maxDistance = 4.5;
-
-        //
-
         window.addEventListener( 'resize', onWindowResize );
-
     }
 
     function onWindowResize() {
-
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
-
         renderer.setSize( window.innerWidth, window.innerHeight );
-
     }
 
-    function addLaserBeam(scene, startPosition, endPosition, color) {
+    function addLaserBeam() {
+        const startPosition = new THREE.Vector3(-0.60, 0.45, 0);
+        const endPosition = new THREE.Vector3(-0.5, 5, 3.3);
         const beamLength = startPosition.distanceTo(endPosition);
-        const beamGeometry = new THREE.CylinderGeometry(0.01, 0.01, beamLength, 32);
+        const color = 0xffffff;
+        const beamGeometry = new THREE.CylinderGeometry(0.03, 0.03, beamLength, 100);
 
-        const beamMaterial = new THREE.MeshBasicMaterial({ color: color, emissive: color });
-        const laserBeam = new THREE.Mesh(beamGeometry, beamMaterial);
+        //const beamMaterial = new THREE.MeshBasicMaterial({ color: color, emissive: color });
+        const beamMaterial = new THREE.MeshBasicMaterial({ color: color});
+        laserBeam = new THREE.Mesh(beamGeometry, beamMaterial); // Assign to global variable
 
         // Position the beam in the middle of the start and end points
         const midPoint = startPosition.clone().lerp(endPosition, 0.5);
@@ -122,23 +103,52 @@
 
         scene.add(laserBeam);
 
-        // Optional: Add a light source at the start position
-        const pointLight = new THREE.PointLight(color, 1, 1);
+        // Add a light source at the start position
+        pointLight = new THREE.PointLight(color, 2.5, 2.5);
         pointLight.position.copy(startPosition);
         scene.add(pointLight);
     }
 
-    // Example usage in your existing code
-    const startPosition = new THREE.Vector3(0, 1, 0);  // Start of the laser beam
-    const endPosition = new THREE.Vector3(0, 1, -2);   // End of the laser beam
-    const laserColor = 0xffffff;                       // White color for the laser
-    //addLaserBeam(scene, startPosition, endPosition, laserColor);
+    function removeLaserBeam() {
+        // Remove the laser beam and the light from the scene
+        if (laserBeam) {
+            scene.remove(laserBeam);
+            laserBeam.geometry.dispose();
+            laserBeam.material.dispose();
+            laserBeam = null;
+        }
+        if (pointLight) {
+            scene.remove(pointLight);
+            pointLight = null;
+        }
+    }
 
     function animate() {
-
         renderer.render( scene, camera );
+    }
 
+    let laserBeamAdded = false; // Flag to track if addLaserBeam has been called
+
+    async function callAndroidFunction() {
+        if (typeof AndroidFunction !== 'undefined' && AndroidFunction.getConnectionStatus) {
+            const connectionStatus = await AndroidFunction.getConnectionStatus(); // Await the async function
+
+            if (connectionStatus && !laserBeamAdded) {
+                // If connectionStatus is true and addLaserBeam has not been called yet
+                addLaserBeam();
+                laserBeamAdded = true; // Set the flag to true
+            } else if (!connectionStatus && laserBeamAdded) {
+                // If connectionStatus becomes false, remove the laser beam
+                removeLaserBeam();
+                laserBeamAdded = false; // Reset the flag
+            }
+        } else {
+            console.log("AndroidFunction or getConnectionStatus is not available");
         }
+    }
+
+    // Call the async function every 5 seconds (5000 milliseconds)
+    setInterval(callAndroidFunction, 3000);
 </script>
 </body>
 </html>
