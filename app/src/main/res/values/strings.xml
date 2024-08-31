@@ -33,6 +33,20 @@
     <string name="system">System</string>
     <string name="memory">Memory</string>
     <string name="storage">Storage</string>
+    <string name="support_page">For more information, visit <a href="https://github.com/davixdedem/Pi-Starlink">\nhttps://github.com/davixdedem/Pi-Starlink</a>.</string>
+    <string name="support_welcome">
+        Hey folks, I\'m Davide: a Software Engineer with a passion for Cyber Security coming from the beautiful country of Italy.\n\n
+
+        My journey with <b>Starlink</b> began when I first heard about it. I was instantly captivated by the technology. The more I learned, the more fascinated I became, diving deep into the incredible world of <b>SpaceX</b>.\n\n
+
+        Then, one day, an idea struck me: <i><b>What if I could harness the power of a Raspberry Pi to replace the Starlink router?</b></i>\n\n
+
+        And so, <b>Pi-Starlink</b> was born!\n\n
+
+        I hope you enjoy following along with this project. If you run into any issues, feel free to open a ticket. I\'d love to help out!
+    </string>
+
+
     <string name="router_page">For more information, log in into <a href="http://192.168.1.1">http://192.168.1.1</a>.</string>
     <string name="openvpn_page">For more information, visit <a href="http://192.168.1.1">OpenVPN For Android</a>.</string>
     <string name="dhcp_title">DHCP</string>
@@ -54,5 +68,6 @@
     <string name="on">ON</string>
     <string name="off">OFF</string>
     <string name="no_active_rules">There are no rules at the moment.</string>
+    <string name="add_a_new_rule">Add a new rule</string>
 
 </resources>

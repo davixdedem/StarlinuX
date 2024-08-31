@@ -77,6 +77,9 @@ class HomeFragment : Fragment() {
     private val icsOpenvpnPermission: Int = 7
     private val vpnDevices = mutableListOf<DhcpLease>()
 
+    /*Port forwarding*/
+    private lateinit var lastIPv6Data: JSONObject
+
     /*Ddns*/
     private var isHostnameEditing : Boolean = false
     private var isUsernameEditing : Boolean = false
@@ -133,7 +136,21 @@ class HomeFragment : Fragment() {
     private val setPortForwardingDestinationPortCommand = "uci set firewall.@redirect['%s'].dest_port='%s'"
     private val setPortForwardingTargetIPCommand = "uci set firewall.@redirect['%s'].dest_ip='%s'"
     private val setPortForwardingEnabledCommand = "uci set firewall.@redirect['%s'].enabled='%s'"
+    private val deletePortForwardingRuleCommand = "uci delete firewall.@redirect['%s']"
+    private val addNewFirewallRuleCommand = """
+        uci add firewall redirect
+        uci set firewall.@redirect[-1].dest='lan'
+        uci set firewall.@redirect[-1].target='DNAT'
+        uci set firewall.@redirect[-1].name='%s'
+        uci set firewall.@redirect[-1].src='wan'
+        uci set firewall.@redirect[-1].src_dport='5555'
+        uci set firewall.@redirect[-1].dest_ip='fdb7:3e6b:bfff::2a4'
+        uci set firewall.@redirect[-1].dest_port='5555'
+        uci set firewall.@redirect[-1].family='ipv6'
+        uci set firewall.@redirect[-1].enabled='0'
+    """.trimIndent()
     private val commitFirewallCommand  = "uci commit firewall"
+    private val restartFirewallCommand  = "/etc/init.d/firewall reload"
 
     /*Configurations*/
     private val onlineStatus = "Online"
@@ -994,7 +1011,95 @@ class HomeFragment : Fragment() {
             /*Return true to indicate that the event has been handled*/
             return@setOnTouchListener true
         }
+
+        binding.fragmentPortForwardingIncluded.addRuleImage.setOnClickListener{
+            addNewPortForwardingCard(lastIPv6Data)
+        }
         /*** END - PORT FORWARDING FRAGMENT ***/
+
+        /*** START - SUPPORT FRAGMENT ***/
+        /*Applying effect to Support buttons*/
+        binding.supportSectionText.setOnTouchListener { view, motionEvent ->
+            if (isBoardReachable) {
+                when (motionEvent.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        /*Apply opacity effect when pressed*/
+                        view.alpha = 0.5f
+                    }
+
+                    MotionEvent.ACTION_UP -> {
+                        /*Revert back to original opacity*/
+                        view.alpha = 1.0f
+                        /*Call performClick to trigger the click event*/
+                        view.performClick()
+                    }
+
+                    MotionEvent.ACTION_CANCEL -> {
+                        /*Revert back to original opacity if the action was canceled*/
+                        view.alpha = 1.0f
+                    }
+                }
+            }
+            /*Return true to indicate that the event has been handled*/
+            return@setOnTouchListener true
+        }
+        binding.supportBtn.setOnTouchListener { view, motionEvent ->
+            when (motionEvent.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    /*Apply opacity effect when pressed*/
+                    view.alpha = 0.5f
+                }
+
+                MotionEvent.ACTION_UP -> {
+                    /*Revert back to original opacity*/
+                    view.alpha = 1.0f
+                    /*Call performClick to trigger the click event*/
+                    view.performClick()
+                }
+
+                MotionEvent.ACTION_CANCEL -> {
+                    /*Revert back to original opacity if the action was canceled*/
+                    view.alpha = 1.0f
+                }
+            }
+            /*Return true to indicate that the event has been handled*/
+            return@setOnTouchListener true
+        }
+
+        /*Binding Support buttons*/
+        binding.supportSectionText.setOnClickListener {
+            if (isBoardReachable) {
+                /*Handle its view visibility*/
+                binding.homeMainLayout.visibility = View.GONE
+                binding.fragmentSupportIncluded.root.visibility = View.VISIBLE
+
+                /*Pause main call API*/
+                canCallHomeAPi = false
+
+            }
+        }
+        binding.supportBtn.setOnClickListener {
+            if (isBoardReachable) {
+                /*Handle its view visibility*/
+                binding.homeMainLayout.visibility = View.GONE
+                binding.fragmentSupportIncluded.root.visibility = View.VISIBLE
+
+                /*Pause main call API*/
+                canCallHomeAPi = false
+
+            }
+        }
+
+        /*Binding Support exit info button*/
+        binding.fragmentSupportIncluded.exitImage.setOnClickListener {
+            binding.homeMainLayout.visibility = View.VISIBLE
+            binding.fragmentSupportIncluded.root.visibility = View.GONE
+
+            /*Pause main call API*/
+            canCallHomeAPi = true
+
+        }
+        /*** END - SUPPORT FRAGMENT ***/
 
         /*Updating resources on time*/
         job = CoroutineScope(Dispatchers.IO).launch {
@@ -1709,13 +1814,13 @@ class HomeFragment : Fragment() {
         )
     }
 
-    /*Set DDNS configuration*/
-    private fun setFirewallConfiguration(command: String, id: String, value: String){
+    /*Add a new Firewall configuration */
+    private fun addNewFirewallConfiguration(command: String, name: String){
         if (!::luciToken.isInitialized) {
             Log.w(openWRTTag, "luciToken is null or empty. Aborting the operation.")
             return
         }
-        val composedCmd = String.format(command, id, value) + " && " + commitFirewallCommand
+        val composedCmd = String.format(command, name,) + " && " + commitFirewallCommand
         Log.d("OpenWRT","Composed command: $composedCmd")
         openWRTApi.executeCommand(
             composedCmd ,
@@ -1729,6 +1834,61 @@ class HomeFragment : Fragment() {
                 /* Handle the failure, update UI on the main thread */
                 activity?.runOnUiThread {
                     Log.d("OpenVPN", error)
+                }
+            }
+        )
+    }
+
+    /*Set Firewall configuration*/
+    private fun setFirewallConfiguration(command: String, id: String, value: String, restart : Boolean = false){
+        var composedCmd = ""
+        if (!::luciToken.isInitialized) {
+            Log.w(openWRTTag, "luciToken is null or empty. Aborting the operation.")
+            return
+        }
+        composedCmd = if (!restart) {
+            String.format(command, id, value) + " && " + commitFirewallCommand
+        } else{
+            String.format(command, id, value) + " && " + commitFirewallCommand + " && " + restartFirewallCommand
+        }
+        Log.d("OpenWRT","Composed command: $composedCmd")
+        openWRTApi.executeCommand(
+            composedCmd ,
+            luciToken,
+            onSuccess = { response ->
+                activity?.runOnUiThread {
+                    Log.d("OpenVPN", response.toString())
+                }
+            },
+            onFailure = { error ->
+                /* Handle the failure, update UI on the main thread */
+                activity?.runOnUiThread {
+                    Log.d("OpenVPN", error)
+                }
+            }
+        )
+    }
+
+    /*Delete Firewall configuration*/
+    private fun deleteFirewallConfiguration(command: String, id: String){
+        if (!::luciToken.isInitialized) {
+            Log.w(openWRTTag, "luciToken is null or empty. Aborting the operation.")
+            return
+        }
+        val composedCmd = String.format(command, id) + " && " + commitFirewallCommand
+        Log.d("OpenWRT","Composed command: $composedCmd")
+        openWRTApi.executeCommand(
+            composedCmd ,
+            luciToken,
+            onSuccess = { response ->
+                activity?.runOnUiThread {
+                    Log.d("OpenWRT", response.toString())
+                }
+            },
+            onFailure = { error ->
+                /* Handle the failure, update UI on the main thread */
+                activity?.runOnUiThread {
+                    Log.d("OpenWRT", error)
                 }
             }
         )
@@ -1892,6 +2052,8 @@ class HomeFragment : Fragment() {
 
     /*Adding port forwarding cards at the view based on the array*/
     private fun addPortForwardingCards(dhcp6: JSONObject) {
+        lastIPv6Data = dhcp6
+
         val parentLayout = view?.findViewById<LinearLayout>(R.id.pf_card_container)
 
         // Assuming `leases6Array` is already defined
@@ -1928,24 +2090,26 @@ class HomeFragment : Fragment() {
             cardView.findViewById<TextView>(R.id.external_port_description).text = lease.externalPort
             cardView.findViewById<TextView>(R.id.destination_port_description).text = lease.destinationPort
 
+            /*Switch Button*/
             val switchButton = cardView.findViewById<SwitchButton>(R.id.switch_button)
             switchButton.isChecked = lease.enabled == "1"
             switchButton.setOnCheckedChangeListener { _, isChecked ->
                 // Handle the checked state change
                 if (isChecked) {
-                    setFirewallConfiguration(setPortForwardingEnabledCommand,lease.id,"1")
+                    setFirewallConfiguration(setPortForwardingEnabledCommand,lease.id,"1", true)
                 } else {
-                    setFirewallConfiguration(setPortForwardingEnabledCommand,lease.id,"0")
+                    setFirewallConfiguration(setPortForwardingEnabledCommand,lease.id,"0", true)
                 }
             }
 
-            // External Port Editing Logic
+            /*External Port*/
             var initialExtPortValue = lease.externalPort
             var isExternalPortEditing = false
             val externalPortEditImage = cardView.findViewById<ImageView>(R.id.edit_external_value_image)
             val externalPortCloseImage = cardView.findViewById<ImageView>(R.id.close_external_value_image)
             val externalPortEditText = cardView.findViewById<EditText>(R.id.external_port_description)
-
+            val cancelRuleImage = cardView.findViewById<ImageView>(R.id.delete_rule)
+            externalPortEditText.background.alpha = 0
             externalPortEditImage.setOnClickListener {
                 if (isExternalPortEditing) {
                     externalPortCloseImage.visibility = View.GONE
@@ -1978,7 +2142,6 @@ class HomeFragment : Fragment() {
                 }
                 isExternalPortEditing = !isExternalPortEditing
             }
-
             externalPortCloseImage.setOnClickListener {
                 externalPortEditText.setText(initialExtPortValue)
                 externalPortCloseImage.visibility = View.GONE
@@ -1995,14 +2158,18 @@ class HomeFragment : Fragment() {
 
                 isExternalPortEditing = false
             }
+            cancelRuleImage.setOnClickListener {
+                deleteFirewallConfiguration(deletePortForwardingRuleCommand,lease.id)
+                cardView.visibility = View.GONE
+            }
 
-            // Destination Port Editing Logic
+            /*Destination Port*/
             var initialDestPortValue = lease.destinationPort
             var isDestinationPortEditing = false
             val destinationPortEditImage = cardView.findViewById<ImageView>(R.id.edit_destination_value_image)
             val destinationPortCloseImage = cardView.findViewById<ImageView>(R.id.close_destination_value_image)
             val destinationPortEditText = cardView.findViewById<EditText>(R.id.destination_port_description)
-
+            destinationPortEditText.background.alpha = 0
             destinationPortEditImage.setOnClickListener {
                 if (isDestinationPortEditing) {
                     destinationPortCloseImage.visibility = View.GONE
@@ -2010,6 +2177,7 @@ class HomeFragment : Fragment() {
                     destinationPortEditText.isFocusable = false
                     destinationPortEditText.isFocusableInTouchMode = false
                     destinationPortEditText.isClickable = false
+                    destinationPortEditText.isEnabled = false
                     destinationPortEditText.clearFocus()
 
                     val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -2026,6 +2194,7 @@ class HomeFragment : Fragment() {
                     destinationPortEditText.isFocusable = true
                     destinationPortEditText.isFocusableInTouchMode = true
                     destinationPortEditText.isClickable = true
+                    destinationPortEditText.isEnabled = true
                     destinationPortEditText.requestFocus()
 
                     val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -2035,7 +2204,6 @@ class HomeFragment : Fragment() {
                 }
                 isDestinationPortEditing = !isDestinationPortEditing
             }
-
             destinationPortCloseImage.setOnClickListener {
                 destinationPortEditText.setText(initialDestPortValue)
                 destinationPortCloseImage.visibility = View.GONE
@@ -2053,13 +2221,13 @@ class HomeFragment : Fragment() {
                 isDestinationPortEditing = false
             }
 
-            // Spinner setup for target IP addresses
+            /*Spinner setup for target IP addresses*/
             val targetIpSpinner = cardView.findViewById<Spinner>(R.id.target_description)
             val adapter = ArrayAdapter(requireContext(), R.layout.spinner_item, ipv6AddressList)
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             targetIpSpinner.adapter = adapter
 
-            // Set the selected IP address if it's available in lease.targetIp
+            /*Set the selected IP address if it's available in lease.targetIp*/
             val selectedIpPosition = ipv6AddressList.indexOf(lease.ipv6Target)
             if (selectedIpPosition >= 0) {
                 targetIpSpinner.setSelection(selectedIpPosition)
@@ -2087,9 +2255,218 @@ class HomeFragment : Fragment() {
                 }
             }
 
-
             parentLayout?.addView(cardView)
         }
+    }
+
+    /*Adding new port forwarding cards at the view based on the array*/
+    private fun addNewPortForwardingCard(dhcp6: JSONObject) {
+        val parentLayout = view?.findViewById<LinearLayout>(R.id.pf_card_container)
+
+        /*Assuming `leases6Array` is already defined*/
+        val leases6Array: JSONArray = dhcp6.getJSONArray("dhcp6_leases")
+        val ipv6Addresses = mutableSetOf<String>()
+        for (i in 0 until leases6Array.length()) {
+            val leaseObject = leases6Array.getJSONObject(i)
+
+            /*Get the primary IPv6 address*/
+            val primaryIp6 = leaseObject.optString("ip6addr")
+            if (primaryIp6.isNotEmpty()) {
+                ipv6Addresses.add(primaryIp6)
+            }
+            /*Get the array of additional IPv6 addresses*/
+            val ip6addrsArray = leaseObject.optJSONArray("ip6addrs")
+            if (ip6addrsArray != null) {
+                for (j in 0 until ip6addrsArray.length()) {
+                    val ip6addr = ip6addrsArray.getString(j).split("/")[0] // Remove the subnet part
+                    ipv6Addresses.add(ip6addr)
+                }
+            }
+        }
+        val ipv6AddressList = ipv6Addresses.toList()
+
+        /*Count the existing cards*/
+        val currentCardCount = parentLayout?.childCount ?: 0
+        val newCardId = currentCardCount + 1
+
+        val inflater = LayoutInflater.from(context)
+        val cardView = inflater.inflate(R.layout.layout_card_port_forwarding, parentLayout, false)
+
+        /*Set default values or leave it empty for user input*/
+        cardView.findViewById<TextView>(R.id.title_text).text = "Rule $newCardId"
+        cardView.findViewById<TextView>(R.id.external_port_description).text = "5555"
+        cardView.findViewById<TextView>(R.id.destination_port_description).text = "5555"
+
+        /*Switch Button*/
+        val switchButton = cardView.findViewById<SwitchButton>(R.id.switch_button)
+        switchButton.isChecked = false
+        switchButton.setOnCheckedChangeListener { _, isChecked ->
+            // Handle the checked state change
+            if (isChecked) {
+                setFirewallConfiguration(setPortForwardingEnabledCommand,
+                    currentCardCount.toString(),"1", true)
+            } else {
+                setFirewallConfiguration(setPortForwardingEnabledCommand,
+                    currentCardCount.toString(),"0", true)
+            }
+        }
+
+        /*External Port*/
+        var isExternalPortEditing = false
+        val externalPortEditImage = cardView.findViewById<ImageView>(R.id.edit_external_value_image)
+        val externalPortCloseImage = cardView.findViewById<ImageView>(R.id.close_external_value_image)
+        val externalPortEditText = cardView.findViewById<EditText>(R.id.external_port_description)
+        val cancelRuleImage = cardView.findViewById<ImageView>(R.id.delete_rule)
+        var initialExtPortValue = externalPortEditText.text.toString()
+        externalPortEditText.background.alpha = 0
+        externalPortEditImage.setOnClickListener {
+            if (isExternalPortEditing) {
+                externalPortCloseImage.visibility = View.GONE
+                externalPortEditText.isFocusable = false
+                externalPortEditText.isFocusableInTouchMode = false
+                externalPortEditText.isClickable = false
+                externalPortEditText.clearFocus()
+
+                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(externalPortEditText.windowToken, 0)
+
+                externalPortEditImage.setImageResource(R.drawable.pen)
+
+                initialExtPortValue = externalPortEditText.text.toString()
+
+                setFirewallConfiguration(setPortForwardingExternalPortCommand,
+                    currentCardCount.toString(),initialExtPortValue)
+
+            } else {
+                externalPortCloseImage.visibility = View.VISIBLE
+                externalPortEditText.isFocusable = true
+                externalPortEditText.isFocusableInTouchMode = true
+                externalPortEditText.isClickable = true
+                externalPortEditText.requestFocus()
+
+                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.showSoftInput(externalPortEditText, InputMethodManager.SHOW_IMPLICIT)
+
+                externalPortEditImage.setImageResource(R.drawable.check)
+
+            }
+            isExternalPortEditing = !isExternalPortEditing
+        }
+        externalPortCloseImage.setOnClickListener {
+            externalPortEditText.setText(initialExtPortValue)
+            externalPortCloseImage.visibility = View.GONE
+            externalPortEditText.isFocusable = false
+            externalPortEditText.isFocusableInTouchMode = false
+            externalPortEditText.isClickable = false
+            externalPortEditText.clearFocus()
+
+            val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(externalPortEditText.windowToken, 0)
+
+            externalPortEditImage.setImageResource(R.drawable.pen)
+
+            isExternalPortEditing = false
+        }
+        cancelRuleImage.setOnClickListener {
+            deleteFirewallConfiguration(deletePortForwardingRuleCommand,
+                currentCardCount.toString()
+            )
+            cardView.visibility = View.GONE
+        }
+
+        /*Destination Port*/
+        var isDestinationPortEditing = false
+        val destinationPortEditImage = cardView.findViewById<ImageView>(R.id.edit_destination_value_image)
+        val destinationPortCloseImage = cardView.findViewById<ImageView>(R.id.close_destination_value_image)
+        val destinationPortEditText = cardView.findViewById<EditText>(R.id.destination_port_description)
+        var initialDestPortValue = destinationPortEditText.text.toString()
+        destinationPortEditText.background.alpha = 0
+        destinationPortEditImage.setOnClickListener {
+            if (isDestinationPortEditing) {
+                destinationPortCloseImage.visibility = View.GONE
+
+                destinationPortEditText.isFocusable = false
+                destinationPortEditText.isFocusableInTouchMode = false
+                destinationPortEditText.isClickable = false
+                destinationPortEditText.isEnabled = false
+                destinationPortEditText.clearFocus()
+
+                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(destinationPortEditText.windowToken, 0)
+
+                destinationPortEditImage.setImageResource(R.drawable.pen)
+
+                initialDestPortValue = destinationPortEditText.text.toString()
+
+                setFirewallConfiguration(setPortForwardingDestinationPortCommand,
+                    currentCardCount.toString(),initialDestPortValue)
+            } else {
+                destinationPortCloseImage.visibility = View.VISIBLE
+
+                destinationPortEditText.isFocusable = true
+                destinationPortEditText.isFocusableInTouchMode = true
+                destinationPortEditText.isClickable = true
+                destinationPortEditText.isEnabled = true
+                destinationPortEditText.requestFocus()
+
+                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.showSoftInput(destinationPortEditText, InputMethodManager.SHOW_IMPLICIT)
+
+                destinationPortEditImage.setImageResource(R.drawable.check)
+            }
+            isDestinationPortEditing = !isDestinationPortEditing
+        }
+        destinationPortCloseImage.setOnClickListener {
+            destinationPortEditText.setText(initialDestPortValue)
+            destinationPortCloseImage.visibility = View.GONE
+
+            destinationPortEditText.isFocusable = false
+            destinationPortEditText.isFocusableInTouchMode = false
+            destinationPortEditText.isClickable = false
+            destinationPortEditText.clearFocus()
+
+            val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(destinationPortEditText.windowToken, 0)
+
+            destinationPortEditImage.setImageResource(R.drawable.pen)
+
+            isDestinationPortEditing = false
+        }
+
+        /*Spinner setup for target IP addresses*/
+        val targetIpSpinner = cardView.findViewById<Spinner>(R.id.target_description)
+        val adapter = ArrayAdapter(requireContext(), R.layout.spinner_item, ipv6AddressList)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        targetIpSpinner.adapter = adapter
+
+        /*Creating a new default rule to backend*/
+        addNewFirewallConfiguration(addNewFirewallRuleCommand,"Rule $newCardId")
+
+        /*Binding IPv6 spinner*/
+        var isInitialSelection = true
+        targetIpSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                // Check if this is the initial setup call
+                if (isInitialSelection) {
+                    isInitialSelection = false
+                    return
+                }
+
+                // Get the selected item
+                val selectedItem = parent.getItemAtPosition(position).toString()
+                // Handle the selected item
+                println("Selected item: $selectedItem")
+
+                setFirewallConfiguration(setPortForwardingTargetIPCommand,
+                    currentCardCount.toString(),selectedItem)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // Handle the case when no item is selected (optional)
+            }
+        }
+
+        parentLayout?.addView(cardView)
     }
 
     /*Adding network cards at the view based on the array*/
@@ -2405,7 +2782,7 @@ class HomeFragment : Fragment() {
     };
 }
 
-/**
+/*
  * Blinks the ImageView by animating its opacity.
  */
 class BlinkAnimator(private val imageView: ImageView, private val duration: Long = 1000) {
@@ -2437,7 +2814,9 @@ class BlinkAnimator(private val imageView: ImageView, private val duration: Long
     }
 }
 
-/** Class to handle local files **/
+/*
+ * Class to handle local files
+ */
 class FileHelper(private val context: Context) {
 
     fun saveFileToInternalStorage(fileContent: String, fileName: String) {
@@ -2458,8 +2837,8 @@ class FileHelper(private val context: Context) {
     }
 }
 
-/** Javascript interface
- *
+/*
+ * Javascript interface *
  */
 class JavaScriptInterface(
     private val context: Context,

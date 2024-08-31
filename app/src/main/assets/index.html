@@ -89,7 +89,7 @@
         const color = 0xffffff;
         const beamGeometry = new THREE.CylinderGeometry(0.03, 0.03, beamLength, 100);
 
-        //const beamMaterial = new THREE.MeshBasicMaterial({ color: color, emissive: color });
+        //const beamMaterial = new THREE.MeshBasicMaterial({ color: color});
         const beamMaterial = new THREE.MeshBasicMaterial({ color: color});
         laserBeam = new THREE.Mesh(beamGeometry, beamMaterial); // Assign to global variable
 

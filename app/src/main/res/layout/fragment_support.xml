@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/black"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="10sp"
+        android:layout_marginLeft="10sp"
+        android:layout_marginRight="10sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/exit_image"
+                android:layout_marginTop="5dp"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/cross"
+                app:tint="@color/teal_200" />
+
+            <TextView
+                android:id="@+id/title_sbc_info"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:textAlignment="center"
+                android:text="@string/support_section_name"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="20sp"
+            android:layout_marginLeft="5sp"
+            android:layout_marginRight="5sp"
+            android:layout_weight="1"
+            android:orientation="vertical" >
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" >
+
+
+
+                    <TextView
+                        android:id="@+id/system_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10sp"
+                        android:gravity="center_horizontal"
+                        android:text="A SHORT AND SWEET STORY"
+                        android:textColor="@color/teal_700"
+                        android:textSize="15sp" />
+
+                    <ImageView
+                        android:id="@+id/imageView3"
+                        android:layout_width="match_parent"
+                        android:layout_marginLeft="10sp"
+                        android:layout_marginTop="20sp"
+                        android:layout_marginBottom="20sp"
+                        android:layout_marginRight="10sp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_height="30sp"
+                        app:srcCompat="@drawable/logo2" />
+
+                    <TextView
+                        android:id="@+id/pf_config_status"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10sp"
+                        android:layout_marginBottom="20sp"
+                        android:text="@string/support_welcome"
+                        android:textAlignment="center"
+                        android:textColor="@color/teal_200" />
+
+                    <ImageView
+                        android:id="@+id/add_rule_image"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="5sp"
+                        android:layout_marginBottom="5sp"
+                        android:layout_width="50sp"
+                        android:layout_height="50sp"
+                        app:tint="@color/teal_700"
+                        app:srcCompat="@drawable/github" />
+
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_marginTop="10sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="center"
+                        android:layout_gravity="center"
+                        android:textColor="@color/white"
+                        android:text="@string/support_page"
+                        android:linksClickable="true" />
+
+
+
+                </LinearLayout>
+
+            </ScrollView>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+

@@ -118,7 +118,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="20sp"
                         android:layout_marginTop="1sp"
-                        android:layout_weight="4"
+                        android:layout_weight="5"
                         app:srcCompat="@drawable/delete"
                         app:tint="@color/teal_700" />
 
@@ -136,7 +136,9 @@
                         android:text="@string/description_card_name"
                         android:textColor="@color/teal_700"
                         android:inputType="number"
-                        android:background="@null"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:clickable="false"
                         android:textSize="14sp" />
 
                     <ImageView
@@ -197,7 +199,9 @@
                         android:text="@string/description_card_name"
                         android:textColor="@color/teal_700"
                         android:inputType="number"
-                        android:background="@null"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:clickable="false"
                         android:textSize="14sp" />
 
                     <ImageView

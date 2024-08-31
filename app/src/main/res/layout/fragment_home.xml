@@ -43,6 +43,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <include
+        layout="@layout/fragment_support"
+        android:id="@+id/fragment_support_included"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <LinearLayout
         android:id="@+id/home_main_layout"
         android:layout_width="match_parent"
