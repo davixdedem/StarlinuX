@@ -46,6 +46,8 @@ import com.suke.widget.SwitchButton
 import android.content.ComponentName
 import android.animation.ObjectAnimator
 import android.content.ServiceConnection
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import com.ncorti.slidetoact.SlideToActView
 import de.blinkt.openvpn.api.IOpenVPNAPIService
 import android.view.inputmethod.InputMethodManager
@@ -54,6 +56,8 @@ import com.magix.pistarlink.databinding.FragmentHomeBinding
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
+import java.net.InetAddress
+import java.net.NetworkInterface
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
@@ -66,7 +70,6 @@ class HomeFragment : Fragment() {
     private lateinit var job: Job
     private var canCallHomeAPi = false
     public var isBoardReachable = false
-    private var isLaserAdded = false
 
     /*Vpn*/
     private var mService: IOpenVPNAPIService? = null
@@ -472,6 +475,8 @@ class HomeFragment : Fragment() {
             binding.homeMainLayout.visibility = View.GONE
             binding.fragmentVpnIncluded.root.visibility = View.VISIBLE
 
+            binding.fragmentVpnIncluded.vpnActiveStatus.visibility = View.GONE
+
             /*Pause main call API*/
             canCallHomeAPi = false
 
@@ -483,6 +488,8 @@ class HomeFragment : Fragment() {
             /*Handle its view visibility*/
             binding.homeMainLayout.visibility = View.GONE
             binding.fragmentVpnIncluded.root.visibility = View.VISIBLE
+
+            binding.fragmentVpnIncluded.vpnActiveStatus.visibility = View.GONE
 
             /*Pause main call API*/
             canCallHomeAPi = false
@@ -557,13 +564,38 @@ class HomeFragment : Fragment() {
         binding.fragmentVpnIncluded.vpnActiveSlide.onSlideCompleteListener =
             object : SlideToActView.OnSlideCompleteListener {
                 override fun onSlideComplete(view: SlideToActView) {
-                    Log.d("OpenVPN", "Slide activation completed: $profileUUID")
-                    if (!isVpnConnected) {
-                        profileUUID?.let { connectVPN(it) }
-                    } else {
-                        disconnectVPN()
+                        binding.fragmentVpnIncluded.vpnActiveStatus.visibility = View.GONE
+                        Log.d("OpenVPN", "Slide activation completed: $profileUUID")
+                        if (!isVpnConnected) {
+                            val networkStatus = context?.let { checkNetworkStatus(it) }
+                            if (networkStatus == 0) {
+                                profileUUID?.let { connectVPN(it) }
+                            }
+                            else{
+                                if(networkStatus == 1) {
+                                    binding.fragmentVpnIncluded.vpnActiveStatus.text =
+                                        "An error occurred: \n No Wi-Fi or mobile data enabled."
+                                }
+                                if(networkStatus == 2){
+                                    binding.fragmentVpnIncluded.vpnActiveStatus.text =
+                                        "An error occurred: \n Wi-Fi or mobile data enabled, but no Internet access."
+                                }
+                                if(networkStatus == 3){
+                                    binding.fragmentVpnIncluded.vpnActiveStatus.text =
+                                        "An error occurred: \n Unable to reach the endpoint due to the absence of IPv6 support from your current ISP."
+                                }
+                                binding.fragmentVpnIncluded.vpnActiveStatus.visibility =
+                                    View.VISIBLE
+                                binding.fragmentVpnIncluded.vpnActiveSlide.setCompleted(
+                                    completed = false,
+                                    true
+                                )
+                            }
+                        } else {
+                            disconnectVPN()
+                        }
                     }
-                }
+
             }
         /*** END - VPN FRAGMENT ***/
 
@@ -1020,28 +1052,26 @@ class HomeFragment : Fragment() {
         /*** START - SUPPORT FRAGMENT ***/
         /*Applying effect to Support buttons*/
         binding.supportSectionText.setOnTouchListener { view, motionEvent ->
-            if (isBoardReachable) {
-                when (motionEvent.action) {
-                    MotionEvent.ACTION_DOWN -> {
-                        /*Apply opacity effect when pressed*/
-                        view.alpha = 0.5f
-                    }
+            when (motionEvent.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    /*Apply opacity effect when pressed*/
+                    view.alpha = 0.5f
+                }
 
-                    MotionEvent.ACTION_UP -> {
-                        /*Revert back to original opacity*/
-                        view.alpha = 1.0f
-                        /*Call performClick to trigger the click event*/
-                        view.performClick()
-                    }
+                MotionEvent.ACTION_UP -> {
+                    /*Revert back to original opacity*/
+                    view.alpha = 1.0f
+                    /*Call performClick to trigger the click event*/
+                    view.performClick()
+                }
 
-                    MotionEvent.ACTION_CANCEL -> {
-                        /*Revert back to original opacity if the action was canceled*/
-                        view.alpha = 1.0f
-                    }
+                MotionEvent.ACTION_CANCEL -> {
+                    /*Revert back to original opacity if the action was canceled*/
+                    view.alpha = 1.0f
                 }
             }
-            /*Return true to indicate that the event has been handled*/
-            return@setOnTouchListener true
+        /*Return true to indicate that the event has been handled*/
+        return@setOnTouchListener true
         }
         binding.supportBtn.setOnTouchListener { view, motionEvent ->
             when (motionEvent.action) {
@@ -1068,26 +1098,22 @@ class HomeFragment : Fragment() {
 
         /*Binding Support buttons*/
         binding.supportSectionText.setOnClickListener {
-            if (isBoardReachable) {
-                /*Handle its view visibility*/
-                binding.homeMainLayout.visibility = View.GONE
-                binding.fragmentSupportIncluded.root.visibility = View.VISIBLE
+            /*Handle its view visibility*/
+            binding.homeMainLayout.visibility = View.GONE
+            binding.fragmentSupportIncluded.root.visibility = View.VISIBLE
 
-                /*Pause main call API*/
-                canCallHomeAPi = false
+            /*Pause main call API*/
+            canCallHomeAPi = false
 
-            }
         }
         binding.supportBtn.setOnClickListener {
-            if (isBoardReachable) {
-                /*Handle its view visibility*/
-                binding.homeMainLayout.visibility = View.GONE
-                binding.fragmentSupportIncluded.root.visibility = View.VISIBLE
+            /*Handle its view visibility*/
+            binding.homeMainLayout.visibility = View.GONE
+            binding.fragmentSupportIncluded.root.visibility = View.VISIBLE
 
-                /*Pause main call API*/
-                canCallHomeAPi = false
+            /*Pause main call API*/
+            canCallHomeAPi = false
 
-            }
         }
 
         /*Binding Support exit info button*/
@@ -2710,6 +2736,11 @@ class HomeFragment : Fragment() {
                             /*Update the activation slider resource*/
                             updateActivationSliderStatus(true)
                         }
+                        if ("No process running" in message){
+                            Log.e("OpenVPN", "VPN disconnected or interrupted.")
+                            updateActivationSliderStatus(false)
+                            isVpnConnected = false
+                        }
                     }
                 }
             })
@@ -2773,6 +2804,84 @@ class HomeFragment : Fragment() {
             binding.fragmentVpnIncluded.vpnActiveSlide.setCompleted(completed = false, true)
             binding.fragmentVpnIncluded.vpnActiveSlide.text = "Slide to active"
             binding.fragmentVpnIncluded.vpnStatusTitle.text = "DISCONNECTED"
+        }
+    }
+
+    fun checkNetworkStatus(context: Context): Int {
+        // 1. Check if Wi-Fi or mobile data is enabled
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetwork = connectivityManager.activeNetwork ?: return 1  // Code 1: No Wi-Fi or mobile data enabled
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return 1
+
+        if (!networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) &&
+            !networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+            return 1  // Code 1: No Wi-Fi or mobile data enabled
+        }
+
+        // 2. Check if we have Internet access
+        if (!hasInternetAccess()) {
+            return 2  // Code 2: Wi-Fi or mobile data enabled, but no Internet access
+        }
+
+        // 3. Check if we have IPv6
+        if (!checkIfIpv6()) {
+            return 3  // Code 3: Wi-Fi or mobile data and Internet access, but no IPv6
+        }
+
+        return 0  // Code 0: Wi-Fi or mobile data, Internet access, and IPv6 are all available
+    }
+
+    private fun hasInternetAccess(): Boolean {
+        return try {
+            val process = ProcessBuilder("ping", "-c", "1", "8.8.8.8").start()
+            val returnVal = process.waitFor()
+            return returnVal == 0
+        } catch (e: Exception) {
+            Log.d("Network", "Error while trying to ping: ${e.message}")
+            false
+        }
+    }
+
+    /*Check if we got an Ipv6 from current ISP */
+    private fun checkIfIpv6(): Boolean {
+        val networkInterfaces = NetworkInterface.getNetworkInterfaces()
+        while (networkInterfaces.hasMoreElements()) {
+            val networkInterface = networkInterfaces.nextElement()
+            val inetAddresses = networkInterface.inetAddresses
+
+            while (inetAddresses.hasMoreElements()) {
+                val inetAddress = inetAddresses.nextElement()
+                if (inetAddress is InetAddress && inetAddress.hostAddress.contains(":")) {
+                    // Found an IPv6 address
+                    Log.d("Network","IPv6 address found: ${inetAddress.hostAddress}")
+                    return curlIpv6IdentMe()
+                }
+            }
+        }
+
+        // No IPv6 address found
+        Log.d("Network","No IPv6 address found.")
+        return false
+    }
+
+    private fun curlIpv6IdentMe(): Boolean {
+        return try {
+            val process = ProcessBuilder("curl", "-6", "https://ident.me").start()
+            val reader = BufferedReader(InputStreamReader(process.inputStream))
+            val output = reader.readLine()
+
+            process.waitFor()
+
+            if (output != null && output.contains(":")) {  // Check if the output looks like an IPv6 address
+                Log.d("Network","Successfully retrieved IPv6 address: $output")
+                true
+            } else {
+                Log.d("Network","Failed to retrieve IPv6 address. Output: $output")
+                false
+            }
+        } catch (e: Exception) {
+            Log.d("Network","Error while trying to curl: ${e.message}")
+            false
         }
     }
 
