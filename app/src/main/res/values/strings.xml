@@ -46,8 +46,7 @@
         I hope you enjoy following along with this project. If you run into any issues, feel free to open a ticket. I\'d love to help out!
     </string>
 
-
-    <string name="router_page">For more information, log in into <a href="http://192.168.1.1">http://192.168.1.1</a>.</string>
+    <string name="router_page">For more information, log into <a href="http://192.168.1.1">http://192.168.1.1</a>.</string>
     <string name="openvpn_page">For more information, visit <a href="http://192.168.1.1">OpenVPN For Android</a>.</string>
     <string name="dhcp_title">DHCP</string>
     <string name="dhcp6_title">DHCP6</string>
@@ -69,5 +68,15 @@
     <string name="off">OFF</string>
     <string name="no_active_rules">There are no rules at the moment.</string>
     <string name="add_a_new_rule">Add a new rule</string>
+    <string name="a_short_and_sweet_story">A SHORT AND SWEET STORY</string>
+    <string name="router">ROUTER</string>
+    <string name="wireless">WIRELESS</string>
+    <string name="pi_starlink">PI STARLINK</string>
+    <string name="Angular"><![CDATA[>]]></string>
+    <string name="configuration">Configuration</string>
+    <string name="external_port">External Port</string>
+    <string name="target_ipv6">Target IPv6</string>
+    <string name="destination_port">Destination Port</string>
+    <string name="offline">OFFLINE</string>
 
 </resources>

@@ -67,7 +67,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10sp"
-                        android:text="Configuration"
+                        android:text="@string/configuration"
                         android:textColor="@color/teal_700"
                         android:textSize="15sp" />
 

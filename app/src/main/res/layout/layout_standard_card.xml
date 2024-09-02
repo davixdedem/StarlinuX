@@ -9,8 +9,8 @@
     app:cardElevation="4dp"
     app:cardBackgroundColor="@color/teal_900">
 
-
     <LinearLayout
+        android:id="@+id/content_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -28,7 +28,7 @@
                 android:layout_marginEnd="20sp"
                 android:gravity="center_vertical"
                 android:layout_height="match_parent"
-                android:text="OFFLINE"
+                android:text="@string/offline"
                 android:textColor="@color/white"
                 android:textSize="18sp" />
 

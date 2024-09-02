@@ -4,7 +4,6 @@
     android:layout_height="wrap_content"
     android:padding="0dp"
     android:layout_margin="0sp"
-    android:text="TEST"
     android:textColor="@color/teal_700"
     android:textSize="14sp"
     android:background="?android:attr/selectableItemBackground" />

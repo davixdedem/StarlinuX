@@ -51,13 +51,14 @@
 
                     <ImageView
                         android:id="@+id/copy_ipv4_image"
-                        android:layout_width="15dp"
+                        android:layout_width="15sp"
                         android:layout_marginStart="5sp"
                         android:layout_height="match_parent"
                         android:layout_weight="0"
                         android:layout_gravity="start"
                         app:srcCompat="@drawable/copy"
                         app:tint="@color/white" />
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -76,7 +77,7 @@
 
                     <ImageView
                         android:id="@+id/copy_macaddr_image"
-                        android:layout_width="15dp"
+                        android:layout_width="15sp"
                         android:layout_marginStart="5sp"
                         android:layout_height="match_parent"
                         android:layout_weight="0"
@@ -86,6 +87,7 @@
                 </LinearLayout>
 
             </LinearLayout>
+
         </LinearLayout>
 
     </LinearLayout>

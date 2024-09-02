@@ -56,6 +56,7 @@ import com.magix.pistarlink.databinding.FragmentHomeBinding
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
+import com.magix.pistarlink.DbHandler
 import java.net.InetAddress
 import java.net.NetworkInterface
 
@@ -70,6 +71,9 @@ class HomeFragment : Fragment() {
     private lateinit var job: Job
     private var canCallHomeAPi = false
     public var isBoardReachable = false
+    private lateinit var dbHandler: DbHandler
+    private lateinit var luciUsername : String
+    private lateinit var luciPassword : String
 
     /*Vpn*/
     private var mService: IOpenVPNAPIService? = null
@@ -87,9 +91,17 @@ class HomeFragment : Fragment() {
     private var isHostnameEditing : Boolean = false
     private var isUsernameEditing : Boolean = false
     private var isPasswordEditing : Boolean = false
+    private var isWirelessPasswordEditing : Boolean = false
+    private var isSSIDEditing: Boolean = false
+    private var isLuciUsernameEditing: Boolean = false
+    private var isLuciPasswordEditing: Boolean = false
     private var hostnameInitialText : String = ""
     private var usernameInitialText : String = ""
     private var passwordInitialText : String = ""
+    private var ssidInitialText: String = ""
+    private var wirelessPasswordInitialText: String = ""
+    private var luciUsernameInitialText: String = ""
+    private var luciPasswordInitialText: String = ""
 
     /*Define a Data Class for Network Lease*/
     data class DhcpLease(
@@ -112,22 +124,20 @@ class HomeFragment : Fragment() {
     private val dhcp6Leases = mutableListOf<DhcpLease>()
     private val pfRules = mutableListOf<PortForwardingCard>()
 
-    /*Luci configurations*/
-    private val username = "root"
-    private val password = "t*iP9Tk6na3VPeq"
+    /*Luci Configurations*/
     private val baseUrl = "http://192.168.1.1"
+
+    /* Luci Commands*/
     private val systemBoardCommand = "ubus call system board"
     private val systemBoardInformationCommand = "ubus call system info"
-    private val getIPv6addressCommand =
-        "ip -6 addr show dev eth0 | grep inet6 | awk '{ print \$2 }' | awk -F'/' '{ print \$1 }' | grep '^2a0d' | head -n 1; ip -4 addr show dev eth0 | grep inet | awk '{ print \$2 }' | awk -F'/' '{ print \$1 }' | head -n 1"
+    private val getIPv6addressCommand = "ip -6 addr show dev eth0 | grep inet6 | awk '{ print \$2 }' | awk -F'/' '{ print \$1 }' | grep '^2a0d' | head -n 1; ip -4 addr show dev eth0 | grep inet | awk '{ print \$2 }' | awk -F'/' '{ print \$1 }' | head -n 1"
     private val getConnectedDevices = "ubus call luci-rpc getDHCPLeases"
     private val getOpenVPNConnectedDevicesCommand = "bash /root/scripts/openvpn_devices.sh"
     private val setupVPNCommand = "bash /root/scripts/openvpn_configure_callback.sh"
     private val checkVPNConfigStatusCommand = "cat /root/scripts/vpn_config_status"
     private val fetchVPNConfigurationFileCommand = "cat /etc/openvpn/"
     private val setConfigAsFetched = "echo '0' > /root/scripts/vpn_config_status "
-    private val getDDNSConfig =
-        "echo \\\"{\\\\\\\"lookup_host\\\\\\\":\\\\\\\"\$(uci get ddns.myddns_ipv6.lookup_host)\\\\\\\", \\\\\\\"username\\\\\\\":\\\\\\\"\$(uci get ddns.myddns_ipv6.username)\\\\\\\", \\\\\\\"password\\\\\\\":\\\\\\\"\$(uci get ddns.myddns_ipv6.password)\\\\\\\"}\\\""
+    private val getDDNSConfig = "echo \\\"{\\\\\\\"lookup_host\\\\\\\":\\\\\\\"\$(uci get ddns.myddns_ipv6.lookup_host)\\\\\\\", \\\\\\\"username\\\\\\\":\\\\\\\"\$(uci get ddns.myddns_ipv6.username)\\\\\\\", \\\\\\\"password\\\\\\\":\\\\\\\"\$(uci get ddns.myddns_ipv6.password)\\\\\\\"}\\\""
     private val setDDNSHostname = "uci set ddns.myddns_ipv6.lookup_host="
     private val setDDNSDomain = "uci set ddns.myddns_ipv6.domain="
     private val setDDNSUsername = "uci set ddns.myddns_ipv6.username="
@@ -154,6 +164,9 @@ class HomeFragment : Fragment() {
     """.trimIndent()
     private val commitFirewallCommand  = "uci commit firewall"
     private val restartFirewallCommand  = "/etc/init.d/firewall reload"
+    private val getWirelessConfigCommand = "echo \\\"{\\\\\\\"ssid\\\\\\\":\\\\\\\"\$(uci get wireless.@wifi-iface[0].ssid)\\\\\\\", \\\\\\\"key\\\\\\\":\\\\\\\"\$(uci get wireless.@wifi-iface[0].key)\\\\\\\"}\\\""
+    private val setWirelessSSIDCommand = "uci set wireless.@wifi-face['%s'].ssid='%s'"
+    private val setWirelessKeyCommand = "uci set wireless.@wifi-face['%s'].key='%s'"
 
     /*Configurations*/
     private val onlineStatus = "Online"
@@ -176,8 +189,19 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
+        // Initialize the DbHandler
+        dbHandler = DbHandler(requireContext())
+
+        /*Prepare DB configurations*/
+        prepareDBConfig()
+
         /*Init the OpenWRTApi class*/
-        openWRTApi = OpenWRTApi(baseUrl, username, password)
+/*        private val username = "root"
+        private val password = "t*iP9Tk6na3VPeq"*/
+        luciUsername = dbHandler.getConfiguration("luci_username").toString()
+        luciPassword = dbHandler.getConfiguration("luci_password").toString()
+        openWRTApi = OpenWRTApi(baseUrl, luciUsername, luciPassword)
+
 
         /*Try to login to Luci on time*/
         performLoginAndUpdate(true)
@@ -738,6 +762,10 @@ class HomeFragment : Fragment() {
                 setDDNSConfiguration(setDDNSHostname, hostnameEditText.text.toString())
                 setDDNSConfiguration(setDDNSDomain, hostnameEditText.text.toString())
 
+                /*Add configuration on database*/
+                dbHandler.updateConfiguration("is_ddns_set", "1")
+                dbHandler.addConfiguration("lastDDNS",hostnameEditText.text.toString())
+
                 /*Update the initial value*/
                 hostnameInitialText = hostnameEditText.text.toString()
 
@@ -1127,6 +1155,403 @@ class HomeFragment : Fragment() {
         }
         /*** END - SUPPORT FRAGMENT ***/
 
+        /*** START - SETTINGS FRAGMENT ***/
+        /*Applying effect to Settings buttons*/
+        binding.settingsText.setOnTouchListener { view, motionEvent ->
+            when (motionEvent.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    /*Apply opacity effect when pressed*/
+                    view.alpha = 0.5f
+                }
+
+                MotionEvent.ACTION_UP -> {
+                    /*Revert back to original opacity*/
+                    view.alpha = 1.0f
+                    /*Call performClick to trigger the click event*/
+                    view.performClick()
+                }
+
+                MotionEvent.ACTION_CANCEL -> {
+                    /*Revert back to original opacity if the action was canceled*/
+                    view.alpha = 1.0f
+                }
+            }
+            /*Return true to indicate that the event has been handled*/
+            return@setOnTouchListener true
+        }
+        binding.settingsBtn.setOnTouchListener { view, motionEvent ->
+            when (motionEvent.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    /*Apply opacity effect when pressed*/
+                    view.alpha = 0.5f
+                }
+
+                MotionEvent.ACTION_UP -> {
+                    /*Revert back to original opacity*/
+                    view.alpha = 1.0f
+                    /*Call performClick to trigger the click event*/
+                    view.performClick()
+                }
+
+                MotionEvent.ACTION_CANCEL -> {
+                    /*Revert back to original opacity if the action was canceled*/
+                    view.alpha = 1.0f
+                }
+            }
+            /*Return true to indicate that the event has been handled*/
+            return@setOnTouchListener true
+        }
+
+        /*Binding Settings buttons*/
+        binding.settingsText.setOnClickListener {
+            /*Handle its view visibility*/
+            binding.homeMainLayout.visibility = View.GONE
+            binding.fragmentSettingsIncluded.root.visibility = View.VISIBLE
+
+            /*Pause main call API*/
+            canCallHomeAPi = false
+
+            /*Update resources*/
+            callOpenWRTSettings()
+
+        }
+        binding.settingsBtn.setOnClickListener {
+            /*Handle its view visibility*/
+            binding.homeMainLayout.visibility = View.GONE
+            binding.fragmentSettingsIncluded.root.visibility = View.VISIBLE
+
+            /*Pause main call API*/
+            canCallHomeAPi = false
+
+            /*Update resources*/
+            callOpenWRTSettings()
+        }
+
+        /*Binding Support exit info button*/
+        binding.fragmentSettingsIncluded.exitImage.setOnClickListener {
+            binding.homeMainLayout.visibility = View.VISIBLE
+            binding.fragmentSettingsIncluded.root.visibility = View.GONE
+
+            /*Pause main call API*/
+            canCallHomeAPi = true
+
+        }
+
+        /*Binding Wireless SSID pencil, check and close button*/
+        val ssidEditText = binding.fragmentSettingsIncluded.cardLayoutWirelessSsid.cardDescription
+        binding.fragmentSettingsIncluded.cardLayoutWirelessSsid.editValueImage.setOnClickListener {
+
+            if (isSSIDEditing) {
+                /*Let the close button be visible*/
+                binding.fragmentSettingsIncluded.cardLayoutWirelessSsid.closeValueImage.visibility = View.GONE
+
+                // When editing is complete
+                ssidEditText.isFocusable = false
+                ssidEditText.isFocusableInTouchMode = false
+                ssidEditText.isClickable = false
+                ssidEditText.clearFocus()
+
+                // Hide the keyboard
+                val imm =
+                    requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(ssidEditText.windowToken, 0)
+
+                // Change the icon to pencil
+                binding.fragmentSettingsIncluded.cardLayoutWirelessSsid.editValueImage.setImageResource(R.drawable.pen)
+
+                /*Sync the new hostname with the router*/
+                //setDDNSConfiguration(setDDNSHostname, ssidEditText.text.toString())
+                //setDDNSConfiguration(setDDNSDomain, ssidEditText.text.toString())
+
+                /*Update the initial value*/
+                ssidInitialText = ssidEditText.text.toString()
+                Log.d("OpenWRT","Setting ssidInitalText as $ssidInitialText")
+
+
+            } else {
+                /*Update the initial value*/
+                ssidInitialText = ssidEditText.text.toString()
+
+                /*Let the close button be visible*/
+                binding.fragmentSettingsIncluded.cardLayoutWirelessSsid.closeValueImage.visibility = View.VISIBLE
+
+                // When editing is enabled
+                ssidEditText.isFocusable = true
+                ssidEditText.isFocusableInTouchMode = true
+                ssidEditText.isClickable = true
+                ssidEditText.requestFocus()
+
+                // Optionally, show the keyboard
+                val imm =
+                    requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.showSoftInput(ssidEditText, InputMethodManager.SHOW_IMPLICIT)
+
+                // Change the icon to check
+                binding.fragmentSettingsIncluded.cardLayoutWirelessSsid.editValueImage.setImageResource(R.drawable.check)
+            }
+
+            // Toggle the state
+            isSSIDEditing = !isSSIDEditing
+        }
+        binding.fragmentSettingsIncluded.cardLayoutWirelessSsid.closeValueImage.setOnClickListener {
+            ssidEditText.setText(ssidInitialText)
+
+            /*Let the close button be visible*/
+            binding.fragmentSettingsIncluded.cardLayoutWirelessSsid.closeValueImage.visibility = View.GONE
+
+            /*When editing is complete*/
+            ssidEditText.isFocusable = false
+            ssidEditText.isFocusableInTouchMode = false
+            ssidEditText.isClickable = false
+            ssidEditText.clearFocus()
+
+            /*Hide the keyboard*/
+            val imm =
+                requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(ssidEditText.windowToken, 0)
+
+            /*Change the icon to pencil*/
+            binding.fragmentSettingsIncluded.cardLayoutWirelessSsid.editValueImage.setImageResource(R.drawable.pen)
+
+            isSSIDEditing = false
+        }
+
+        /*Binding Password SSID pencil, check and close button*/
+        val wirelessPasswordEditText = binding.fragmentSettingsIncluded.cardLayoutWirelessPassword.cardDescription
+        binding.fragmentSettingsIncluded.cardLayoutWirelessPassword.editValueImage.setOnClickListener {
+
+            if (isWirelessPasswordEditing) {
+                /*Let the close button be visible*/
+                binding.fragmentSettingsIncluded.cardLayoutWirelessPassword.closeValueImage.visibility = View.GONE
+
+                // When editing is complete
+                wirelessPasswordEditText.isFocusable = false
+                wirelessPasswordEditText.isFocusableInTouchMode = false
+                wirelessPasswordEditText.isClickable = false
+                wirelessPasswordEditText.clearFocus()
+
+                // Hide the keyboard
+                val imm =
+                    requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(wirelessPasswordEditText.windowToken, 0)
+
+                // Change the icon to pencil
+                binding.fragmentSettingsIncluded.cardLayoutWirelessPassword.editValueImage.setImageResource(R.drawable.pen)
+
+                /*Sync the new hostname with the router*/
+                //setDDNSConfiguration(setDDNSHostname, ssidEditText.text.toString())
+                //setDDNSConfiguration(setDDNSDomain, ssidEditText.text.toString())
+
+                /*Update the initial value*/
+                wirelessPasswordInitialText = wirelessPasswordEditText.text.toString()
+                Log.d("OpenWRT","Setting wirelessPasswordInitalText as $wirelessPasswordInitialText")
+
+
+            } else {
+                /*Update the initial value*/
+                wirelessPasswordInitialText = wirelessPasswordEditText.text.toString()
+
+                /*Let the close button be visible*/
+                binding.fragmentSettingsIncluded.cardLayoutWirelessPassword.closeValueImage.visibility = View.VISIBLE
+
+                // When editing is enabled
+                wirelessPasswordEditText.isFocusable = true
+                wirelessPasswordEditText.isFocusableInTouchMode = true
+                wirelessPasswordEditText.isClickable = true
+                wirelessPasswordEditText.requestFocus()
+
+                // Optionally, show the keyboard
+                val imm =
+                    requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.showSoftInput(wirelessPasswordEditText, InputMethodManager.SHOW_IMPLICIT)
+
+                // Change the icon to check
+                binding.fragmentSettingsIncluded.cardLayoutWirelessPassword.editValueImage.setImageResource(R.drawable.check)
+            }
+
+            // Toggle the state
+            isWirelessPasswordEditing = !isWirelessPasswordEditing
+        }
+        binding.fragmentSettingsIncluded.cardLayoutWirelessPassword.closeValueImage.setOnClickListener {
+            wirelessPasswordEditText.setText(wirelessPasswordInitialText)
+
+            /*Let the close button be visible*/
+            binding.fragmentSettingsIncluded.cardLayoutWirelessPassword.closeValueImage.visibility = View.GONE
+
+            /*When editing is complete*/
+            wirelessPasswordEditText.isFocusable = false
+            wirelessPasswordEditText.isFocusableInTouchMode = false
+            wirelessPasswordEditText.isClickable = false
+            wirelessPasswordEditText.clearFocus()
+
+            /*Hide the keyboard*/
+            val imm =
+                requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(wirelessPasswordEditText.windowToken, 0)
+
+            /*Change the icon to pencil*/
+            binding.fragmentSettingsIncluded.cardLayoutWirelessPassword.editValueImage.setImageResource(R.drawable.pen)
+
+            isWirelessPasswordEditing = false
+        }
+
+        /*Binding Luci Username pencil, check and close button*/
+        val luciUsernameEditText = binding.fragmentSettingsIncluded.cardLayoutRouterUsername.cardDescription
+        binding.fragmentSettingsIncluded.cardLayoutRouterUsername.editValueImage.setOnClickListener {
+
+            if (isLuciUsernameEditing) {
+                /*Let the close button be visible*/
+                binding.fragmentSettingsIncluded.cardLayoutRouterUsername.closeValueImage.visibility = View.GONE
+
+                // When editing is complete
+                luciUsernameEditText.isFocusable = false
+                luciUsernameEditText.isFocusableInTouchMode = false
+                luciUsernameEditText.isClickable = false
+                luciUsernameEditText.clearFocus()
+
+                // Hide the keyboard
+                val imm =
+                    requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(luciUsernameEditText.windowToken, 0)
+
+                // Change the icon to pencil
+                binding.fragmentSettingsIncluded.cardLayoutRouterUsername.editValueImage.setImageResource(R.drawable.pen)
+
+                /*Update resource on database*/
+                dbHandler.updateConfiguration("luci_username",luciUsernameEditText.text.toString())
+
+                /*Update the initial value*/
+                luciUsernameInitialText = luciUsernameEditText.text.toString()
+                Log.d("OpenWRT","Setting luciUsernameInitialText as $luciUsernameInitialText")
+
+
+            } else {
+                /*Update the initial value*/
+                luciUsernameInitialText = luciUsernameEditText.text.toString()
+
+                /*Let the close button be visible*/
+                binding.fragmentSettingsIncluded.cardLayoutRouterUsername.closeValueImage.visibility = View.VISIBLE
+
+                // When editing is enabled
+                luciUsernameEditText.isFocusable = true
+                luciUsernameEditText.isFocusableInTouchMode = true
+                luciUsernameEditText.isClickable = true
+                luciUsernameEditText.requestFocus()
+
+                // Optionally, show the keyboard
+                val imm =
+                    requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.showSoftInput(luciUsernameEditText, InputMethodManager.SHOW_IMPLICIT)
+
+                // Change the icon to check
+                binding.fragmentSettingsIncluded.cardLayoutRouterUsername.editValueImage.setImageResource(R.drawable.check)
+            }
+
+            // Toggle the state
+            isLuciUsernameEditing = !isLuciUsernameEditing
+        }
+        binding.fragmentSettingsIncluded.cardLayoutRouterUsername.closeValueImage.setOnClickListener {
+            luciUsernameEditText.setText(luciUsernameInitialText)
+
+            /*Let the close button be visible*/
+            binding.fragmentSettingsIncluded.cardLayoutRouterUsername.closeValueImage.visibility = View.GONE
+
+            /*When editing is complete*/
+            luciUsernameEditText.isFocusable = false
+            luciUsernameEditText.isFocusableInTouchMode = false
+            luciUsernameEditText.isClickable = false
+            luciUsernameEditText.clearFocus()
+
+            /*Hide the keyboard*/
+            val imm =
+                requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(luciUsernameEditText.windowToken, 0)
+
+            /*Change the icon to pencil*/
+            binding.fragmentSettingsIncluded.cardLayoutRouterUsername.editValueImage.setImageResource(R.drawable.pen)
+
+            isLuciUsernameEditing = false
+        }
+
+        /*Binding Luci Password pencil, check and close button*/
+        val luciPasswordEditText = binding.fragmentSettingsIncluded.cardLayoutRouterPassword.cardDescription
+        binding.fragmentSettingsIncluded.cardLayoutRouterPassword.editValueImage.setOnClickListener {
+
+            if (isLuciPasswordEditing) {
+                /*Let the close button be visible*/
+                binding.fragmentSettingsIncluded.cardLayoutRouterPassword.closeValueImage.visibility = View.GONE
+
+                // When editing is complete
+                luciPasswordEditText.isFocusable = false
+                luciPasswordEditText.isFocusableInTouchMode = false
+                luciPasswordEditText.isClickable = false
+                luciPasswordEditText.clearFocus()
+
+                // Hide the keyboard
+                val imm =
+                    requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(luciPasswordEditText.windowToken, 0)
+
+                // Change the icon to pencil
+                binding.fragmentSettingsIncluded.cardLayoutRouterPassword.editValueImage.setImageResource(R.drawable.pen)
+
+                /*Update resource on database*/
+                dbHandler.updateConfiguration("luci_password",luciPasswordEditText.text.toString())
+
+                /*Update the initial value*/
+                luciPasswordInitialText = luciPasswordEditText.text.toString()
+                Log.d("OpenWRT","Setting luciPasswordInitialText as $luciPasswordInitialText")
+
+
+            } else {
+                /*Update the initial value*/
+                luciPasswordInitialText = luciPasswordEditText.text.toString()
+
+                /*Let the close button be visible*/
+                binding.fragmentSettingsIncluded.cardLayoutRouterPassword.closeValueImage.visibility = View.VISIBLE
+
+                // When editing is enabled
+                luciPasswordEditText.isFocusable = true
+                luciPasswordEditText.isFocusableInTouchMode = true
+                luciPasswordEditText.isClickable = true
+                luciPasswordEditText.requestFocus()
+
+                // Optionally, show the keyboard
+                val imm =
+                    requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.showSoftInput(luciPasswordEditText, InputMethodManager.SHOW_IMPLICIT)
+
+                // Change the icon to check
+                binding.fragmentSettingsIncluded.cardLayoutRouterPassword.editValueImage.setImageResource(R.drawable.check)
+            }
+
+            // Toggle the state
+            isLuciPasswordEditing = !isLuciPasswordEditing
+        }
+        binding.fragmentSettingsIncluded.cardLayoutRouterPassword.closeValueImage.setOnClickListener {
+            luciPasswordEditText.setText(luciPasswordInitialText)
+
+            /*Let the close button be visible*/
+            binding.fragmentSettingsIncluded.cardLayoutRouterPassword.closeValueImage.visibility = View.GONE
+
+            /*When editing is complete*/
+            luciPasswordEditText.isFocusable = false
+            luciPasswordEditText.isFocusableInTouchMode = false
+            luciPasswordEditText.isClickable = false
+            luciPasswordEditText.clearFocus()
+
+            /*Hide the keyboard*/
+            val imm =
+                requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(luciPasswordEditText.windowToken, 0)
+
+            /*Change the icon to pencil*/
+            binding.fragmentSettingsIncluded.cardLayoutRouterPassword.editValueImage.setImageResource(R.drawable.pen)
+
+            isLuciPasswordEditing = false
+        }
+        /*** START - SETTINGS FRAGMENT ***/
+
         /*Updating resources on time*/
         job = CoroutineScope(Dispatchers.IO).launch {
             while (isActive) {
@@ -1134,9 +1559,10 @@ class HomeFragment : Fragment() {
                     Log.d("OpenWRT","Calling function from loop")
                     performLoginAndUpdate()
                 }
-                delay(10000)
+                delay(10000)  // Always delay to keep the loop running
             }
         }
+
     }
 
     override fun onDestroyView() {
@@ -1146,6 +1572,9 @@ class HomeFragment : Fragment() {
         /*Disconnecting VPN and unbind its service*/
         disconnectVPN()
         unbindService()
+
+        /*Detach database*/
+        dbHandler.close()
     }
 
     override fun onPause() {
@@ -1187,11 +1616,10 @@ class HomeFragment : Fragment() {
 
                     /*Update the board status as online*/
                     updateBoardStatus(true)
-                    if (firstCall){
+                    if (firstCall) {
                         /*Set variable to true*/
                         canCallHomeAPi = true
                     }
-
                 }
             },
             onFailure = { error ->
@@ -1202,6 +1630,12 @@ class HomeFragment : Fragment() {
 
                     Log.d("OpenWRT", "OpenWRT Error: $error")
                 }
+
+                // Optional: Retry after a delay or log and allow the loop to retry in the next iteration
+                CoroutineScope(Dispatchers.IO).launch {
+                    delay(5000)  // Wait for 5 seconds before retrying (optional)
+                    performLoginAndUpdate(firstCall)
+                }
             }
         )
     }
@@ -1209,7 +1643,6 @@ class HomeFragment : Fragment() {
     /*Updates the board status resources*/
     private fun updateBoardStatus(isOnline: Boolean) {
         isBoardReachable = isOnline
-        //trigLaserBeam(isOnline)
 
         val icon: ImageView = binding.boardStatusIcon
         val alphaValue = if (isOnline) 1.0F else 0.5F
@@ -1503,6 +1936,65 @@ class HomeFragment : Fragment() {
                     }
                     
                     /* Adding the network devices cards */
+                }
+            },
+            onFailure = { error ->
+                /* Handle the failure, update UI on the main thread */
+                activity?.runOnUiThread {
+                    Log.d(openWRTTag, error)
+                }
+            }
+        )
+    }
+
+    /* Call the OpenWRT in order to get port forwarding rules */
+    private fun callOpenWRTSettings() {
+        if (!::luciToken.isInitialized) {
+            Log.w(openWRTTag, "luciToken is null or empty. Aborting the operation.")
+            return
+        }
+
+        openWRTApi.executeCommand(
+            getWirelessConfigCommand,
+            luciToken,
+            onSuccess = { response ->
+                /* Handle the successful response, update UI on the main thread */
+                activity?.runOnUiThread {
+                    Log.d(openWRTTag, response.toString())
+
+                    /* Parsing the JSON Object */
+                    try {
+                        val resultString = response.optString("result")
+
+                        Log.d("OpenWRT", "Result String: $resultString")
+
+                        // Parse the resultString as JSON
+                        val resultJson = JSONObject(resultString)
+
+                        // Extract ssid and key
+                        val ssid = resultJson.optString("ssid")
+                        val key = resultJson.optString("key")
+
+                        /*Update SSID resources*/
+                        binding.fragmentSettingsIncluded.cardLayoutWirelessSsid.cardTitle.text = "SSID"
+                        binding.fragmentSettingsIncluded.cardLayoutWirelessSsid.cardDescription.setText(ssid)
+
+                        /*Update Wireless Password resources*/
+                        binding.fragmentSettingsIncluded.cardLayoutWirelessPassword.cardTitle.text = "Password"
+                        binding.fragmentSettingsIncluded.cardLayoutWirelessPassword.cardDescription.setText(key)
+
+                        /*Update luci username*/
+                        binding.fragmentSettingsIncluded.cardLayoutRouterUsername.cardTitle.text = "Username"
+                        binding.fragmentSettingsIncluded.cardLayoutRouterUsername.cardDescription.setText(dbHandler.getConfiguration("luci_username"))
+
+                        /*Update luci password*/
+                        binding.fragmentSettingsIncluded.cardLayoutRouterPassword.cardTitle.text = "Password"
+                        binding.fragmentSettingsIncluded.cardLayoutRouterPassword.cardDescription.setText(dbHandler.getConfiguration("luci_password"))
+
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        Log.e("OpenWRT", "Error parsing response", e)
+                    }
                 }
             },
             onFailure = { error ->
@@ -2037,9 +2529,19 @@ class HomeFragment : Fragment() {
         binding.layoutIpAddresses.cardDescription.text = "IPv4: $ipv4Address"
         binding.layoutIpAddresses.cardDescriptionTwo.text = "IPv6: $ipv6Address"
 
-        /*DDNS*/
-        binding.layoutDns.cardTitle.text = "DDNS"
-        binding.layoutDns.cardDescription.text = "You haven't set up a DDNS yet."
+        /*Check weather DDNS has been set or not*/
+        val isDDNSset = dbHandler.getConfiguration("is_ddns_set")
+        if (isDDNSset == "0") {
+            binding.layoutDns.cardTitle.text = "DDNS"
+            binding.layoutDns.cardDescription.text = "You haven't set up a DDNS yet."
+        }
+        else{
+            val lastDDNS = dbHandler.getConfiguration("lastDDNS")
+            binding.layoutDns.cardTitle.text = "DDNS"
+            binding.layoutDns.cardDescription.text = lastDDNS
+            binding.layoutDns.copyIpv4Image.setImageResource(R.drawable.copy)
+            binding.layoutDns.contentLayout.background = null
+        }
     }
 
     /*Converting bytes into readable string*/
@@ -2864,6 +3366,7 @@ class HomeFragment : Fragment() {
         return false
     }
 
+    /*Fetch IPv6 from ident.me*/
     private fun curlIpv6IdentMe(): Boolean {
         return try {
             val process = ProcessBuilder("curl", "-6", "https://ident.me").start()
@@ -2889,6 +3392,19 @@ class HomeFragment : Fragment() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         Log.d("OpenVPN Codes","requestCode: $requestCode, resultCode: $resultCode, data: $data")
     };
+
+    /*Prepare database with configurations*/
+    private fun prepareDBConfig(){
+        /*User attitude*/
+        dbHandler.addConfiguration("first_boot","1")
+
+        /*Luci Webpage*/
+        dbHandler.addConfiguration("luci_username","root")
+        dbHandler.addConfiguration("luci_password","DanyelPortman1995@@")
+
+        /*DDNS*/
+        dbHandler.addConfiguration("is_ddns_set","0")
+    }
 }
 
 /*

@@ -3,6 +3,7 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
@@ -33,7 +34,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:text="External Port"
+                    android:text="@string/external_port"
                     android:textColor="@color/white"
                     android:textSize="18sp" />
 
@@ -77,9 +78,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="left"
-                    android:text="Target IPv6"
+                    android:text="@string/target_ipv6"
                     android:textColor="@color/white"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    tools:ignore="RtlHardcoded" />
 
 
 
@@ -109,9 +111,10 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:gravity="left"
-                        android:text="External Port"
+                        android:text="@string/external_port"
                         android:textColor="@color/white"
-                        android:textSize="18sp" />
+                        android:textSize="18sp"
+                        tools:ignore="RtlHardcoded" />
 
                     <ImageView
                         android:id="@+id/delete_rule"
@@ -181,7 +184,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="left"
-                        android:text="Destination Port"
+                        android:text="@string/destination_port"
                         android:textColor="@color/white"
                         android:textSize="18sp" />
 
@@ -245,7 +248,7 @@
                         android:id="@+id/target_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Target IPv6"
+                        android:text="@string/target_ipv6"
                         android:textColor="@color/white"
                         android:textSize="18sp" />
 

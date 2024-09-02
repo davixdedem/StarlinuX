@@ -34,7 +34,7 @@
                 app:tint="@color/teal_200" />
 
             <TextView
-                android:id="@+id/title_settings"
+                android:id="@+id/title_sbc_info"
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
@@ -48,18 +48,135 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="20sp"
+            android:layout_marginLeft="5sp"
+            android:layout_marginRight="5sp"
             android:layout_weight="1"
             android:orientation="vertical" >
 
-            <include
-                android:id="@+id/router_password_layout_card"
-                layout="@layout/layout_card_editable"
-                />
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:id="@+id/router_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10sp"
+                        android:layout_marginTop="10sp"
+                        android:text="@string/router"
+                        android:textColor="@color/teal_700"
+                        android:textSize="15sp" />
+
+                    <include
+                        android:id="@+id/card_layout_router_username"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="10sp"
+                        android:layout_marginStart="10sp"
+                        android:layout_marginEnd="10sp"
+                        layout="@layout/layout_card_editable" />
+
+                    <include
+                        android:id="@+id/card_layout_router_password"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="5sp"
+                        android:layout_marginStart="10sp"
+                        android:layout_marginEnd="10sp"
+                        layout="@layout/layout_card_editable" />
+
+                    <TextView
+                        android:id="@+id/wireless_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10sp"
+                        android:layout_marginTop="20sp"
+                        android:text="@string/wireless"
+                        android:textColor="@color/teal_700"
+                        android:textSize="15sp" />
+
+                    <include
+                        android:id="@+id/card_layout_wireless_ssid"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="10sp"
+                        android:layout_marginStart="10sp"
+                        android:layout_marginEnd="10sp"
+                        layout="@layout/layout_card_editable" />
+
+                    <include
+                        android:id="@+id/card_layout_wireless_password"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="5sp"
+                        android:layout_marginStart="10sp"
+                        android:layout_marginEnd="10sp"
+                        layout="@layout/layout_card_editable" />
+
+                    <TextView
+                        android:id="@+id/pistarlink_title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20sp"
+                        android:layout_marginStart="10sp"
+                        android:text="@string/pi_starlink"
+                        android:textColor="@color/teal_700"
+                        android:textSize="15sp" />
+
+                    <com.ncorti.slidetoact.SlideToActView
+                        android:id="@+id/router_reboot_slide"
+                        android:layout_marginTop="5sp"
+                        android:elevation="6dp"
+                        app:area_margin="3dp"
+                        app:border_radius="4dp"
+                        app:slider_locked="true"
+                        android:layout_width="match_parent"
+                        app:inner_color="@color/white"
+                        app:outer_color="@color/teal_900"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="textEnd"
+                        app:bounce_on_start="true"
+                        app:text="Slide to reboot" />
+
+                    <com.ncorti.slidetoact.SlideToActView
+                        android:id="@+id/router_factory_reset_slide"
+                        android:layout_marginTop="5sp"
+                        android:elevation="6dp"
+                        app:area_margin="3dp"
+                        app:border_radius="4dp"
+                        app:slider_locked="true"
+                        android:layout_width="match_parent"
+                        app:inner_color="@color/white"
+                        app:outer_color="@color/teal_900"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="textEnd"
+                        app:bounce_on_start="true"
+                        app:text="Slide to factory reset" />
+
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_marginTop="30sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAlignment="center"
+                        android:layout_gravity="center"
+                        android:textColor="@color/white"
+                        android:text="@string/router_page"
+                        android:linksClickable="true" />
+
+                </LinearLayout>
+
+            </ScrollView>
 
         </LinearLayout>
 
     </LinearLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

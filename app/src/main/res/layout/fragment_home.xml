@@ -44,6 +44,13 @@
         android:layout_height="match_parent" />
 
     <include
+        layout="@layout/fragment_settings"
+        android:id="@+id/fragment_settings_included"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <include
         layout="@layout/fragment_support"
         android:id="@+id/fragment_support_included"
         android:visibility="gone"
@@ -178,7 +185,7 @@
                         android:layout_marginEnd="10sp"
                         android:layout_weight="0"
                         android:gravity="center"
-                        android:text=">"
+                        android:text="@string/Angular"
                         android:textAlignment="textEnd"
                         android:textColor="@color/white"
                         android:textSize="20sp"
@@ -188,6 +195,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="25sp"
@@ -196,6 +204,7 @@
                     <ImageView
                         android:id="@+id/dmz_image_icon"
                         android:layout_width="50sp"
+                        android:alpha="0.5"
                         android:layout_height="match_parent"
                         app:tint="@color/white"
                         android:src="@drawable/dmz" />
@@ -217,10 +226,10 @@
                         android:id="@+id/dmz_section_btn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="10sp"
+                        android:layout_marginEnd="10sp"
                         android:layout_weight="0"
                         android:gravity="center"
-                        android:text=">"
+                        android:text="@string/Angular"
                         android:textAlignment="textEnd"
                         android:textColor="@color/white"
                         android:textSize="20sp"
@@ -238,6 +247,7 @@
                     <ImageView
                         android:id="@+id/ddns_image_icon"
                         app:tint="@color/white"
+                        android:alpha="0.5"
                         android:layout_width="50sp"
                         android:layout_height="match_parent"
                         android:src="@drawable/ddns" />
@@ -259,10 +269,10 @@
                         android:id="@+id/ddns_section_btn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="10sp"
+                        android:layout_marginEnd="10sp"
                         android:layout_weight="0"
                         android:gravity="center"
-                        android:text=">"
+                        android:text="@string/Angular"
                         android:textAlignment="textEnd"
                         android:textColor="@color/white"
                         android:textSize="20sp"
@@ -281,6 +291,7 @@
                         android:id="@+id/pw_image_icon"
                         android:layout_width="50dp"
                         android:layout_height="match_parent"
+                        android:alpha="0.5"
                         android:src="@drawable/domain"
                         app:tint="@color/white" />
 
@@ -301,10 +312,10 @@
                         android:id="@+id/pw_section_btn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="10sp"
+                        android:layout_marginEnd="10sp"
                         android:layout_weight="0"
                         android:gravity="center"
-                        android:text=">"
+                        android:text="@string/Angular"
                         android:textAlignment="textEnd"
                         android:textColor="@color/white"
                         android:textSize="20sp"
@@ -321,6 +332,7 @@
 
                     <ImageView
                         android:id="@+id/network_image_icon"
+                        android:alpha="0.5"
                         android:layout_width="50sp"
                         android:layout_height="match_parent"
                         android:src="@drawable/network"
@@ -343,10 +355,10 @@
                         android:id="@+id/network_btn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="10sp"
+                        android:layout_marginEnd="10sp"
                         android:layout_weight="0"
                         android:gravity="center"
-                        android:text=">"
+                        android:text="@string/Angular"
                         android:textAlignment="textEnd"
                         android:textColor="@color/white"
                         android:textSize="20sp"
@@ -369,7 +381,7 @@
                         app:tint="@color/white" />
 
                     <TextView
-                        android:id="@+id/textView4"
+                        android:id="@+id/settings_text"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginStart="10sp"
@@ -384,10 +396,10 @@
                         android:id="@+id/settings_btn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="10sp"
+                        android:layout_marginEnd="10sp"
                         android:layout_weight="0"
                         android:gravity="center"
-                        android:text=">"
+                        android:text="@string/Angular"
                         android:textAlignment="textEnd"
                         android:textColor="@color/white"
                         android:textSize="20sp"
@@ -425,10 +437,10 @@
                         android:id="@+id/support_btn"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="10sp"
+                        android:layout_marginEnd="10sp"
                         android:layout_weight="0"
                         android:gravity="center"
-                        android:text=">"
+                        android:text="@string/Angular"
                         android:textAlignment="textEnd"
                         android:textColor="@color/white"
                         android:textSize="20sp"
