@@ -1211,6 +1211,14 @@ class HomeFragment : Fragment() {
             /*Pause main call API*/
             canCallHomeAPi = false
 
+            /*Update luci username*/
+            binding.fragmentSettingsIncluded.cardLayoutRouterUsername.cardTitle.text = "Username"
+            binding.fragmentSettingsIncluded.cardLayoutRouterUsername.cardDescription.setText(dbHandler.getConfiguration("luci_username"))
+
+            /*Update luci password*/
+            binding.fragmentSettingsIncluded.cardLayoutRouterPassword.cardTitle.text = "Password"
+            binding.fragmentSettingsIncluded.cardLayoutRouterPassword.cardDescription.setText(dbHandler.getConfiguration("luci_password"))
+
             /*Update resources*/
             callOpenWRTSettings()
 
@@ -1222,6 +1230,14 @@ class HomeFragment : Fragment() {
 
             /*Pause main call API*/
             canCallHomeAPi = false
+
+            /*Update luci username*/
+            binding.fragmentSettingsIncluded.cardLayoutRouterUsername.cardTitle.text = "Username"
+            binding.fragmentSettingsIncluded.cardLayoutRouterUsername.cardDescription.setText(dbHandler.getConfiguration("luci_username"))
+
+            /*Update luci password*/
+            binding.fragmentSettingsIncluded.cardLayoutRouterPassword.cardTitle.text = "Password"
+            binding.fragmentSettingsIncluded.cardLayoutRouterPassword.cardDescription.setText(dbHandler.getConfiguration("luci_password"))
 
             /*Update resources*/
             callOpenWRTSettings()
@@ -1424,6 +1440,10 @@ class HomeFragment : Fragment() {
                 luciUsernameInitialText = luciUsernameEditText.text.toString()
                 Log.d("OpenWRT","Setting luciUsernameInitialText as $luciUsernameInitialText")
 
+                /*Update OpenWRT Login Object*/
+                luciUsername = dbHandler.getConfiguration("luci_username").toString()
+                luciPassword = dbHandler.getConfiguration("luci_password").toString()
+                openWRTApi = OpenWRTApi(baseUrl, luciUsername, luciPassword)
 
             } else {
                 /*Update the initial value*/
@@ -1502,6 +1522,10 @@ class HomeFragment : Fragment() {
                 luciPasswordInitialText = luciPasswordEditText.text.toString()
                 Log.d("OpenWRT","Setting luciPasswordInitialText as $luciPasswordInitialText")
 
+                /*Update OpenWRT Login Object*/
+                luciUsername = dbHandler.getConfiguration("luci_username").toString()
+                luciPassword = dbHandler.getConfiguration("luci_password").toString()
+                openWRTApi = OpenWRTApi(baseUrl, luciUsername, luciPassword)
 
             } else {
                 /*Update the initial value*/
@@ -1599,35 +1623,46 @@ class HomeFragment : Fragment() {
         unbindService()
     }
 
-    /* Performs login in order to retrieve the auth token*/
+    /* Performs login in order to retrieve the auth token */
     private fun performLoginAndUpdate(firstCall: Boolean = false) {
-        Log.d("OpenWRT","Performing login and updating resources")
+        Log.d("OpenWRT Login", "Performing login and updating resources")
         openWRTApi.login(
             onSuccess = { success ->
-                /*Handle successful login, update UI on the main thread*/
+                /* Handle successful login, update UI on the main thread */
                 activity?.runOnUiThread {
                     Log.d("OpenWRT", success.toString())
 
-                    /*Update the token*/
-                    luciToken = success.get("result").toString()
+                    /* Check if "result" is not null */
+                    val result = success.optString("result", "null")
+                    if (result != "null") {
+                        /* Update the token */
+                        luciToken = result
 
-                    /*luciToken has got, calling the API to get IPv6 address*/
-                    callOpenWRTIPApi()
+                        /* luciToken has been retrieved, calling the API to get IPv6 address */
+                        callOpenWRTIPApi()
 
-                    /*Update the board status as online*/
-                    updateBoardStatus(true)
-                    if (firstCall) {
-                        /*Set variable to true*/
-                        canCallHomeAPi = true
+                        /* Update the board status as online */
+                        updateBoardStatus(true)
+
+                        if (firstCall) {
+                            /* Set variable to true */
+                            canCallHomeAPi = true
+                        }
+                    } else {
+                        Log.d("OpenWRT Login", "Failed to retrieve luciToken: 'result' is null")
+                        /* Handle the case where "result" is null */
+                        updateBoardStatus(false)
+
+                        /*Update resources*/
+                        binding.layoutDns.cardDescription.text = "Failed to log into Pi-Starlink. Please check your credentials in Settings."
                     }
                 }
             },
             onFailure = { error ->
-                /*Handle login failure, update UI on the main thread*/
+                /* Handle login failure, update UI on the main thread */
                 activity?.runOnUiThread {
-                    /*Update the board status as disconnected*/
+                    /* Update the board status as disconnected */
                     updateBoardStatus(false)
-
                     Log.d("OpenWRT", "OpenWRT Error: $error")
                 }
 
@@ -1713,19 +1748,17 @@ class HomeFragment : Fragment() {
         openWRTApi.executeCommand(
             systemBoardCommand,
             luciToken,
-            onSuccess = { response ->
-                /*Handle the successful response, update UI on the main thread*/
+            onSuccess = { response, responseCode ->
                 activity?.runOnUiThread {
-                    Log.d(openWRTTag,response.toString())
-
-                    /*Update resource information*/
+                    Log.d(openWRTTag, "Response Code: $responseCode")
+                    Log.d(openWRTTag, response.toString())
                     updateSystemBoardInformation(response)
                 }
             },
-            onFailure = { error ->
-                /*Handle the failure, update UI on the main thread*/
+            onFailure = { error, responseCode ->
                 activity?.runOnUiThread {
-                    Log.d(openWRTTag,error)
+                    Log.d(openWRTTag, "Error: $error")
+                    Log.d(openWRTTag, "Response Code: $responseCode")
                 }
             }
         )
@@ -1736,47 +1769,51 @@ class HomeFragment : Fragment() {
         openWRTApi.executeCommand(
             systemBoardInformationCommand,
             luciToken,
-            onSuccess = { response ->
+            onSuccess = { response, responseCode ->
                 /*Handle the successful response, update UI on the main thread*/
                 activity?.runOnUiThread {
-                    Log.d(openWRTTag,response.toString())
+                    Log.d(openWRTTag, "Response Code: $responseCode")
+                    Log.d(openWRTTag, response.toString())
 
                     /*Update resource information*/
                     updateSystemStorageInformation(response)
                 }
             },
-            onFailure = { error ->
+            onFailure = { error, responseCode ->
                 /*Handle the failure, update UI on the main thread*/
                 activity?.runOnUiThread {
-                    Log.d(openWRTTag,error)
+                    Log.d(openWRTTag, "Error: $error")
+                    Log.d(openWRTTag, "Response Code: $responseCode")
                 }
             }
         )
     }
 
-    /* Call the OpenWRT in order to get the IPv6 address*/
+    /* Call the OpenWRT in order to get the IPv6 address */
     private fun callOpenWRTIPApi() {
         openWRTApi.executeCommand(
             getIPv6addressCommand,
             luciToken,
-            onSuccess = { response ->
-                /*Handle the successful response, update UI on the main thread*/
+            onSuccess = { response, responseCode ->
+                /* Handle the successful response, update UI on the main thread */
                 activity?.runOnUiThread {
-                    Log.d(openWRTTag,response.toString())
+                    Log.d(openWRTTag, "Response Code: $responseCode")
+                    Log.d(openWRTTag, response.toString())
 
                     updateIPStatus(response)
                 }
             },
-            onFailure = { error ->
-                /*Handle the failure, update UI on the main thread*/
+            onFailure = { error, responseCode ->
+                /* Handle the failure, update UI on the main thread */
                 activity?.runOnUiThread {
-                    Log.d(openWRTTag,error)
+                    Log.d(openWRTTag, "Error: $error")
+                    Log.d(openWRTTag, "Response Code: $responseCode")
                 }
             }
         )
     }
 
-    /* Call OpenWRT in order to get */
+    /* Call OpenWRT in order to get network information */
     private fun callOpenWRTNetwork(onResult: (JSONObject?) -> Unit) {
         if (!::luciToken.isInitialized) {
             Log.w(openWRTTag, "luciToken is null or empty. Aborting the operation.")
@@ -1787,9 +1824,10 @@ class HomeFragment : Fragment() {
         openWRTApi.executeCommand(
             getConnectedDevices,
             luciToken,
-            onSuccess = { response ->
+            onSuccess = { response, responseCode ->
                 /* Handle the successful response */
                 activity?.runOnUiThread {
+                    Log.d(openWRTTag, "Response Code: $responseCode")
                     Log.d(openWRTTag, response.toString())
 
                     /* Parsing the JSON Object */
@@ -1809,10 +1847,11 @@ class HomeFragment : Fragment() {
                     }
                 }
             },
-            onFailure = { error ->
+            onFailure = { error, responseCode ->
                 /* Handle the failure */
                 activity?.runOnUiThread {
-                    Log.d(openWRTTag, error)
+                    Log.d(openWRTTag, "Error: $error")
+                    Log.d(openWRTTag, "Response Code: $responseCode")
                     onResult(null)
                 }
             }
@@ -1879,9 +1918,10 @@ class HomeFragment : Fragment() {
         openWRTApi.executeCommand(
             getRedirectFirewallRulesCommand,
             luciToken,
-            onSuccess = { response ->
+            onSuccess = { response, responseCode ->
                 /* Handle the successful response, update UI on the main thread */
                 activity?.runOnUiThread {
+                    Log.d(openWRTTag, "Response Code: $responseCode")
                     Log.d(openWRTTag, response.toString())
 
                     /* Emptying the cards */
@@ -1921,27 +1961,26 @@ class HomeFragment : Fragment() {
                         e.printStackTrace()
                     }
 
-                    /* Get DHCv6 data*/
+                    /* Get DHCPv6 data */
                     callOpenWRTNetwork { jsonObject ->
                         jsonObject?.let {
                             // Handle the JSON data
                             Log.d("OpenWRTNetwork", it.toString())
-
                             addPortForwardingCards(it)
-
                         } ?: run {
                             // Handle the error case
                             Log.e("OpenWRTNetwork", "Failed to retrieve data")
                         }
                     }
-                    
+
                     /* Adding the network devices cards */
                 }
             },
-            onFailure = { error ->
+            onFailure = { error, responseCode ->
                 /* Handle the failure, update UI on the main thread */
                 activity?.runOnUiThread {
-                    Log.d(openWRTTag, error)
+                    Log.d(openWRTTag, "Error: $error")
+                    Log.d(openWRTTag, "Response Code: $responseCode")
                 }
             }
         )
@@ -1951,15 +1990,23 @@ class HomeFragment : Fragment() {
     private fun callOpenWRTSettings() {
         if (!::luciToken.isInitialized) {
             Log.w(openWRTTag, "luciToken is null or empty. Aborting the operation.")
+
+            /*Update resource*/
+            binding.fragmentSettingsIncluded.cardLayoutWirelessSsid.cardDescription.setText("Failed to retrieve, check router credentials.")
+            binding.fragmentSettingsIncluded.cardLayoutWirelessSsid.cardTitle.text = "SSID"
+
+            binding.fragmentSettingsIncluded.cardLayoutWirelessPassword.cardDescription.setText("Failed to retrieve, check router credentials.")
+            binding.fragmentSettingsIncluded.cardLayoutWirelessPassword.cardTitle.text = "Password"
             return
         }
 
         openWRTApi.executeCommand(
             getWirelessConfigCommand,
             luciToken,
-            onSuccess = { response ->
+            onSuccess = { response, responseCode ->
                 /* Handle the successful response, update UI on the main thread */
                 activity?.runOnUiThread {
+                    Log.d(openWRTTag, "Response Code: $responseCode")
                     Log.d(openWRTTag, response.toString())
 
                     /* Parsing the JSON Object */
@@ -1983,24 +2030,18 @@ class HomeFragment : Fragment() {
                         binding.fragmentSettingsIncluded.cardLayoutWirelessPassword.cardTitle.text = "Password"
                         binding.fragmentSettingsIncluded.cardLayoutWirelessPassword.cardDescription.setText(key)
 
-                        /*Update luci username*/
-                        binding.fragmentSettingsIncluded.cardLayoutRouterUsername.cardTitle.text = "Username"
-                        binding.fragmentSettingsIncluded.cardLayoutRouterUsername.cardDescription.setText(dbHandler.getConfiguration("luci_username"))
-
-                        /*Update luci password*/
-                        binding.fragmentSettingsIncluded.cardLayoutRouterPassword.cardTitle.text = "Password"
-                        binding.fragmentSettingsIncluded.cardLayoutRouterPassword.cardDescription.setText(dbHandler.getConfiguration("luci_password"))
-
                     } catch (e: Exception) {
                         e.printStackTrace()
                         Log.e("OpenWRT", "Error parsing response", e)
                     }
                 }
             },
-            onFailure = { error ->
+            onFailure = { error, responseCode ->
                 /* Handle the failure, update UI on the main thread */
                 activity?.runOnUiThread {
+                    Log.d(openWRTTag, "Response Code: $responseCode")
                     Log.d(openWRTTag, error)
+
                 }
             }
         )
@@ -2016,9 +2057,10 @@ class HomeFragment : Fragment() {
         openWRTApi.executeCommand(
             getOpenVPNConnectedDevicesCommand,
             luciToken,
-            onSuccess = { response ->
+            onSuccess = { response, responseCode ->
                 /* Handle the successful response, update UI on the main thread */
                 activity?.runOnUiThread {
+                    Log.d(openWRTTag, "Response Code: $responseCode")
                     Log.d(openWRTTag, response.toString())
 
                     /* Emptying the cards */
@@ -2068,9 +2110,10 @@ class HomeFragment : Fragment() {
                     addVpnCards()
                 }
             },
-            onFailure = { error ->
+            onFailure = { error, responseCode ->
                 /* Handle the failure, update UI on the main thread */
                 activity?.runOnUiThread {
+                    Log.d(openWRTTag, "Response Code: $responseCode")
                     Log.d(openWRTTag, error)
                 }
             }
@@ -2090,7 +2133,8 @@ class HomeFragment : Fragment() {
         openWRTApi.executeCommand(
             setupVPNCommand,
             luciToken,
-            onSuccess = { response ->
+            onSuccess = { response, responseCode ->
+                Log.d(openWRTTag, "Response Code: $responseCode")
                 /* Handle the successful response, update UI on the main thread */
                 activity?.runOnUiThread {
                     Log.d("OpenVPN", response.toString())
@@ -2106,7 +2150,8 @@ class HomeFragment : Fragment() {
                     }
                 }
             },
-            onFailure = { error ->
+            onFailure = { error, responseCode ->
+                Log.d(openWRTTag, "Response Code: $responseCode")
                 /* Handle the failure, update UI on the main thread */
                 activity?.runOnUiThread {
                     binding.fragmentVpnIncluded.vpnConfigActiveSlide.setCompleted(completed = false,true)
@@ -2126,7 +2171,8 @@ class HomeFragment : Fragment() {
         openWRTApi.executeCommand(
             checkVPNConfigStatusCommand,
             luciToken,
-            onSuccess = { response ->
+            onSuccess = { response, responseCode ->
+                Log.d(openWRTTag, "Response Code: $responseCode")
                 /* Handle the successful response, update UI on the main thread */
                 activity?.runOnUiThread {
                     Log.d("OpenVPN", response.toString())
@@ -2166,7 +2212,8 @@ class HomeFragment : Fragment() {
                     }
                 }
             },
-            onFailure = { error ->
+            onFailure = { error, responseCode ->
+                Log.d(openWRTTag, "Response Code: $responseCode")
                 /* Handle the failure, update UI on the main thread */
                 activity?.runOnUiThread {
                     Log.d("OpenVPN", error)
@@ -2185,8 +2232,9 @@ class HomeFragment : Fragment() {
         openWRTApi.executeCommand(
             "$fetchVPNConfigurationFileCommand$client.ovpn",
             luciToken,
-            onSuccess = { response ->
+            onSuccess = { response, responseCode ->
                 activity?.runOnUiThread {
+                    Log.d(openWRTTag, "Response Code: $responseCode")
                     Log.d("OpenVPN", response.toString())
                     val resultString = response.optString("result").trim()
 
@@ -2204,7 +2252,8 @@ class HomeFragment : Fragment() {
                     }
                 }
             },
-            onFailure = { error ->
+            onFailure = { error, responseCode ->
+                Log.d(openWRTTag, "Response Code: $responseCode")
                 /* Handle the failure, update UI on the main thread */
                 activity?.runOnUiThread {
                     Log.d("OpenVPN", error)
@@ -2223,8 +2272,9 @@ class HomeFragment : Fragment() {
         openWRTApi.executeCommand(
             setConfigAsFetched,
             luciToken,
-            onSuccess = { response ->
+            onSuccess = { response, responseCode ->
                 activity?.runOnUiThread {
+                    Log.d(openWRTTag, "Response Code: $responseCode")
                     Log.d("OpenVPN", response.toString())
                     val resultString = response.optString("result").trim()
 
@@ -2236,9 +2286,10 @@ class HomeFragment : Fragment() {
                     binding.fragmentVpnIncluded.vpnConfigStatus.text = "VPN configuration is complete, use the slider below to connect."
                 }
             },
-            onFailure = { error ->
+            onFailure = { error, responseCode ->
                 /* Handle the failure, update UI on the main thread */
                 activity?.runOnUiThread {
+                    Log.d(openWRTTag, "Response Code: $responseCode")
                     Log.d("OpenVPN", error)
                 }
             }
@@ -2254,8 +2305,9 @@ class HomeFragment : Fragment() {
         openWRTApi.executeCommand(
             getDDNSConfig,
             luciToken,
-            onSuccess = { response ->
+            onSuccess = { response, responseCode ->
                 activity?.runOnUiThread {
+                    Log.d(openWRTTag, "Response Code: $responseCode")
                     Log.d("OpenVPN", response.toString())
                     val resultString = response.optString("result").trim()
                     Log.d("OpenVPN","DDNS configuration: $resultString")
@@ -2289,9 +2341,10 @@ class HomeFragment : Fragment() {
                     }
                 }
             },
-            onFailure = { error ->
+            onFailure = { error, responseCode ->
                 /* Handle the failure, update UI on the main thread */
                 activity?.runOnUiThread {
+                    Log.d(openWRTTag, "Response Code: $responseCode")
                     Log.d("OpenVPN", error)
                 }
             }
@@ -2307,8 +2360,9 @@ class HomeFragment : Fragment() {
         openWRTApi.executeCommand(
             "$command$value&&$commitDDNSCommand",
             luciToken,
-            onSuccess = { response ->
+            onSuccess = { response, responseCode ->
                 activity?.runOnUiThread {
+                    Log.d(openWRTTag, "Response Code: $responseCode")
                     Log.d("OpenVPN", response.toString())
                     val resultString = response.optString("result").trim()
                     Log.d("OpenVPN","DDNS configuration has been set: $resultString")
@@ -2323,9 +2377,10 @@ class HomeFragment : Fragment() {
                     }
                 }
             },
-            onFailure = { error ->
+            onFailure = { error, responseCode ->
                 /* Handle the failure, update UI on the main thread */
                 activity?.runOnUiThread {
+                    Log.d(openWRTTag, "Response Code: $responseCode")
                     Log.d("OpenVPN", error)
                 }
             }
@@ -2343,14 +2398,16 @@ class HomeFragment : Fragment() {
         openWRTApi.executeCommand(
             composedCmd ,
             luciToken,
-            onSuccess = { response ->
+            onSuccess = { response, responseCode ->
                 activity?.runOnUiThread {
+                    Log.d(openWRTTag, "Response Code: $responseCode")
                     Log.d("OpenVPN", response.toString())
                 }
             },
-            onFailure = { error ->
+            onFailure = { error, responseCode ->
                 /* Handle the failure, update UI on the main thread */
                 activity?.runOnUiThread {
+                    Log.d(openWRTTag, "Response Code: $responseCode")
                     Log.d("OpenVPN", error)
                 }
             }
@@ -2373,14 +2430,16 @@ class HomeFragment : Fragment() {
         openWRTApi.executeCommand(
             composedCmd ,
             luciToken,
-            onSuccess = { response ->
+            onSuccess = { response, responseCode ->
                 activity?.runOnUiThread {
+                    Log.d(openWRTTag, "Response Code: $responseCode")
                     Log.d("OpenVPN", response.toString())
                 }
             },
-            onFailure = { error ->
+            onFailure = { error, responseCode ->
                 /* Handle the failure, update UI on the main thread */
                 activity?.runOnUiThread {
+                    Log.d(openWRTTag, "Response Code: $responseCode")
                     Log.d("OpenVPN", error)
                 }
             }
@@ -2398,14 +2457,16 @@ class HomeFragment : Fragment() {
         openWRTApi.executeCommand(
             composedCmd ,
             luciToken,
-            onSuccess = { response ->
+            onSuccess = { response, responseCode ->
                 activity?.runOnUiThread {
+                    Log.d(openWRTTag, "Response Code: $responseCode")
                     Log.d("OpenWRT", response.toString())
                 }
             },
-            onFailure = { error ->
+            onFailure = { error, responseCode ->
                 /* Handle the failure, update UI on the main thread */
                 activity?.runOnUiThread {
+                    Log.d(openWRTTag, "Response Code: $responseCode")
                     Log.d("OpenWRT", error)
                 }
             }

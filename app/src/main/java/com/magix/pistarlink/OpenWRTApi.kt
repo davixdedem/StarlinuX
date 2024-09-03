@@ -90,18 +90,18 @@ class OpenWRTApi(private val baseUrl: String, private val username: String, priv
     fun executeCommand(
         command: String,
         sysAuthToken: String,
-        onSuccess: (JSONObject) -> Unit,
-        onFailure: (String) -> Unit
+        onSuccess: (JSONObject, Int) -> Unit,  // Passing the response code along with the JSONObject
+        onFailure: (String, Int) -> Unit       // Passing the error message and response code
     ) {
         val url = "$baseUrl/cgi-bin/luci/rpc/sys"
         val jsonPayload = """
-            {
-                "method": "exec",
-                "params": [
-                    "$command"
-                ]
-            }
-        """.trimIndent()
+        {
+            "method": "exec",
+            "params": [
+                "$command"
+            ]
+        }
+    """.trimIndent()
 
         val requestBody = RequestBody.create("application/json".toMediaTypeOrNull(), jsonPayload)
 
@@ -114,20 +114,22 @@ class OpenWRTApi(private val baseUrl: String, private val username: String, priv
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                onFailure("Failed to execute command: ${e.message}")
+                // When the request fails due to an exception (like network failure), response code might be unavailable.
+                onFailure("Failed to execute command: ${e.message}", -1) // -1 indicates no response code available.
             }
 
             override fun onResponse(call: Call, response: Response) {
+                val responseCode = response.code  // Get the HTTP response code
                 if (response.isSuccessful) {
                     val responseBody = response.body?.string() ?: "No response body"
                     try {
                         val jsonResponse = JSONObject(responseBody)
-                        onSuccess(jsonResponse)
+                        onSuccess(jsonResponse, responseCode)  // Pass the response code along with the response
                     } catch (e: Exception) {
-                        onFailure("Failed to parse JSON response: ${e.message}")
+                        onFailure("Failed to parse JSON response: ${e.message}", responseCode)
                     }
                 } else {
-                    onFailure("Failed to execute command with status code: ${response.code}")
+                    onFailure("Failed to execute command with status code: $responseCode", responseCode)
                 }
             }
         })
