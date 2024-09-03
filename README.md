@@ -31,13 +31,13 @@
 <br />
 <div align="center">
   <a href="https://github.com/github_username/repo_name">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+    <img src="images/logo2.png" alt="Logo" width="800" height="100">
   </a>
 
-<h3 align="center">project_title</h3>
+<h3 align="center">Pi Starlink</h3>
 
   <p align="center">
-    project_description
+    The Rasberry Pi's <s>un</s>official solution for Starlink.
     <br />
     <a href="https://github.com/github_username/repo_name"><strong>Explore the docs »</strong></a>
     <br />
@@ -85,7 +85,19 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
-Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `github_username`, `repo_name`, `twitter_handle`, `linkedin_username`, `email_client`, `email`, `project_title`, `project_description`
+Since <b>Starlink</b> provides their clients a public IPv6, which is globally accessible, we leveraged on it building from scratch a custom image of OpenWRT dedicated to Raspberry Pi. 
+This offers a proper and reliable Modem/Router with pre-configured settings studiously assessed for working with the Starlink Dish as plug and play. <br>
+
+The Android application of <b>Pi Starlink</b> will allow you to set up your own free <b>VPN</b> all over IPv6 in a few easy steps and reach your Home Network while ensuring adequate security you need to surf the net safely. 
+The VPN is based on <b>OpenVPN</b>, which is free and also, it works with the APIs provided by the fork project of <i>OpenVPN for Android</i>. <i>Pi Starlink</i> is not only oriented to the normal Starlink customers but even to people who want 
+to host their own public server globally as our application has specific features for managing <b>port forwarding</b> rules. In case you get an ethernet port extender, we’ll be able to set up a proper <b>DMZ</b>, all is up to you!<br>
+
+An IPv6 address is certainly not easy to remember because of its length, that’s why our application points you in a good direction for you in order to set up a free Dynamic DNS, getting a fully qualified domain name to share with
+people to you want to reach your game server, or your web page! We tried to raise an application that is far from complex, but feel free to open an issue if you encounter any problem.<br>
+
+Last but not least, one of the main goals of this project is power saving, because Pi Starlink replaced the original Starlink router, which has a higher power consumption compared to the low cost <b>Single Board Computer</b> we’re working on. 
+As a matter of fact, most of the Starlink vanlifer users might be interested in this project as the power is a critical point they used to facing every day when they travel, and that’s now something very reachable. 
+Just buy the PoE(Power over Ethernet) which powers up all your items from 12v switching to 46v avoiding any a.c inverter.<br>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
