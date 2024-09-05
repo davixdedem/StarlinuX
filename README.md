@@ -81,12 +81,12 @@
 <!-- ABOUT THE PROJECT -->
 ## What's Pi Starlink?
 
+
 <div align="center">
-  <a href="https://github.com/github_username/repo_name">
-    <img src="images/round_logo.png" alt="Logo" width="200" height="100">
+  <a href="https://youtu.be/NmBfgOanCyk">
+    <img src="images/pi-link.png" alt="Watch the video" width="300" height="200">
   </a>
 </div>
-
 <div align="center">
   <i>A brief story...</i>
 </div>
@@ -95,16 +95,18 @@
 Since Starlink provides their clients a public <i>IPv6</i>, which is globally accessible, we leveraged on it building from scratch a custom image of <b>OpenWRT</b> dedicated to Raspberry Pi. 
 This offers a proper and reliable Modem/Router with pre-configured settings studiously assessed for working with the Starlink Dish as plug & play. <br>
 
-<div align="center">
-  <i>So, we made an Android application!</i>
-</div>
-<br>
 
 <div align="center">
-  <a href="https://youtu.be/NmBfgOanCyk">
-    <img src="https://github-production-user-asset-6210df.s3.amazonaws.com/8762862/290665304-2f7112ae-f748-4f39-b617-fabd689c3772.png?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAVCODYLSA53PQK4ZA%2F20240905%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20240905T195215Z&X-Amz-Expires=300&X-Amz-Signature=1838e3feb5af535ba2513ec4f6ab825ac238022f8cccddcfc0ad70f7fead3e16&X-Amz-SignedHeaders=host&actor_id=94486728&key_id=0&repo_id=74627617" alt="Watch the video" width="300" height="200">
+  <a href="https://github.com/github_username/repo_name">
+    <img src="images/round_logo.png" alt="Logo" width="200" height="100">
   </a>
 </div>
+<div align="center">
+  <i>Android app!</i>
+</div>
+<p align="center">
+<img src="https://cdn.rawgit.com/steverichey/google-play-badge-svg/master/img/fr_get.svg" width="10%">
+</p>
 
 The mobile application of <b>Pi Starlink</b> will allow you to set up your own free VPN all over IPv6 in a few easy steps and reach your home network while ensuring adequate security you need to surf the net safely. 
 The VPN is based on <i>OpenVPN</i>, which is free and also, it works with the APIs provided by the fork project of <a href="https://github.com/schwabe/ics-openvpn"><i>OpenVPN for Android</i></a>. Pi Starlink is not only oriented to the normal Starlink customers but even to people who want 
@@ -122,9 +124,14 @@ people to you want to reach your game server, or your web page! We tried to rais
   <i>Last but not least...</i>
 </div>
 <br>
+<div align="center">
+  <a href="https://youtu.be/NmBfgOanCyk">
+    <img src="images/hez.jpg" alt="Watch the video" width="300" height="200">
+  </a>
+</div>
 One of the main goals of this project is power saving, because Pi Starlink replaced the original Starlink router, which has a higher power consumption compared to the low cost <b>Single Board Computer</b> we’re working on. 
 As a matter of fact, most of the Starlink vanlifer users might be interested in this project as the power is a critical point they used to facing every day when they travel, and that’s now something very reachable. 
-Just buy the PoE(Power over Ethernet) which powers up all your items from 12v switching to 46v avoiding any a.c inverter.<br>
+Just buy the PoE(Power over Ethernet) which powers up all your items from 12v switching to 46v avoiding any A.C inverter.<br>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
