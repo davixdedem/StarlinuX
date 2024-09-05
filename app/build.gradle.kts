@@ -73,5 +73,5 @@ dependencies {
     implementation(libs.androidx.cardview)
     implementation(libs.slidetoact)
     implementation(libs.switch.button)
-
+    implementation(libs.minidns.hla)
 }

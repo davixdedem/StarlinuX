@@ -47,7 +47,10 @@ import android.content.ComponentName
 import android.animation.ObjectAnimator
 import android.content.ServiceConnection
 import android.net.ConnectivityManager
+import android.net.DnsResolver
+import android.net.Network
 import android.net.NetworkCapabilities
+import android.os.CancellationSignal
 import com.ncorti.slidetoact.SlideToActView
 import de.blinkt.openvpn.api.IOpenVPNAPIService
 import android.view.inputmethod.InputMethodManager
@@ -59,6 +62,8 @@ import android.webkit.WebChromeClient
 import com.magix.pistarlink.DbHandler
 import java.net.InetAddress
 import java.net.NetworkInterface
+import java.util.concurrent.Executor
+import java.util.concurrent.Executors
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
@@ -83,6 +88,7 @@ class HomeFragment : Fragment() {
     private val profileName = "Pi-Starlink"
     private val icsOpenvpnPermission: Int = 7
     private val vpnDevices = mutableListOf<DhcpLease>()
+    private val maxExpirationTimer = 3600
 
     /*Port forwarding*/
     private lateinit var lastIPv6Data: JSONObject
@@ -163,10 +169,12 @@ class HomeFragment : Fragment() {
         uci set firewall.@redirect[-1].enabled='0'
     """.trimIndent()
     private val commitFirewallCommand  = "uci commit firewall"
+    private val commitWirelessCommand  = "uci commit wireless"
     private val restartFirewallCommand  = "/etc/init.d/firewall reload"
     private val getWirelessConfigCommand = "echo \\\"{\\\\\\\"ssid\\\\\\\":\\\\\\\"\$(uci get wireless.@wifi-iface[0].ssid)\\\\\\\", \\\\\\\"key\\\\\\\":\\\\\\\"\$(uci get wireless.@wifi-iface[0].key)\\\\\\\"}\\\""
-    private val setWirelessSSIDCommand = "uci set wireless.@wifi-face['%s'].ssid='%s'"
-    private val setWirelessKeyCommand = "uci set wireless.@wifi-face['%s'].key='%s'"
+    private val setWirelessSSIDCommand = "uci set wireless.@wifi-iface[0].ssid='%s'"
+    private val setWirelessPasswordCommand = "uci set wireless.@wifi-iface[0].key='%s'"
+    private val restartRouterCommand = "reboot"
 
     /*Configurations*/
     private val onlineStatus = "Online"
@@ -585,42 +593,42 @@ class HomeFragment : Fragment() {
             }
 
         /*Binding activation slide button*/
-        binding.fragmentVpnIncluded.vpnActiveSlide.onSlideCompleteListener =
-            object : SlideToActView.OnSlideCompleteListener {
-                override fun onSlideComplete(view: SlideToActView) {
-                        binding.fragmentVpnIncluded.vpnActiveStatus.visibility = View.GONE
-                        Log.d("OpenVPN", "Slide activation completed: $profileUUID")
-                        if (!isVpnConnected) {
-                            val networkStatus = context?.let { checkNetworkStatus(it) }
-                            if (networkStatus == 0) {
-                                profileUUID?.let { connectVPN(it) }
-                            }
-                            else{
-                                if(networkStatus == 1) {
-                                    binding.fragmentVpnIncluded.vpnActiveStatus.text =
-                                        "An error occurred: \n No Wi-Fi or mobile data enabled."
-                                }
-                                if(networkStatus == 2){
-                                    binding.fragmentVpnIncluded.vpnActiveStatus.text =
-                                        "An error occurred: \n Wi-Fi or mobile data enabled, but no Internet access."
-                                }
-                                if(networkStatus == 3){
-                                    binding.fragmentVpnIncluded.vpnActiveStatus.text =
-                                        "An error occurred: \n Unable to reach the endpoint due to the absence of IPv6 support from your current ISP."
-                                }
-                                binding.fragmentVpnIncluded.vpnActiveStatus.visibility =
-                                    View.VISIBLE
-                                binding.fragmentVpnIncluded.vpnActiveSlide.setCompleted(
-                                    completed = false,
-                                    true
-                                )
-                            }
-                        } else {
-                            disconnectVPN()
-                        }
-                    }
+        binding.fragmentVpnIncluded.vpnActiveSlide.onSlideCompleteListener = object : SlideToActView.OnSlideCompleteListener {
+            override fun onSlideComplete(view: SlideToActView) {
+                // Hide the VPN active status view
+                binding.fragmentVpnIncluded.vpnActiveStatus.visibility = View.GONE
+                Log.d("OpenVPN", "Slide activation completed: $profileUUID")
 
+                // Check if the VPN is not connected
+                if (!isVpnConnected) {
+                    val networkStatus = context?.let { checkNetworkStatus(it) }
+                    Log.d("OpenVPN", "Network code is: $networkStatus")
+
+                    if (networkStatus == 0) {
+                        //handleDDNSAndVPNConfiguration()
+                        handleVPNActivation()
+                    } else {
+                        handleNetworkError(networkStatus)
+                    }
+                } else {
+                    disconnectVPN()
+                }
             }
+
+            private fun handleNetworkError(networkStatus: Int?) {
+                when (networkStatus) {
+                    1 -> binding.fragmentVpnIncluded.vpnActiveStatus.text =
+                        "An error occurred: \n No Wi-Fi or mobile data enabled."
+                    2 -> binding.fragmentVpnIncluded.vpnActiveStatus.text =
+                        "An error occurred: \n Wi-Fi or mobile data enabled, but no Internet access."
+                    3 -> binding.fragmentVpnIncluded.vpnActiveStatus.text =
+                        "An error occurred: \n Unable to reach the endpoint due to the absence of IPv6 support from your current ISP."
+                }
+
+                binding.fragmentVpnIncluded.vpnActiveStatus.visibility = View.VISIBLE
+                binding.fragmentVpnIncluded.vpnActiveSlide.setCompleted(false, true)
+            }
+        }
         /*** END - VPN FRAGMENT ***/
 
         /*** START - DDNS FRAGMENT ***/
@@ -1275,9 +1283,8 @@ class HomeFragment : Fragment() {
                 // Change the icon to pencil
                 binding.fragmentSettingsIncluded.cardLayoutWirelessSsid.editValueImage.setImageResource(R.drawable.pen)
 
-                /*Sync the new hostname with the router*/
-                //setDDNSConfiguration(setDDNSHostname, ssidEditText.text.toString())
-                //setDDNSConfiguration(setDDNSDomain, ssidEditText.text.toString())
+                /*Sync the new Password with the router*/
+                setWirelessConfiguration(setWirelessSSIDCommand,ssidEditText.text.toString())
 
                 /*Update the initial value*/
                 ssidInitialText = ssidEditText.text.toString()
@@ -1354,9 +1361,8 @@ class HomeFragment : Fragment() {
                 // Change the icon to pencil
                 binding.fragmentSettingsIncluded.cardLayoutWirelessPassword.editValueImage.setImageResource(R.drawable.pen)
 
-                /*Sync the new hostname with the router*/
-                //setDDNSConfiguration(setDDNSHostname, ssidEditText.text.toString())
-                //setDDNSConfiguration(setDDNSDomain, ssidEditText.text.toString())
+                /*Sync the new Password with the router*/
+                setWirelessConfiguration(setWirelessPasswordCommand,wirelessPasswordEditText.text.toString())
 
                 /*Update the initial value*/
                 wirelessPasswordInitialText = wirelessPasswordEditText.text.toString()
@@ -1574,6 +1580,22 @@ class HomeFragment : Fragment() {
 
             isLuciPasswordEditing = false
         }
+
+        /*Binding Reboot slide button*/
+        binding.fragmentSettingsIncluded.routerRebootSlide.onSlideCompleteListener =
+            object : SlideToActView.OnSlideCompleteListener {
+                override fun onSlideComplete(view: SlideToActView) {
+                    Log.d("OpenVPN", "Reboot Slide activation completed.")
+                }
+            }
+
+        /*Binding Factory Reset slide button*/
+        binding.fragmentSettingsIncluded.routerFactoryResetSlide.onSlideCompleteListener =
+            object : SlideToActView.OnSlideCompleteListener {
+                override fun onSlideComplete(view: SlideToActView) {
+                    Log.d("OpenVPN", "Factory Reset Slide activation completed.")
+                }
+            }
         /*** START - SETTINGS FRAGMENT ***/
 
         /*Updating resources on time*/
@@ -1586,7 +1608,6 @@ class HomeFragment : Fragment() {
                 delay(10000)  // Always delay to keep the loop running
             }
         }
-
     }
 
     override fun onDestroyView() {
@@ -2127,7 +2148,7 @@ class HomeFragment : Fragment() {
             return
         }
         if (binding.fragmentVpnIncluded.vpnConfigActiveSlide.isLocked){
-            Log.d("OpenVPN","Shouldn't active slider due to its status.")
+            Log.d("OpenVPN","Can't active slider due to its status.")
             return
         }
         openWRTApi.executeCommand(
@@ -2135,23 +2156,23 @@ class HomeFragment : Fragment() {
             luciToken,
             onSuccess = { response, responseCode ->
                 Log.d(openWRTTag, "Response Code: $responseCode")
+
                 /* Handle the successful response, update UI on the main thread */
                 activity?.runOnUiThread {
                     Log.d("OpenVPN", response.toString())
                     val resultString = response.optString("result").trim()
                     Log.d("OpenVPN","Config result is $resultString")
                     if (resultString == "OK"){
+
+                        /*Configuration process started*/
                         Log.d("OpenVPN","VPN configuration process has been started")
-                        binding.fragmentVpnIncluded.vpnConfigStatus.text = "VPN configuration will take some time. Please come back here in a few minutes."
-                        binding.fragmentVpnIncluded.setupTitle.text = "Configuration: IN PROGRESS"
-                        binding.fragmentVpnIncluded.vpnConfigStatus.visibility = View.VISIBLE
-                        binding.fragmentVpnIncluded.vpnConfigActiveSlide.alpha =  0.5F
-                        binding.fragmentVpnIncluded.vpnConfigActiveSlide.visibility =  View.GONE
+                        trigVpnConfigResourceStatus(1)
                     }
                 }
             },
             onFailure = { error, responseCode ->
                 Log.d(openWRTTag, "Response Code: $responseCode")
+
                 /* Handle the failure, update UI on the main thread */
                 activity?.runOnUiThread {
                     binding.fragmentVpnIncluded.vpnConfigActiveSlide.setCompleted(completed = false,true)
@@ -2159,6 +2180,18 @@ class HomeFragment : Fragment() {
                 }
             }
         )
+    }
+
+    /*Trig the vpn status resources*/
+    private fun trigVpnConfigResourceStatus(status: Int){
+        if (status == 1) {
+            binding.fragmentVpnIncluded.vpnConfigStatus.text =
+                "VPN configuration will take some time. Please come back here in a few minutes."
+            binding.fragmentVpnIncluded.setupTitle.text = "Configuration: IN PROGRESS"
+            binding.fragmentVpnIncluded.vpnConfigStatus.visibility = View.VISIBLE
+            binding.fragmentVpnIncluded.vpnConfigActiveSlide.alpha = 0.5F
+            binding.fragmentVpnIncluded.vpnConfigActiveSlide.visibility = View.GONE
+        }
     }
 
     /* Check OpenVPN config status */
@@ -2173,13 +2206,16 @@ class HomeFragment : Fragment() {
             luciToken,
             onSuccess = { response, responseCode ->
                 Log.d(openWRTTag, "Response Code: $responseCode")
+
                 /* Handle the successful response, update UI on the main thread */
                 activity?.runOnUiThread {
                     Log.d("OpenVPN", response.toString())
                     val resultString = response.optString("result").trim()
                     if (resultString == "1"){
+
                         /* Handle in case of configuration in process */
                         Log.d("OpenVPN","VPN configuration is still in progress.")
+                        trigVpnConfigResourceStatus(1)
 
                         /*Update resources*/
                         binding.fragmentVpnIncluded.vpnConfigActiveSlide.isLocked = true
@@ -2188,6 +2224,7 @@ class HomeFragment : Fragment() {
                     }
                     else{
                         if (resultString == "2"){
+
                             /* Handle in case of configuration done */
                             Log.d("OpenVPN","VPN configuration done!")
                             binding.fragmentVpnIncluded.vpnConfigStatus.visibility = View.VISIBLE
@@ -2201,6 +2238,7 @@ class HomeFragment : Fragment() {
                             fetchVPNConfiguration(client = "admin")
                         }
                         if (resultString == "0"){
+
                             /* Handle in case of configuration in idle */
                             Log.d("OpenVPN","VPN configuration is in idle.")
                             binding.fragmentVpnIncluded.vpnConfigStatus.visibility = View.GONE
@@ -2223,7 +2261,7 @@ class HomeFragment : Fragment() {
     }
 
     /*Fetch vpn configuration*/
-    private fun fetchVPNConfiguration(client: String) {
+    private fun fetchVPNConfiguration(client: String,ipv6: String = "null") {
         if (!::luciToken.isInitialized) {
             Log.w(openWRTTag, "luciToken is null or empty. Aborting the operation.")
             return
@@ -2234,12 +2272,14 @@ class HomeFragment : Fragment() {
             luciToken,
             onSuccess = { response, responseCode ->
                 activity?.runOnUiThread {
+
                     Log.d(openWRTTag, "Response Code: $responseCode")
                     Log.d("OpenVPN", response.toString())
                     val resultString = response.optString("result").trim()
 
                     /*Check if resultString contains the file content*/
                     if (resultString.isNotEmpty()) {
+
                         /*Initialize FileHelper with context*/
                         val fileHelper = FileHelper(activity!!)
                         fileHelper.saveFileToInternalStorage(resultString, "$client.ovpn")
@@ -2247,6 +2287,7 @@ class HomeFragment : Fragment() {
 
                         /*Adding the admin profile to OpenVPN for Android*/
                         addNewOpenvpnProfile(client="admin")
+
                     } else {
                         Log.w("OpenVPN", "No content found in the response.")
                     }
@@ -2260,6 +2301,31 @@ class HomeFragment : Fragment() {
                 }
             }
         )
+    }
+
+    /*Fetch VPN configuration locally and return the content*/
+    private fun fetchVPNConfigurationLocally(client: String): String? {
+        return try {
+            // Log the start of the operation
+            Log.d(openWRTTag, "Fetching VPN configuration for client: $client locally.")
+
+            // Define the path to the local file
+            val fileName = "$client.ovpn"
+            val fileHelper = FileHelper(activity!!)
+            val resultString = fileHelper.readFileFromInternalStorage(fileName)
+
+            // Check if the file content was retrieved successfully
+            if (resultString.isNotEmpty()) {
+                Log.d("OpenVPN", "Config file has been successfully read from local storage.")
+                resultString
+            } else {
+                Log.w("OpenVPN", "No content found in the local config file.")
+                null
+            }
+        } catch (e: Exception) {
+            Log.e(openWRTTag, "Failed to fetch VPN configuration locally: ${e.message}")
+            null
+        }
     }
 
     /*Set vpn status to 0*/
@@ -2284,6 +2350,14 @@ class HomeFragment : Fragment() {
                     binding.fragmentVpnIncluded.vpnConfigStatus.visibility = View.VISIBLE
                     binding.fragmentVpnIncluded.setupTitle.text = "CONFIGURATION: COMPLETED"
                     binding.fragmentVpnIncluded.vpnConfigStatus.text = "VPN configuration is complete, use the slider below to connect."
+
+                    /*Insert configuration into database*/
+                    val currentTimeStamp = System.currentTimeMillis().toString()
+                    dbHandler.addConfiguration("lastVPNSync",currentTimeStamp)
+                    dbHandler.updateConfiguration("lastVPNSync",currentTimeStamp)
+
+                    /*Update UUID*/
+                    updateVPNLayout()
                 }
             },
             onFailure = { error, responseCode ->
@@ -2366,6 +2440,43 @@ class HomeFragment : Fragment() {
                     Log.d("OpenVPN", response.toString())
                     val resultString = response.optString("result").trim()
                     Log.d("OpenVPN","DDNS configuration has been set: $resultString")
+
+                    /*Update resources*/
+                    /* Assuming the resultString is in JSON format */
+                    try {
+                        val jsonResult = JSONObject(resultString)
+
+                    } catch (e: JSONException) {
+                        Log.e("OpenVPN", "Failed to parse JSON: ${e.message}")
+                    }
+                }
+            },
+            onFailure = { error, responseCode ->
+                /* Handle the failure, update UI on the main thread */
+                activity?.runOnUiThread {
+                    Log.d(openWRTTag, "Response Code: $responseCode")
+                    Log.d("OpenVPN", error)
+                }
+            }
+        )
+    }
+
+    /*Set Wireless configuration*/
+    private fun setWirelessConfiguration(command: String, value: String){
+        if (!::luciToken.isInitialized) {
+            Log.w(openWRTTag, "luciToken is null or empty. Aborting the operation.")
+            return
+        }
+        val composedCmd = String.format(command, value) + " && " + commitWirelessCommand
+        openWRTApi.executeCommand(
+            composedCmd,
+            luciToken,
+            onSuccess = { response, responseCode ->
+                activity?.runOnUiThread {
+                    Log.d(openWRTTag, "Response Code: $responseCode")
+                    Log.d("OpenVPN", response.toString())
+                    val resultString = response.optString("result").trim()
+                    Log.d("OpenVPN","Wireless configuration has been set: $resultString")
 
                     /*Update resources*/
                     /* Assuming the resultString is in JSON format */
@@ -3076,10 +3187,13 @@ class HomeFragment : Fragment() {
     }
 
     /*Updates the VPN Layout base on profile existence*/
-    private fun updateVPNLayout() {
-        val vpnList = listVPNs()
+    private fun updateVPNLayout(autoStart: Boolean = false) {
 
-        // Check if the list is empty
+        /*Get list of available VPNs*/
+        val vpnList = listVPNs()
+        Log.d("VPN-Debug","Vpn list: $vpnList")
+
+        /*Check if the list is empty*/
         if (vpnList.isEmpty()) {
             Log.d("OpenVPN", "No VPN profiles found.")
 
@@ -3098,22 +3212,29 @@ class HomeFragment : Fragment() {
             binding.fragmentVpnIncluded.vpnActiveSlide.isLocked = true
             binding.fragmentVpnIncluded.vpnConfigActiveSlide.setCompleted(completed = false,false)
 
-            /*If no profiles have been found, checking the configuration status*/
+            /*If no profiles have been found, check the configuration status*/
             checkVPNConfigStatus()
 
         } else {
-            // Check if the list contains an element with "Pi-Starlink"
+
+            /*Check if the list contains an element with "Pi-Starlink"*/
             val matchingProfile = vpnList.find { it.contains("Pi-Starlink") }
 
             if (matchingProfile != null) {
                 Log.d("OpenVPN", "VPN profiles contain 'Pi-Starlink': $vpnList")
 
-                // Extract the UUID from the matching profile (assuming the format is "Name:UUID")
+                /*Extract the UUID from the matching profile (assuming the format is "Name:UUID")*/
                 profileUUID = matchingProfile.split(":").getOrNull(1)?.trim()
 
                 if (profileUUID != null) {
-                    // Use profileUUID as needed
+
+                    /*Use profileUUID as needed*/
                     Log.d("OpenVPN", "Profile UUID: $profileUUID")
+
+                    /*Insert/Update the UUID into Database*/
+                    dbHandler.addConfiguration("lastVPNUUID",profileUUID.toString())
+                    dbHandler.updateConfiguration("lastVPNUUID",profileUUID.toString())
+
                     binding.fragmentVpnIncluded.vpnConfigActiveSlide.setCompleted(completed = true, false)
                     binding.fragmentVpnIncluded.vpnActiveSlide.isLocked = false
 
@@ -3122,6 +3243,7 @@ class HomeFragment : Fragment() {
                     binding.fragmentVpnIncluded.vpnConfigStatus.visibility = View.VISIBLE
                     binding.fragmentVpnIncluded.vpnConfigStatus.text = "VPN configuration is complete, use the slider below to connect."
                     binding.fragmentVpnIncluded.setupTitle.text = "Configuration: COMPLETED"
+
                 } else {
                     Log.d("OpenVPN", "No UUID found in the matching profile.")
                 }
@@ -3147,7 +3269,7 @@ class HomeFragment : Fragment() {
             /*Read the configuration file*/
             val fis = FileInputStream(file)
             val br = BufferedReader(InputStreamReader(fis))
-            val config = StringBuilder()
+            var config = StringBuilder()
             var line: String?
             while (true) {
                 line = br.readLine()
@@ -3156,8 +3278,6 @@ class HomeFragment : Fragment() {
             }
             br.close()
             fis.close()
-
-            Log.d("OpenVPN","Load configuration file: $config")
 
             /*Add the new VPN profile*/
             val name = profileName
@@ -3185,6 +3305,46 @@ class HomeFragment : Fragment() {
         Log.d("OpenVPN", "Profile has been started/added")
 
         setVPNConfiguration()
+    }
+
+    /* Adding a new VPN profile */
+    private fun addNewOpenvpnProfileLocally(configString: String): Boolean {
+        return try {
+            // Ensure the configuration string is not empty
+            if (configString.isEmpty()) {
+                Log.e("OpenVPN", "Configuration string is empty.")
+                return false
+            }
+
+            /* Add the new VPN profile */
+            val name = profileName
+            val profile = mService?.addNewVPNProfile(name, false, configString)
+            Log.d("OpenVPN", "Profile added: $profile")
+
+            true
+        } catch (e: RemoteException) {
+            Log.e("OpenVPN", "RemoteException: ${e.message}")
+            false
+        } catch (e: Exception) {
+            // Catch any other exceptions to prevent the app from crashing
+            Log.e("OpenVPN", "Exception: ${e.message}")
+            false
+        }
+    }
+
+    /* Update IPv6 Address in VPNConfig String */
+    private fun replaceIPv6Address(configString: String, newIPv6: String): String {
+        // Define the regex pattern to match the IPv6 address in the string
+        val regex = Regex("""remote\s+\[[0-9a-fA-F:]+\]\s+1194\s+udp""")
+
+        // Replace the matched IPv6 address with the new one
+        val updatedString = regex.replace(configString) {
+            // Replace the old IPv6 address with the newIPv6 inside the [ ]
+            "remote [$newIPv6] 1194 udp"
+        }
+
+        // Return the updated string
+        return updatedString
     }
 
     /**
@@ -3268,6 +3428,18 @@ class HomeFragment : Fragment() {
         return resultList
     }
 
+    /*Returns the list of the available VPNs*/
+    private fun deleteVPNProfile(profileUuid: String):  Boolean{
+        try {
+            Log.d("OpenVPN","Deleting OpenVPN profile name: $profileUuid")
+            mService?.removeProfile(profileUuid)
+        } catch (e: RemoteException) {
+            Log.d("OpenVPN", "Error: ${e.message}")
+            return  false
+        }
+        return true
+    }
+
     /*Connects the VPN based on the profile UUID*/
     private fun connectVPN(profileUUID: String) {
         Log.d("OpenVPN", "Attempting to start the OpenVPN profile.")
@@ -3284,6 +3456,7 @@ class HomeFragment : Fragment() {
                     /*Update UI or handle state changes based on the message*/
                     activity?.runOnUiThread {
                         Log.d("OpenVPN","State: $message")
+
                         if ("SUCCESS" in message) {
                             // Extracting the IPv4 address from the message
                             val parts = message.split(",")
@@ -3300,9 +3473,11 @@ class HomeFragment : Fragment() {
                             updateActivationSliderStatus(true)
                         }
                         if ("No process running" in message){
-                            Log.e("OpenVPN", "VPN disconnected or interrupted.")
-                            updateActivationSliderStatus(false)
-                            isVpnConnected = false
+                            if (isVpnConnected) {
+                                Log.e("OpenVPN", "VPN disconnected or interrupted.")
+                                updateActivationSliderStatus(false)
+                                isVpnConnected = false
+                            }
                         }
                     }
                 }
@@ -3364,12 +3539,13 @@ class HomeFragment : Fragment() {
             binding.fragmentVpnIncluded.vpnActiveSlide.isReversed = false
             binding.fragmentVpnIncluded.vpnActiveSlide.outerColor =
                 Color.parseColor("#1F1F1E") /*White*/
-            binding.fragmentVpnIncluded.vpnActiveSlide.setCompleted(completed = false, true)
             binding.fragmentVpnIncluded.vpnActiveSlide.text = "Slide to active"
             binding.fragmentVpnIncluded.vpnStatusTitle.text = "DISCONNECTED"
+            binding.fragmentVpnIncluded.vpnActiveSlide.setCompleted(completed = false, true)
         }
     }
 
+    /*Check network status*/
     fun checkNetworkStatus(context: Context): Int {
         // 1. Check if Wi-Fi or mobile data is enabled
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -3394,6 +3570,7 @@ class HomeFragment : Fragment() {
         return 0  // Code 0: Wi-Fi or mobile data, Internet access, and IPv6 are all available
     }
 
+    /*Return if has internet access*/
     private fun hasInternetAccess(): Boolean {
         return try {
             val process = ProcessBuilder("ping", "-c", "1", "8.8.8.8").start()
@@ -3454,6 +3631,132 @@ class HomeFragment : Fragment() {
         Log.d("OpenVPN Codes","requestCode: $requestCode, resultCode: $resultCode, data: $data")
     };
 
+    /*Handle the VPN activation*/
+    private fun handleVPNActivation(){
+        /*
+        * 1. Check if the DDNS has been set.
+        *       1.1. DDNS is set, check the last time the OpenVPN configuration file has been synced.
+        *           1.2. The difference time exceeds its timer.
+        *           1.3. Resolve the IPv6 address of the FQDN.
+        *           1.4. Edit the remote ip address of the last OpenVPN configuration file.
+        *           1.5. Delete the current OpenVPN profile and add the new one.
+        *           1.6. Connect to OpenVPN.
+        *       1.6. The difference time doesn't exceed its time, so connect to OpenVPN without further controls.
+        * 2. DDNS is not set, connect to OpenVPN without further controls.
+        * */
+
+        binding.fragmentVpnIncluded.vpnStatusTitle.text = "CONNECTING..."
+
+        val ddns = dbHandler.getConfiguration("lastDDNS")
+        if (ddns != null){
+            Log.d("VPN-Handler","DDNS has been set: $ddns")
+            val lastOpenVPNSync = dbHandler.getConfiguration("lastVPNSync")?.toLong()
+            Log.d("VPN-Handler","Last sync is about $lastOpenVPNSync")
+            val differenceTime = lastOpenVPNSync?.let { calculateTimeDifferenceInSeconds(it) }
+            Log.d("VPN-Handler","The difference time is: $differenceTime")
+            if (differenceTime != null) {
+                if (differenceTime > maxExpirationTimer){
+                    Log.d("VPN-Handler","The time difference exceeds its timer.")
+                    val executor = Executors.newSingleThreadExecutor()
+                    context?.let { ctx ->
+                        getIpAddresses(ctx, ddns, executor) { _, ipv6 ->
+                            if (ipv6 != null) {
+                                Log.d("VPN-Handler","Resolved IPv6 of $ddns as: $ipv6 ")
+                                val openVPNConfigFile = fetchVPNConfigurationLocally("admin")
+                                if (openVPNConfigFile != null){
+                                    Log.d("VPN-Handler","The OpenVPN configuration file has been successfully fetched.")
+                                    val openVPNEditedFile = replaceIPv6Address(openVPNConfigFile,ipv6)
+                                    Log.d("VPN-Handler","The OpenVPN configuration file has been updated with the new IPv6: $ipv6.")
+                                    val lastUUID = dbHandler.getConfiguration("lastVPNUUID")
+                                    if (lastUUID != null){
+                                        val statusDelete = deleteVPNProfile(lastUUID)
+                                        if (statusDelete){
+                                            Log.d("VPN-Handler","The OpenVPN profile has been deleted")
+                                            val statusAdding = addNewOpenvpnProfileLocally(openVPNEditedFile)
+                                            if(statusAdding){
+                                                Log.d("VPN-Handler","The new OpenVPN profile has been successfully added, retrieving its UUID.")
+                                                val vpnList = listVPNs()
+                                                if (vpnList.isNotEmpty()) {
+                                                    val matchingProfile = vpnList.find { it.contains("Pi-Starlink") }
+                                                    if (matchingProfile != null) {
+                                                        profileUUID = matchingProfile.split(":").getOrNull(1)?.trim()
+                                                        if (profileUUID != null) {
+                                                            profileUUID?.let {
+                                                                dbHandler.updateConfiguration(
+                                                                    "lastUUID",
+                                                                    it
+                                                                )
+                                                                Log.d("VPN-Handler","Updating the last VPN sync.")
+                                                                val currentTimeStamp = System.currentTimeMillis().toString()
+                                                                dbHandler.updateConfiguration("lastVPNSync",currentTimeStamp)
+                                                                Log.d("VPN-Handler","All done! Connecting to VPN.")
+                                                                connectVPN(profileUUID!!)
+                                                            }
+                                                        }
+                                                        else{
+                                                            Log.e("VPN-Handler","instance of profileUUID is null.")
+                                                        }
+                                                    }
+                                                    else{
+                                                        Log.e("VPN-Handler","No one of the profiles contain 'Pi-Starlink'")
+                                                    }
+                                                }
+                                                else{
+                                                    Log.e("VPN-Handler","The vpn list is empty.")
+                                                }
+                                            }
+                                            else{
+                                                Log.e("VPN-Handler","An error occurred while adding the new OpenVPN Profile.")
+                                            }
+                                        }
+                                        else{
+                                            Log.e("VPN-Handler","An error occurred while deleting the OpenVPN Profile.")
+                                        }
+                                    }
+                                    else{
+                                        Log.e("VPN-Handler","lastUUID is null. Skipping renewing process and I'll try to connect the VPN anyways.")
+                                    }
+                                }
+                            } else {
+                                Log.e("VPN-Handler", "IPv6 address not found. Skipping renewing process and I'll try to connect the VPN anyways.")
+                            }
+                        }
+                    }
+                } else{
+                    Log.d("VPN-Handler","The time difference doesn't exceed its timer. Connecting to VPN.")
+                    val lastUUID = dbHandler.getConfiguration("lastVPNUUID")
+                    if (lastUUID != null) {
+                        connectVPN(profileUUID!!)
+                    }
+                }
+            }
+        }
+    }
+
+    /*Handle the VPN configuration*/
+    private fun handleVPNSetup(){
+        /*
+        * 1. Check if the Router is reachable.
+        *       1.1. Router is set, check the last time the OpenVPN configuration file has been synced.
+        *           1.2. The difference time exceeds its timer.
+        *           1.3. Resolve the IPv6 address of the FQDN.
+        *           1.4. Edit the remote ip address of the last OpenVPN configuration file.
+        *           1.5. Delete the current OpenVPN profile and add the new one.
+        *           1.6. Connect to OpenVPN.
+        *       1.6. The difference time doesn't exceed its time, so connect to OpenVPN without further controls.
+        * 2. DDNS is not set, connect to OpenVPN without further controls.
+        * */
+    }
+
+    /*Calculate the difference time and print it*/
+    private fun calculateTimeDifferenceInSeconds(lastVPNSyncTimestamp: Long): Long {
+        val currentTimestamp = System.currentTimeMillis()
+        val differenceInMillis = currentTimestamp - lastVPNSyncTimestamp
+        val differenceInSeconds = differenceInMillis / 1000
+        Log.d("VPN-Handler","Time difference in seconds: $differenceInSeconds")
+        return differenceInSeconds
+    }
+
     /*Prepare database with configurations*/
     private fun prepareDBConfig(){
         /*User attitude*/
@@ -3465,6 +3768,52 @@ class HomeFragment : Fragment() {
 
         /*DDNS*/
         dbHandler.addConfiguration("is_ddns_set","0")
+    }
+
+    /*Fetch IPv4 and IPv6 addresses*/
+    private fun getIpAddresses(
+        context: Context,
+        fqdn: String,
+        executor: Executor,
+        callback: (ipv4: String?, ipv6: String?) -> Unit
+    ) {
+        val dnsResolver = DnsResolver.getInstance()
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network: Network? = connectivityManager.activeNetwork
+        val cancellationSignal = CancellationSignal()
+
+        var ipv4Address: String? = null
+        var ipv6Address: String? = null
+
+        // Define the callback for IPv4 and IPv6 resolution
+        val dnsCallback = object : DnsResolver.Callback<MutableList<InetAddress>> {
+            override fun onAnswer(answer: MutableList<InetAddress>, rcode: Int) {
+                for (inetAddress in answer) {
+                    if (inetAddress.address.size == 4) {  // IPv4
+                        ipv4Address = inetAddress.hostAddress
+                    } else if (inetAddress.address.size == 16) {  // IPv6
+                        ipv6Address = inetAddress.hostAddress
+                    }
+                }
+                // Invoke the callback after both addresses are resolved
+                callback(ipv4Address, ipv6Address)
+            }
+
+            override fun onError(error: DnsResolver.DnsException) {
+                Log.e("DnsResolver", "DNS resolution failed: ${error.message}")
+                callback(null, null)
+            }
+        }
+
+        // Issue the DNS query for both A (IPv4) and AAAA (IPv6) records
+        dnsResolver.query(
+            network,
+            fqdn,
+            DnsResolver.FLAG_EMPTY,  // No specific flags
+            executor,
+            cancellationSignal,
+            dnsCallback
+        )
     }
 }
 
@@ -3519,6 +3868,17 @@ class FileHelper(private val context: Context) {
             Log.d("OpenVPN", "File saved to ${file.absolutePath}")
         } catch (e: IOException) {
             Log.e("OpenVPN", "Error saving file: ${e.message}")
+        }
+    }
+
+    fun readFileFromInternalStorage(fileName: String): String {
+        return try {
+            context.openFileInput(fileName).bufferedReader().useLines { lines ->
+                lines.joinToString("\n")
+            }
+        } catch (e: Exception) {
+            Log.e("FileHelper", "Error reading file: ${e.message}")
+            ""
         }
     }
 }

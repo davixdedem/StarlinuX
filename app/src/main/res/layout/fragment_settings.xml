@@ -135,14 +135,13 @@
                         android:elevation="6dp"
                         app:area_margin="3dp"
                         app:border_radius="4dp"
-                        app:slider_locked="true"
                         android:layout_width="match_parent"
                         app:inner_color="@color/white"
                         app:outer_color="@color/teal_900"
                         android:layout_height="wrap_content"
                         android:textAlignment="textEnd"
-                        app:bounce_on_start="true"
-                        app:text="Slide to reboot" />
+                        app:bounce_on_start="false"
+                        app:text="Slide to Reboot" />
 
                     <com.ncorti.slidetoact.SlideToActView
                         android:id="@+id/router_factory_reset_slide"
@@ -150,14 +149,13 @@
                         android:elevation="6dp"
                         app:area_margin="3dp"
                         app:border_radius="4dp"
-                        app:slider_locked="true"
                         android:layout_width="match_parent"
                         app:inner_color="@color/white"
                         app:outer_color="@color/teal_900"
                         android:layout_height="wrap_content"
                         android:textAlignment="textEnd"
-                        app:bounce_on_start="true"
-                        app:text="Slide to factory reset" />
+                        app:bounce_on_start="false"
+                        app:text="Slide to Factory Reset" />
 
                     <TextView
                         android:id="@+id/textView"

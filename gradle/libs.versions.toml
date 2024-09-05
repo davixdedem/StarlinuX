@@ -2,6 +2,8 @@
 agp = "8.5.0"
 cardview = "1.0.0"
 core = "1.45.0"
+dnsjava = "3.5.2"
+dnsjavaVersion = "3.6.11"
 externalAidlLibrary = "1.0"
 filamentAndroid = "1.53.5"
 gltfioAndroid = "1.36.0"
@@ -17,6 +19,7 @@ material = "1.10.0"
 constraintlayout = "2.1.4"
 lifecycleLivedataKtx = "2.6.1"
 lifecycleViewmodelKtx = "2.6.1"
+minidnsHla = "0.3.2"
 moshi = "1.12.0"
 navigationFragmentKtx = "2.6.0"
 navigationUiKtx = "2.6.0"
@@ -37,6 +40,8 @@ switchButton = "0.0.3"
 androidx-cardview = { module = "androidx.cardview:cardview", version.ref = "cardview" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 core = { module = "com.google.ar:core", version.ref = "core" }
+dnsjava = { module = "dnsjava:dnsjava", version.ref = "dnsjava" }
+dnsjava-v3611 = { module = "dnsjava:dnsjava", version.ref = "dnsjavaVersion" }
 external-aidl-library = { module = "com.example:external-aidl-library", version.ref = "externalAidlLibrary" }
 filament-android = { module = "com.google.android.filament:filament-android", version.ref = "filamentAndroid" }
 filament-utils-android = { module = "com.google.android.filament:filament-utils-android", version.ref = "gltfioAndroid" }
@@ -53,6 +58,7 @@ androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecy
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
 androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
 androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
+minidns-hla = { module = "org.minidns:minidns-hla", version.ref = "minidnsHla" }
 moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 rajawali = { module = "org.rajawali3d:rajawali", version.ref = "rajawali" }
