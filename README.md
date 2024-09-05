@@ -93,7 +93,7 @@ Since Starlink provides their clients a public <i>IPv6</i>, which is globally ac
 This offers a proper and reliable Modem/Router with pre-configured settings studiously assessed for working with the Starlink Dish as plug & play. <br>
 
 <div align="center">
-  <i>The Android application!</i>
+  <i><b>Get now the Android app...</b></i>
 </div>
 <br>
 
@@ -102,7 +102,7 @@ The VPN is based on <i>OpenVPN</i>, which is free and also, it works with the AP
 to host their own public server globally as our application has specific features for managing <b>port forwarding</b> rules. In case you get an ethernet port extender, we’ll be able to set up a proper <b>DMZ</b>, all is up to you!<br>
 
 <div align="center">
-  <i>IPv6, what a Saviour!</i>
+  <i><b>...IPv6, what a Saviour!</b></i>
 </div>
 <br>
 
@@ -110,12 +110,7 @@ An IPv6 address is certainly not easy to remember because of its length, that’
 people to you want to reach your game server, or your web page! We tried to raise an application that is far from complex, but feel free to open an issue if you encounter any problem.<br>
 
 <div align="center">
-  <a href="https://youtu.be/NmBfgOanCyk">
-    <img src="images/hez.jpg" alt="Watch the video" width="300" height="200">
-  </a>
-</div>
-<div align="center">
-  <i>Last but not least...</i>
+  <i><b>Last but not least...</b></i>
 </div>
 <br>
 
