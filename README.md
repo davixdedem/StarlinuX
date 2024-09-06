@@ -113,7 +113,7 @@ An IPv6 address is certainly not easy to remember because of its length, that’
 people to you want to reach your game server, or your web page! We tried to raise an application that is far from complex, but feel free to open an issue if you encounter any problem.<br>
 
 <div align="center">
-  <i><b>Just n case you get a Power Over Ethernet!</b></i>
+  <i><b>Just in case you get a Power Over Ethernet!</b></i>
 </div>
 <br>
 <div align="center">
@@ -194,6 +194,18 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+<!-- VPN setting -->
+## How to set up your own VPN, in a few minutes!
+1. Go to the <i>Virtual Private Network</i> section.
+2. Slide the configuration button, <i>Pi Starlink</i> will take a few minutes to configure OpenVPN depending on your <i>Raspberry Pi</i> efficiency.
+3. Once is done, turn off your Wi-Fi connection and use only your mobile network.
+4. Slide the activation button, your Smartphone will be assigned a local IPv4 address.
+5. Congrats, you're a virtually at home!
+
+- For any furthers logs, please SSH on your Router and check: <i>/var/log/openvpn.log</i>
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 <!-- FAQ -->
 ## FAQ
 <details> <summary><b>I'm currently running the basic plan of Starlink, is it possible to set up my own VPN anyway?</b></summary>
@@ -203,7 +215,7 @@ Certainly! You do have the possibility to set up your own VPN even with the basi
 Sorry, but an assigned IPv6 is mandatory. We suggest you to find a new ISP in order to obtain an IPv6 address.
 
 </details> <details> <summary><b>How can I check if my Smartphone is running an IPv6?</b></summary>
-Try connecting to the VPN. If you're missing IPv6, an alert will advise you. Alternatively, you can visit <a href="http://checkipv6.com">checkipv6.com</a> to test your ISP.
+Try connecting to the VPN. If you're missing IPv6, an alert will advise you. Alternatively, you can visit <a href="https://test-ipv6.com/">checkipv6.com</a> to test your ISP.
 
 </details> <details> <summary><b>My Minecraft server is listening on port 5555, how do I make people reach my server?</b></summary>
 The easiest way is to set up Port Forwarding. Go to the dedicated section in the app.
@@ -215,6 +227,8 @@ Of course not, Pi Starlink handles the Router while Starlink manages the Dish.
 Yes, you do. But don't worry, you'll manage everything from Pi Starlink.
 
 </details>
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- ROADMAP -->
 ## Roadmap
