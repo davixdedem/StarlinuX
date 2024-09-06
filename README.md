@@ -113,20 +113,21 @@ An IPv6 address is certainly not easy to remember because of its length, that’
 people to you want to reach your game server, or your web page! We tried to raise an application that is far from complex, but feel free to open an issue if you encounter any problem.<br>
 
 <div align="center">
-  <i><b>Last but not least...</b></i>
+  <i><b>Just n case you get a Power Over Ethernet!</b></i>
 </div>
 <br>
+<div align="center">
+  <a href="https://github.com/github_username/repo_name">
+    <img src="images/poe.png" alt="Logo" width="500" height="300">
+  </a>
+</div>
 
 One of the main goals of this project is power saving, because Pi Starlink replaced the original Starlink router, which has a higher power consumption compared to the low cost <b>Single Board Computer</b> we’re working on. 
 As a matter of fact, most of the Starlink vanlifer users might be interested in this project as the power is a critical point they used to facing every day when they travel, and that’s now something very reachable. 
 Just buy the PoE(Power over Ethernet) which powers up all your items from 12v switching to 46v avoiding any A.C inverter.<br>
 
-<div align="center">
-  <a href="https://github.com/github_username/repo_name">
-    <img src="images/poe.png" alt="Logo" width="500" height="60">
-  </a>
-</div>
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 
 
 
