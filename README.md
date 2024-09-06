@@ -180,14 +180,57 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <!-- VPN setting -->
 ## Set up your own VPN
 <div align="center">
-    <img src="images/vpn_plus_pi.png" alt="Logo" width="350" height="150">
+    <img src="images/vpn_plus_pi.png" alt="Logo" width="220" height="100">
 </div>
 1. First of all, be sure you've already installed <a href="https://github.com/schwabe/ics-openvpn"><i>OpenVPN for Android</i></a> on your Smartphone.<br>
 2. In Pi Starlink, go to the <i><b>Virtual Private Network(VPN)</b></i> section.<br>
 3. Slide the configuration button, Pi Starlink will take a few minutes to configure OpenVPN depending on your Raspberry Pi efficiency.<br>
 4. Once is done, turn off your Wi-Fi connection and use only your <b>Mobile Network</b>.
 5. Slide the activation button, your smartphone will be assigned a <b>local IPv4 address</b>. <br>
-6. Congrats, you're a virtually home!
+6. Congrats, you're a virtually home! <br>
+7. For disconnecting, slide it back.<br>
+
+### Some tips to check if everything works:
+- <b>From your Smartphone:</b>
+1. Once your connected to the VPN,try to open your router page <b>http://192.168.1.1</b> from your Smartphone.
+2. If you reach it, it means everything is working!
+   
+- <b>From an external device:</b>
+1. Once your Smartphone is connected to the VPN, check its assigned local IPv4 into the <i>Virtual Private Networn(VPN)</i> section, in this case is <b>192.168.9.2</b>.
+2. Use a device connected on the local network to ping your Smartphone.
+```sh
+ping 192.168.9.2
+```
+3. You should see the following output.
+```sh
+PING 192.168.9.2 (192.168.9.2) 56(84) bytes of data.
+64 bytes from 192.168.9.2: icmp_seq=1 ttl=63 time=128 ms
+64 bytes from 192.168.9.2: icmp_seq=2 ttl=63 time=114 ms
+64 bytes from 192.168.9.2: icmp_seq=3 ttl=63 time=138 ms
+64 bytes from 192.168.9.2: icmp_seq=4 ttl=63 time=109 ms
+```
+### For any further data:
+SSH into your Pi Starlink and check the <i>OpenVPN</i> logs:
+```sh
+tail -f /var/log/openvpn.log
+```
+```sh
+tail -f /var/log/openvpn_status.log
+```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- DDNS setting -->
+## Set up your own DDNS
+<div align="center">
+    <img src="images/vpn_plus_pi.png" alt="Logo" width="220" height="100">
+</div>
+1. First of all, be sure you've already installed <a href="https://github.com/schwabe/ics-openvpn"><i>OpenVPN for Android</i></a> on your Smartphone.<br>
+2. In Pi Starlink, go to the <i><b>Virtual Private Network(VPN)</b></i> section.<br>
+3. Slide the configuration button, Pi Starlink will take a few minutes to configure OpenVPN depending on your Raspberry Pi efficiency.<br>
+4. Once is done, turn off your Wi-Fi connection and use only your <b>Mobile Network</b>.
+5. Slide the activation button, your smartphone will be assigned a <b>local IPv4 address</b>. <br>
+6. Congrats, you're a virtually home! <br>
 7. For disconnecting, slide it back.<br>
 
 ### Some tips to check if everything works:
