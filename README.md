@@ -167,7 +167,6 @@ This is an example of how to list things you need to use the software and how to
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
-
 <!-- USAGE -->
 ## Usage
 
@@ -223,7 +222,7 @@ tail -f /var/log/openvpn_status.log
 <!-- DDNS setting -->
 ## Set up your own DDNS
 <div align="center">
-    <img src="images/vpn_plus_pi.png" alt="Logo" width="220" height="100">
+    <img src="images/mynoip.png" alt="Logo" width="220" height="80">
 </div>
 1. First of all, be sure you've already installed <a href="https://github.com/schwabe/ics-openvpn"><i>OpenVPN for Android</i></a> on your Smartphone.<br>
 2. In Pi Starlink, go to the <i><b>Virtual Private Network(VPN)</b></i> section.<br>
