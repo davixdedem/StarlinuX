@@ -184,12 +184,12 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 1. First of all, be sure you've already installed <a href="https://github.com/schwabe/ics-openvpn"><i>OpenVPN for Android</i></a> on your Smartphone.<br>
 2. In Pi Starlink, go to the <i><b>Virtual Private Network(VPN)</b></i> section.<br>
 3. Slide the configuration button, Pi Starlink will take a few minutes to configure OpenVPN depending on your Raspberry Pi efficiency.<br>
-4. Once is done, turn off your Wi-Fi connection and use only your <b>Mobile Network</b>.
-5. Slide the activation button, your smartphone will be assigned a <b>local IPv4 address</b>. <br>
+4. Once is done, turn off your Wi-Fi connection and use only your <b>Mobile Network</b>.<br>
+5. Slide the activation button, your smartphone will be assigned a <b>local IPv4 address</b>.<br>
 6. Congrats, you're a virtually home! <br>
 7. For disconnecting, slide it back.<br>
 
-### Some tips to check if everything works:
+### Some tips to check if it works:
 - <b>From your Smartphone:</b>
 1. Once your connected to the VPN,try to open your router page <b>http://192.168.1.1</b> from your Smartphone.
 2. If you reach it, it means everything is working!
@@ -220,32 +220,57 @@ tail -f /var/log/openvpn_status.log
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- DDNS setting -->
-## Get rid of dynamic IP: set up your personal DDNS
+## Get rid of dynamic IP: set up your personal DDNS!
 <div align="center">
     <img src="images/mynoip.png" alt="Logo" width="80" height="80">
 </div>
 1. First of all, register and sign up at <a href="https://my.noip.com">https://my.noip.com</a><br>
 2. Create a new hostname through the control panel.(e.g <i>my-starlink-home.ddns.net</i>) <br>
-3. Setup a new DDNS key, you'll receive <b>username</b> and <b>password</b><br>
+3. Setup a new DDNS key, you'll receive <b>username</b> and <b>password</b>.<br>
 4. In Pi Starlink, go to the <i><b>Dynamic DNS(DDNS)</b></i> section.<br>
 5. Fill out the form with the <b>hostname</b> and your <b>DDNS key credentials</b>.<br>
 6. Congrats, you've set up your DDNS!<br>
-7. Pi Starlink will take care to sync your FQDN with the current IPv6 on time.
+7. Pi Starlink will take care to sync your FQDN with the current IPv6 on time.<br>
 
+### Some tips to check if it works:
+- <b>From any Linux device:</b>
+1. Try to resolve your DDNS(e.g <i>my-starlink-home.ddns.net</i>)
+```sh
+nslookup -type=AAAA my-starlink-home.ddns.net
+```
+2. You should see the following output.
+```sh
+Server:		127.0.0.53
+Address:	127.0.0.53#53
+
+Non-authoritative answer:
+Name:	my-starlink-home.ddns.net
+Address: 2a0d:3344:....
+```
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- DDNS setting -->
 ## Got a Game Server or a Web Page? Set up Port Forwarding!
 <div align="center">
-    <img src="images/mynoip.png" alt="Logo" width="80" height="80">
+    <img src="images/db.png" alt="Logo" width="80" height="80">
 </div>
-1. First of all, register and sign up at <a href="https://my.noip.com">https://my.noip.com</a><br>
-2. Create a new hostname through the control panel.(e.g <i>my-starlink-home.ddns.net</i>) <br>
-3. Setup a new DDNS key, you'll receive <b>username</b> and <b>password</b><br>
-4. In Pi Starlink, go to the <i><b>Dynamic DNS(DDNS)</b></i> section.<br>
-5. Fill out the form with the <b>hostname</b> and your <b>DDNS key credentials</b>.<br>
-6. Congrats, you've set up your DDNS!<br>
-7. Pi Starlink will take care to sync your FQDN with the current IPv6 on time.
+1. In the Pi Starlink Application, go to the <i><b>Port Forwarding</b></i> section.<br>
+2. As default, there are a couple of pre configured rules(HTTP and SSH).<br>
+3. Add a new rule clicking on the (+) button.<br>
+4. Edit the <b>External Port</b> with the port everybody has to point.<br>
+5. Edit the <b>Destination Port</b> with the port the server is listening on.<br>
+6. Choose its IPv6 address from the <b>Target IPv6</b> dropdown list.<br>
+7. Enable the rule with the toggle<br>
+8. Congrats, all done!<br> 
+
+### Some tips to check if it works:
+- <b>From an external device:</b>
+1. Try to reach your server from the outside pointing at your <b>WAN IPv6 address</b> and the external port.<br>
+```sh
+nc -6 [IPv6_address] 5555
+```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- FAQ -->
 ## FAQ
