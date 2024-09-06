@@ -121,6 +121,11 @@ One of the main goals of this project is power saving, because Pi Starlink repla
 As a matter of fact, most of the Starlink vanlifer users might be interested in this project as the power is a critical point they used to facing every day when they travel, and that’s now something very reachable. 
 Just buy the PoE(Power over Ethernet) which powers up all your items from 12v switching to 46v avoiding any A.C inverter.<br>
 
+<div align="center">
+  <a href="https://github.com/github_username/repo_name">
+    <img src="images/poe.png" alt="Logo" width="500" height="60">
+  </a>
+</div>
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
