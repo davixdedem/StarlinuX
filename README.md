@@ -180,7 +180,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <!-- VPN setting -->
 ## Set up your own VPN
 <div align="center">
-    <img src="images/vpn_plus_pi.png" alt="Logo" width="150" height="150">
+    <img src="images/vpn_plus_pi.png" alt="Logo" width="300" height="300">
 </div>
 1. First of all, be sure you've already installed <a href="https://github.com/schwabe/ics-openvpn"><i>OpenVPN for Android</i></a> on your Smartphone.<br>
 2. In Pi Starlink, go to the <i><b>Virtual Private Network(VPN)</b></i> section.<br>
