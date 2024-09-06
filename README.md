@@ -179,7 +179,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <!-- VPN setting -->
 ## Set up your own VPN
 <div align="center">
-    <img src="images/vpn_plus_pi.png" alt="Logo" width="220" height="100">
+    <img src="images/vpn_plus_pi.png" alt="Logo" width="220" height="90">
 </div>
 1. First of all, be sure you've already installed <a href="https://github.com/schwabe/ics-openvpn"><i>OpenVPN for Android</i></a> on your Smartphone.<br>
 2. In Pi Starlink, go to the <i><b>Virtual Private Network(VPN)</b></i> section.<br>
@@ -222,13 +222,15 @@ tail -f /var/log/openvpn_status.log
 <!-- DDNS setting -->
 ## Set up your own DDNS
 <div align="center">
-    <img src="images/mynoip.png" alt="Logo" width="100" height="100">
+    <img src="images/mynoip.png" alt="Logo" width="80" height="80">
 </div>
 1. First of all, register and sign up at <a href="https://my.noip.com">https://my.noip.com</a><br>
 2. Create a new hostname through the control panel.(e.g <i>my-starlink-home.ddns.net</i>) <br>
-3. Setup a new DDNS key, you'll receive <b>username</b> and <b>password</br>
+3. Setup a new DDNS key, you'll receive <b>username</b> and <b>password</b><br>
 4. In Pi Starlink, go to the <i><b>Dynamic DNS(DDNS)</b></i> section.<br>
 5. Fill out the form with the <b>hostname</b> and your <b>DDNS key credentials</b>.
+6. Congrats, you've set up your DDNS!
+7. Pi Starlink will take care to sync your FQDN with the current IPv6 on time.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
