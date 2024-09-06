@@ -184,7 +184,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
     <img src="images/ovpn4android.png" alt="Logo" width="100" height="100">
   </a>
 </div>
-1. First of all, be sure you've already installed <a href="https://github.com/schwabe/ics-openvpn"><i>OpenVPN for Android</i></a> on your Smartphone.
+1. First of all, be sure you've already installed <a href="https://github.com/schwabe/ics-openvpn"><i>OpenVPN for Android</i></a> on your Smartphone.<br>
 2. In Pi Starlink, go to the <i><b>Virtual Private Network(VPN)</b></i> section.<br>
 3. Slide the configuration button, Pi Starlink will take a few minutes to configure OpenVPN depending on your Raspberry Pi efficiency.<br>
 4. Once is done, turn off your Wi-Fi connection and use only your <b>Mobile Network</b>.
