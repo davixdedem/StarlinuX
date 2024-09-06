@@ -195,15 +195,36 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- VPN setting -->
-## How to set up your own VPN, in a few minutes!
-1. Go to the <i>Virtual Private Network(VPN)</i> section.<br>
-3. Slide the configuration button, <i>Pi Starlink</i> will take a few minutes to configure OpenVPN depending on your <i>Raspberry Pi</i> efficiency.<br>
-5. Once is done, turn off your Wi-Fi connection and use only your mobile network.
-7. Slide the activation button, your Smartphone will be assigned a local IPv4 address. <br>
-9. Congrats, you're a virtually at home!
-10. For disconnecting, slide it back.<br>
+## How to set up your own VPN
+1. First of all, be sure you've already installed <a href="https://github.com/schwabe/ics-openvpn"><i>OpenVPN for Android</i></a> on your smartphone.
+2. In Pi Starlink, go to the <i><b>Virtual Private Network(VPN)</b></i> section.<br>
+3. Slide the configuration button, Pi Starlink will take a few minutes to configure OpenVPN depending on your Raspberry Pi efficiency.<br>
+4. Once is done, turn off your Wi-Fi connection and use only your <b>Mobile Network</b>.
+5. Slide the activation button, your smartphone will be assigned a <b>local IPv4 address</b>. <br>
+6. Congrats, you're a virtually home!
+7. For disconnecting, slide it back.<br>
 
-For any further data, SSH into Pi-Starlink and check the <i>OpenVPN</i> logs:
+### Some tips to check if everything works:
+- <b>From your Smartphone:</b>
+1. Once your connected to the VPN,try to open your router page <b>http://192.168.1.1</b> from your Smartphone.
+2. If you reach it, it means everything is working!
+   
+- <b>From an external device:</b>
+1. Once your Smartphone is connected to the VPN, check its assigned local IPv4 into the <i>Virtual Private Networn(VPN)</i> section, in this case is <b>192.168.9.2</b>.
+2. Use a device connected on the local network to ping your Smartphone.
+```sh
+ping 192.168.9.2
+```
+3. You should see the following output.
+```sh
+PING 192.168.9.2 (192.168.9.2) 56(84) bytes of data.
+64 bytes from 192.168.9.2: icmp_seq=1 ttl=63 time=128 ms
+64 bytes from 192.168.9.2: icmp_seq=2 ttl=63 time=114 ms
+64 bytes from 192.168.9.2: icmp_seq=3 ttl=63 time=138 ms
+64 bytes from 192.168.9.2: icmp_seq=4 ttl=63 time=109 ms
+```
+### For any further data:
+SSH into your Pi Starlink and check the <i>OpenVPN</i> logs:
 ```sh
 tail -f /var/log/openvpn.log
 ```
