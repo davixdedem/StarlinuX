@@ -82,18 +82,21 @@
 
 <div align="center">
   <a href="https://github.com/github_username/repo_name">
-    <img src="images/round_logo.png" alt="Logo" width="200" height="100">
+    <img src="images/round_logo.png" alt="Logo" width="250" height="130">
   </a>
 </div>
 <p align="center">
-<img src="https://cdn.rawgit.com/steverichey/google-play-badge-svg/master/img/fr_get.svg" width="20%">
-</p>
+<img src="https://camo.githubusercontent.com/1ddf90e524a4bfe8b77f9a6902d54fc708380389b7e0d7f9ad29196a799e77db/68747470733a2f2f706c61792e676f6f676c652e636f6d2f696e746c2f656e5f75732f6261646765732f696d616765732f67656e657269632f656e2d706c61792d62616467652e706e67" width="20%">
+<img src="https://camo.githubusercontent.com/0014f07b7f169b7232d26d242bb2f8ef598dea7169bd8766385d70d6be8127a1/68747470733a2f2f662d64726f69642e6f72672f62616467652f6765742d69742d6f6e2e706e67" width="20%">
+</p>  
+
+
 
 Since Starlink provides their clients a public <i>IPv6</i>, which is globally accessible, we leveraged on it building from scratch a custom image of <b>OpenWRT</b> dedicated to Raspberry Pi. 
 This offers a proper and reliable Modem/Router with pre-configured settings studiously assessed for working with the Starlink Dish as plug & play. <br>
 
 <div align="center">
-  <i><b>Get now the Android app...</b></i>
+  <i><b>Get now our Android app...</b></i>
 </div>
 <br>
 
@@ -176,7 +179,7 @@ This is an example of how to list things you need to use the software and how to
 
 
 
-<!-- USAGE EXAMPLES -->
+<!-- USAGE -->
 ## Usage
 
 Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
@@ -185,7 +188,27 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+<!-- FAQ -->
+## FAQ
+<details> <summary><b>I'm currently running the basic plan of Starlink, is it possible to set up my own VPN anyway?</b></summary>
+Certainly! You do have the possibility to set up your own VPN even with the basic Starlink plan.
 
+</details> <details> <summary><b>My Smartphone's mobile network doesn't provide an IPv6, how can I reach my Starlink network?</b></summary>
+Sorry, but an assigned IPv6 is mandatory. We suggest you to find a new ISP in order to obtain an IPv6 address.
+
+</details> <details> <summary><b>How can I check if my Smartphone is running an IPv6?</b></summary>
+Try connecting to the VPN. If you're missing IPv6, an alert will advise you. Alternatively, you can visit <a href="http://checkipv6.com">checkipv6.com</a> to test your ISP.
+
+</details> <details> <summary><b>My Minecraft server is listening on port 5555, how do I make people reach my server?</b></summary>
+The easiest way is to set up Port Forwarding. Go to the dedicated section in the app.
+
+</details> <details> <summary><b>Does this application substitute the original Starlink app?</b></summary>
+Of course not, Pi Starlink handles the Router while Starlink manages the Dish.
+
+</details> <details> <summary><b>Do I need to install OpenVPN for Android?</b></summary>
+Yes, you do. But don't worry, you'll manage everything from Pi Starlink.
+
+</details>
 
 <!-- ROADMAP -->
 ## Roadmap
