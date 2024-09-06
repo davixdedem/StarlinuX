@@ -229,7 +229,7 @@ tail -f /var/log/openvpn_status.log
 3. Setup a new DDNS key, you'll receive <b>username</b> and <b>password</b><br>
 4. In Pi Starlink, go to the <i><b>Dynamic DNS(DDNS)</b></i> section.<br>
 5. Fill out the form with the <b>hostname</b> and your <b>DDNS key credentials</b>.
-6. Congrats, you've set up your DDNS!
+6. Congrats, you've set up your DDNS!<br>
 7. Pi Starlink will take care to sync your FQDN with the current IPv6 on time.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
