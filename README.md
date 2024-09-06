@@ -129,23 +129,6 @@ Just buy the PoE(Power over Ethernet) which powers up all your items from 12v sw
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
-
-
-### Built With
-
-* [![Next][Next.js]][Next-url]
-* [![React][React.js]][React-url]
-* [![Vue][Vue.js]][Vue-url]
-* [![Angular][Angular.io]][Angular-url]
-* [![Svelte][Svelte.dev]][Svelte-url]
-* [![Laravel][Laravel.com]][Laravel-url]
-* [![Bootstrap][Bootstrap.com]][Bootstrap-url]
-* [![JQuery][JQuery.com]][JQuery-url]
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
 <!-- GETTING STARTED -->
 ## Getting Started
 
@@ -196,6 +179,11 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 
 <!-- VPN setting -->
 ## Set up your own VPN
+<div align="center">
+  <a href="https://github.com/github_username/repo_name">
+    <img src="images/ovpn4android.png" alt="Logo" width="100" height="100">
+  </a>
+</div>
 1. First of all, be sure you've already installed <a href="https://github.com/schwabe/ics-openvpn"><i>OpenVPN for Android</i></a> on your Smartphone.
 2. In Pi Starlink, go to the <i><b>Virtual Private Network(VPN)</b></i> section.<br>
 3. Slide the configuration button, Pi Starlink will take a few minutes to configure OpenVPN depending on your Raspberry Pi efficiency.<br>
