@@ -196,15 +196,20 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 
 <!-- VPN setting -->
 ## How to set up your own VPN, in a few minutes!
-1. Go to the <i>Virtual Private Network</i> section.<br>
-   <a href="https://github.com/github_username/repo_name"> <img src="images/vpn_section.png" alt="Logo" width="350" height="60"> </a> <br>
-3. Slide the configuration button, <i>Pi Starlink</i> will take a few minutes to configure OpenVPN depending on your <i>Raspberry Pi</i> efficiency.
-   <a href="https://github.com/github_username/repo_name"> <img src="images/slider_active.png" alt="Logo" width="350" height="100"> </a> <br>
+1. Go to the <i>Virtual Private Network(VPN)</i> section.<br>
+3. Slide the configuration button, <i>Pi Starlink</i> will take a few minutes to configure OpenVPN depending on your <i>Raspberry Pi</i> efficiency.<br>
 5. Once is done, turn off your Wi-Fi connection and use only your mobile network.
-6. Slide the activation button, your Smartphone will be assigned a local IPv4 address.
-7. Congrats, you're a virtually at home!
+7. Slide the activation button, your Smartphone will be assigned a local IPv4 address. <br>
+9. Congrats, you're a virtually at home!
+10. For disconnecting, slide it back.<br>
 
-- For any furthers logs, please SSH on your Router and check: <i>/var/log/openvpn.log</i>
+For any further data, SSH into Pi-Starlink and check the <i>OpenVPN</i> logs:
+```sh
+tail -f /var/log/openvpn.log
+```
+```sh
+tail -f /var/log/openvpn_status.log
+```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
