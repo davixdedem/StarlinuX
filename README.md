@@ -180,8 +180,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <!-- VPN setting -->
 ## Set up your own VPN
 <div align="center">
-    <img src="images/ovpn4android.png" alt="Logo" width="100" height="100">
-    <img src="images/round_logo_alpha.png" alt="Logo" width="100" height="100">
+    <img src="images/vpn_plus_pi.png" alt="Logo" width="150" height="150">
 </div>
 
 1. First of all, be sure you've already installed <a href="https://github.com/schwabe/ics-openvpn"><i>OpenVPN for Android</i></a> on your Smartphone.<br>
