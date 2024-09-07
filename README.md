@@ -163,35 +163,33 @@ Unless you’re a developer, you’re not obliged to clone this repository so ju
   ```
 4. Open the app, you're in!<br>
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-### Prerequisites
+## Prerequisites
+### Minimum Requirements for your Smartphone.
+- Operating System: Android 14 (API Level 34)<br>
+- Processor: ARMv8 or equivalent<br>
+- RAM: 4 GB or more<br>
+- Storage: 100 MB of free space (for app installation and data)<br>
+- Screen Resolution: HD (720p) or higher<br>
+- Network: Wi-Fi or Mobile Data<br>
 
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
+### Minimum Requirements for your Raspberry Pi.
+- Raspberry Pi 3 Model B+
+  - Wi-Fi: 802.11n
+  - Ethernet: 10/100 Mbps
 
-### Installation
+- Raspberry Pi 4 Model B
+  - Wi-Fi: 802.11ac
+  - Ethernet: Gigabit Ethernet
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
-   ```sh
-   git clone https://github.com/github_username/repo_name.git
-   ```
-3. Install NPM packages
-   ```sh
-   npm install
-   ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
-   ```
-5. Change git remote url to avoid accidental pushes to base project
-   ```sh
-   git remote set-url origin github_username/repo_name
-   git remote -v # confirm the changes
-   ```
+- Raspberry Pi 400
+  - Wi-Fi: 802.11ac
+  - Ethernet: Gigabit Ethernet
+
+- Raspberry Pi 3 Model B
+  - Wi-Fi: 802.11n
+  - Ethernet: 10/100 Mbps
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
