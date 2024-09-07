@@ -143,6 +143,7 @@ Unless you’re a developer, you’re not obliged to clone this repository so ju
     <img src="images/round_logo_open_wrt.png" alt="Logo" width="100" height="50">
   </a>
 </div>
+
 1. Download our pre-configured OpenWRT image from <a href="https://github.com/schwabe/ics-openvpn">Google Drive</a>.<br>
 3. Flash it into a 32GB micro SDCard.<br>
 4. Plug it into your Raspberry Pi.<br>
