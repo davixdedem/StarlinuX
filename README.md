@@ -191,6 +191,11 @@ Unless you’re a developer, you’re not obliged to clone this repository so ju
   - Wi-Fi: 802.11n
   - Ethernet: 10/100 Mbps
 
+#### Recommended Model
+- <b>Raspberry Pi 5</b>
+  - Wi-Fi: 802.11ac or newer
+  - Ethernet: Gigabit Ethernet
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
