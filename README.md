@@ -242,7 +242,11 @@ PING 192.168.9.2 (192.168.9.2) 56(84) bytes of data.
 64 bytes from 192.168.9.2: icmp_seq=4 ttl=63 time=109 ms
 ```
 ### For any further data:
-SSH into your Pi Starlink and check the <i>OpenVPN</i> logs:
+If you want to check live the configuration process:
+```sh
+tail -f /tmp/openvpn_output.log
+```
+To check the OpenVPN logs:
 ```sh
 tail -f /var/log/openvpn.log
 ```
