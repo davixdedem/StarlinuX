@@ -79,7 +79,6 @@
 <!-- ABOUT THE PROJECT -->
 ## What's Pi Starlink?
 
-
 <div align="center">
   <a href="https://github.com/github_username/repo_name">
     <img src="images/round_logo.png" alt="Logo" width="300" height="150">
@@ -90,7 +89,14 @@
 <img src="https://camo.githubusercontent.com/0014f07b7f169b7232d26d242bb2f8ef598dea7169bd8766385d70d6be8127a1/68747470733a2f2f662d64726f69642e6f72672f62616467652f6765742d69742d6f6e2e706e67" width="25%">
 </p>  
 
-
+<div align="center">
+  <a href="https://github.com/github_username/repo_name">
+    <img src="images/openwrt.png" alt="Logo" width="300" height="150">
+  </a>
+</div>
+<p align="center">
+<img src="images/googledrive.png" width="25%">
+</p> 
 
 Since Starlink provides their clients a public <i>IPv6</i>, which is globally accessible, we leveraged on it building from scratch a custom image of <b>OpenWRT</b> dedicated to Raspberry Pi. 
 This offers a proper and reliable Modem/Router with pre-configured settings studiously assessed for working with the Starlink Dish as plug & play. <br>
