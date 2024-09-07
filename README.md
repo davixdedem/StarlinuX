@@ -91,7 +91,7 @@
 
 <div align="center">
   <a href="https://github.com/github_username/repo_name">
-    <img src="images/openwrt.png" alt="Logo" width="300" height="150">
+    <img src="images/round_logo_open_wrt.png" alt="Logo" width="300" height="150">
   </a>
 </div>
 <p align="center">
