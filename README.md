@@ -137,9 +137,32 @@ Just buy the PoE(Power over Ethernet) which powers up all your items from 12v sw
 
 <!-- GETTING STARTED -->
 ## Getting Started
+Unless you’re a developer, you’re not obliged to clone this repository so just download the pre configured OpenWRT image we provide you and flash it into your <b>Raspberry Pi</b>.<br>
+<div align="left">
+  <a href="https://github.com/github_username/repo_name">
+    <img src="images/round_logo_open_wrt.png" alt="Logo" width="100" height="50">
+  </a>
+</div>
+1. Download our pre-configured OpenWRT image from <a href="https://github.com/schwabe/ics-openvpn">Google Drive</a>.<br>
+3. Flash it into a 32GB micro SDCard.<br>
+4. Plug it into your Raspberry Pi.<br>
+5. Power it up!<br><br>
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+<div align="left">
+  <a href="https://github.com/github_username/repo_name">
+    <img src="images/round_logo.png" alt="Logo" width="100" height="50">
+  </a>
+</div>
+
+1. Download the Pi-Starlink application from .<br>
+2. Install it onto your Smartphone.<br>
+3. Connect to the <b>Pi Starlink</b> Wi-Fi using the following:<br>
+  ```sh
+  SSID: Pi-Starlink
+  Password: pistarlink
+  ```
+4. Open the app, you're in!<br>
+
 
 ### Prerequisites
 
