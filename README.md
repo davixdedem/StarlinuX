@@ -309,6 +309,14 @@ nc -6 [IPv6_address] 5555
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+<!-- Ethernet Extender -->
+## In need of more ethernet ports? Get an extender! 
+<div align="center">
+    <img src="images/vpn_plus_pi.png" alt="Logo" width="220" height="90">
+</div>
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 <!-- FAQ -->
 ## FAQ
 <details> <summary><b>I'm currently running the basic plan of Starlink, is it possible to set up my own VPN anyway?</b></summary>
