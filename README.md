@@ -317,6 +317,7 @@ nc -6 [IPv6_address] 5555
 <p align="center">
 <img src="images/aliexpress.png" width="25%">
 </p>  
+There is no competitor when we speak about Ethernet, as the cable is still the perfect solution if your goal is to reduce any latency while you’re playing your fav game online. So, we’d like to suggest you the most reliable Ethernet Port Extender that we figured out and that we’re currenly pushing off the edge getting amazing results.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
