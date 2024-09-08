@@ -312,7 +312,7 @@ nc -6 [IPv6_address] 5555
 <!-- Ethernet Extender -->
 ## In need of more ethernet ports? Get an extender! 
 <div align="center">
-    <img src="images/vpn_plus_pi.png" alt="Logo" width="220" height="90">
+    <img src="images/extender.png" alt="Logo" width="220" height="90">
 </div>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
