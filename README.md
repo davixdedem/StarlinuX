@@ -224,7 +224,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 
 ### Some tips to check if it works:
 - <b>From your Smartphone:</b>
-1. Once your connected to the VPN,try to open your router page <b>http://192.168.1.1</b> from your Smartphone.
+1. Once you're connected to the VPN,try to open your router page <b>http://192.168.1.1</b> from your Smartphone.
 2. If you reach it, it means everything is working!
    
 - <b>From an external device:</b>
@@ -312,8 +312,11 @@ nc -6 [IPv6_address] 5555
 <!-- Ethernet Extender -->
 ## In need of more ethernet ports? Get an extender! 
 <div align="center">
-    <img src="images/extender.png" alt="Logo" width="220" height="90">
+    <img src="images/extender.png" alt="Logo" width="600" height="300">
 </div>
+<p align="center">
+<img src="images/aliexpress.png" width="25%">
+</p>  
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
