@@ -294,8 +294,8 @@ Address: 2a0d:3344:....
 1. In the Pi Starlink Application, go to the <i><b>Port Forwarding</b></i> section.<br>
 2. As default, there are a couple of pre configured rules(HTTP and SSH).<br>
 3. Add a new rule clicking on the (+) button.<br>
-4. Edit the <b>External Port</b> with the port everybody has to point.<br>
-5. Edit the <b>Destination Port</b> with the port the server is listening on.<br>
+4. Edit the <b>External Port</b> with that one everybody should point to.<br>
+5. Edit the <b>Destination Port</b> with the one the server is listening on.<br>
 6. Choose its IPv6 address from the <b>Target IPv6</b> dropdown list.<br>
 7. Enable the rule with the toggle<br>
 8. Congrats, all done!<br> 
