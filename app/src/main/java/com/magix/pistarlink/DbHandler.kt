@@ -97,7 +97,6 @@ class DbHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, nul
         return configValue
     }
 
-
     // Method to update a configuration
     fun updateConfiguration(configName: String, configValue: String): Int {
         val db = this.writableDatabase

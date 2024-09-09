@@ -77,6 +77,7 @@
             <ImageView
                 android:id="@+id/sbc_text_name"
                 android:layout_width="100sp"
+                android:alpha="0.5"
                 android:layout_height="match_parent"
                 android:layout_weight="0"
                 android:src="@drawable/logo2" />
@@ -136,6 +137,14 @@
 
             <include
                 android:id="@+id/layout_dns"
+                layout="@layout/layout_standard_card"
+                android:layout_marginTop="5sp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <include
+                android:id="@+id/layout_vpn"
+                android:visibility="gone"
                 layout="@layout/layout_standard_card"
                 android:layout_marginTop="5sp"
                 android:layout_width="match_parent"
@@ -268,6 +277,7 @@
                     <TextView
                         android:id="@+id/ddns_section_btn"
                         android:layout_width="wrap_content"
+                        android:alpha="0.5"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="10sp"
                         android:layout_weight="0"
@@ -315,6 +325,7 @@
                         android:layout_marginEnd="10sp"
                         android:layout_weight="0"
                         android:gravity="center"
+                        android:alpha="0.5"
                         android:text="@string/Angular"
                         android:textAlignment="textEnd"
                         android:textColor="@color/white"
@@ -357,6 +368,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="10sp"
                         android:layout_weight="0"
+                        android:alpha="0.5"
                         android:gravity="center"
                         android:text="@string/Angular"
                         android:textAlignment="textEnd"

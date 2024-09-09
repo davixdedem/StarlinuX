@@ -165,6 +165,7 @@
                         android:textAlignment="center"
                         android:layout_gravity="center"
                         android:textColor="@color/white"
+                        android:autoLink="web"
                         android:text="@string/router_page"
                         android:linksClickable="true" />
 

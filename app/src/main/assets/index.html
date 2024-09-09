@@ -9,108 +9,223 @@
         canvas { display: block; }
     </style>
     <!-- Include Three.js library -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.119/build/three.min.js"></script>
+    <script src="three.min.js"></script>
     <!-- Include OBJLoader from Three.js examples -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.119/examples/js/loaders/OBJLoader.js"></script>
+    <script src="OBJLoader.js"></script>
     <!-- Include OrbitControls from Three.js examples -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.119/examples/js/controls/OrbitControls.js"></script>
+    <script src="OrbitControls.js"></script>
     <!-- Include MTLLoader from Three.js examples -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.119.1/examples/js/loaders/MTLLoader.js"></script>
+    <script src="MTLLoader.js"></script>
 </head>
 <body>
 <script>
     let camera, scene, renderer;
-    let laserBeam, pointLight; // Declare laserBeam and pointLight globally
+    let laserBeam, pointLight;
+    let groundPlane;
+    let controls;
+    let controlsChanged = false;
+    let laserBeamAdded = false;
+
+    // Rotation limits (in radians)
+    const minAzimuthAngle = -Math.PI / 4; // 45 degrees counterclockwise
+    const maxAzimuthAngle = Math.PI / 4; // 45 degrees clockwise
 
     init();
 
     function init() {
+        camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 20);
+        camera.position.set(1, 2, 4);
 
-        camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.1, 20 );
-        camera.position.z = 4;
-        camera.position.y = 2;
-        camera.position.x = 1;
-
-        // scene
+        // START - Scene
         scene = new THREE.Scene();
+        const startPosition = new THREE.Vector3(-0.60, 0.45, 0);
 
-        const ambientLight = new THREE.AmbientLight( 0xffffff );
-        //scene.add( ambientLight );
+        // START - Hemisphere Light
+        const emisphereLight = new THREE.HemisphereLight( 0xffffff, 0x080820, 0.8 );
+        scene.add( emisphereLight );
+        // END - Hemisphere Light
 
-        const pointLight = new THREE.PointLight( 0xffffff, 1 );
-        camera.add( pointLight );
-        scene.add( camera );
+        // START - Spotlight
+        const spotLight = new THREE.SpotLight(0xffffff, 2); // White light with intensity of 1
+        spotLight.position.copy(startPosition);
+        spotLight.position.x -= 3.5;
+        spotLight.position.y += 0.5;
+        spotLight.angle = 0.7 // The angle of the spotlight's cone
+        spotLight.penumbra = 0.5; // The degree of the spotlight's softness
+        spotLight.decay = 3; // How quickly the light intensity falls off
+        spotLight.distance = 20; // The distance at which the light intensity reaches zero
+        spotLight.castShadow = true;
+        spotLight.shadow.mapSize.width = 2048; // Higher value for better quality shadows
+        spotLight.shadow.mapSize.height = 2048;
+        scene.add(spotLight);
+        // END - Spotlight
 
-        // model
-        const onProgress = function ( xhr ) {
-            if ( xhr.lengthComputable ) {
-                const percentComplete = xhr.loaded / xhr.total * 100;
-                console.log( percentComplete.toFixed( 2 ) + '% downloaded' );
-            }
-        };
+        // Camera
+        scene.add(camera);
 
-        new THREE.MTLLoader()
-            .setPath( 'male02/' )
-            .load( 'pistarlink_model.mtl', function ( materials ) {
-                materials.preload();
-                new THREE.OBJLoader()
-                    .setMaterials( materials )
-                    .setPath( 'male02/' )
-                    .load( 'pistarlink_model.obj', function ( object ) {
-                        object.position.y = - 0.50;
-                        object.scale.setScalar( 0.01 );
-                        scene.add( object );
-                    }, onProgress );
-            } );
+        // Ground Plane
+        addGroundPlane();
 
-        renderer = new THREE.WebGLRenderer( { antialias: true } );
-        renderer.setPixelRatio( window.devicePixelRatio );
-        renderer.setSize( window.innerWidth, window.innerHeight );
-        renderer.setAnimationLoop( animate );
-        document.body.appendChild( renderer.domElement );
-        const controls = new THREE.OrbitControls( camera, renderer.domElement );
+        // Load model
+        loadModel();
+
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.body.appendChild(renderer.domElement);
+
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.enableZoom = false;
         controls.enablePan = false;
         controls.minDistance = 4.5;
         controls.maxDistance = 4.5;
-        window.addEventListener( 'resize', onWindowResize );
+        controls.minPolarAngle = Math.PI / 6;
+        controls.maxPolarAngle = Math.PI / 2;
+
+        // Clamp rotation to azimuth angle limits
+        controls.addEventListener('change', () => {
+            controlsChanged = true;
+
+            // Get the current azimuth angle
+            const currentAzimuth = controls.getAzimuthalAngle();
+
+            // Clamp the azimuth angle to the defined limits
+            // if (currentAzimuth < minAzimuthAngle) {
+            //    controls.minAzimuthAngle = minAzimuthAngle;
+            //    controls.maxAzimuthAngle = maxAzimuthAngle;
+            // }
+            // if (currentAzimuth > maxAzimuthAngle) {
+            //    controls.minAzimuthAngle = minAzimuthAngle;
+            //    controls.maxAzimuthAngle = maxAzimuthAngle;
+            // }
+        });
+
+        window.addEventListener('resize', onWindowResize);
+        setInterval(callAndroidFunction, 3000);
+    }
+
+    function addGroundPlane() {
+        const planeGeometry = new THREE.PlaneGeometry(10, 10);
+
+        // Create a canvas to draw the gradient
+        const canvas = document.createElement('canvas');
+        const size = 512; // Size of the texture
+        canvas.width = size;
+        canvas.height = size;
+
+        const context = canvas.getContext('2d');
+
+        // Create radial gradient (lighter in the center, darker at the edges)
+        const gradient = context.createRadialGradient(
+            size / 2, size / 2, 0, // Center point
+            size / 2, size / 2, size / 2 // Outer radius
+        );
+        gradient.addColorStop(0, '#202727'); // Center color
+        gradient.addColorStop(1, '#000000'); // Edge color (black)
+
+        // Fill the canvas with the gradient
+        context.fillStyle = gradient;
+        context.fillRect(0, 0, size, size);
+
+        // Create a texture from the canvas
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.wrapS = THREE.ClampToEdgeWrapping;
+        texture.wrapT = THREE.ClampToEdgeWrapping;
+
+        // Apply the texture to a standard material
+        const planeMaterial = new THREE.MeshStandardMaterial({
+            map: texture,
+            side: THREE.DoubleSide
+        });
+
+        groundPlane = new THREE.Mesh(planeGeometry, planeMaterial);
+
+        groundPlane.rotation.x = Math.PI / 2;
+        groundPlane.position.y = -0.75;
+        groundPlane.receiveShadow = true;
+        groundPlane.castShadow = true;
+
+        scene.add(groundPlane);
+    }
+
+    function clampCameraPosition() {
+        const cameraY = camera.position.y;
+        const groundPlaneY = groundPlane.position.y;
+
+        if (cameraY < groundPlaneY) {
+            camera.position.y = groundPlaneY;
+        }
     }
 
     function onWindowResize() {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
-        renderer.setSize( window.innerWidth, window.innerHeight );
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    function loadModel() {
+        const onProgress = (xhr) => {
+            if (xhr.lengthComputable) {
+                const percentComplete = (xhr.loaded / xhr.total) * 100;
+                console.log(`${percentComplete.toFixed(2)}% downloaded`);
+            }
+        };
+
+        new THREE.MTLLoader()
+            .setPath('male02/')
+            .load('pistarlink_model.mtl', (materials) => {
+                materials.preload();
+                new THREE.OBJLoader()
+                    .setMaterials(materials)
+                    .setPath('male02/')
+                    .load('pistarlink_model.obj', (loadedObject) => {
+                        loadedObject.traverse((child) => {
+                            if (child.isMesh) {
+                                child.castShadow = true;
+                                child.receiveShadow = true;
+                                child.material.shininess = 0;
+                                child.material.specular = new THREE.Color(0x111111); // Dark specular for less reflective highlights
+                                child.material.reflectivity = 0; // Disable environmental reflection
+                            }
+                        });
+                        loadedObject.position.y = -0.50;
+                        loadedObject.scale.setScalar(0.01);
+                        scene.add(loadedObject);
+                    }, onProgress);
+            });
     }
 
     function addLaserBeam() {
+        if (laserBeam) {
+            removeLaserBeam();
+        }
+
         const startPosition = new THREE.Vector3(-0.60, 0.45, 0);
         const endPosition = new THREE.Vector3(-0.5, 5, 3.3);
         const beamLength = startPosition.distanceTo(endPosition);
         const color = 0xffffff;
         const beamGeometry = new THREE.CylinderGeometry(0.03, 0.03, beamLength, 100);
+        const beamMaterial = new THREE.MeshBasicMaterial({ color });
 
-        //const beamMaterial = new THREE.MeshBasicMaterial({ color: color});
-        const beamMaterial = new THREE.MeshBasicMaterial({ color: color});
-        laserBeam = new THREE.Mesh(beamGeometry, beamMaterial); // Assign to global variable
-
-        // Position the beam in the middle of the start and end points
+        laserBeam = new THREE.Mesh(beamGeometry, beamMaterial);
+        laserBeam.castShadow = false;
         const midPoint = startPosition.clone().lerp(endPosition, 0.5);
         laserBeam.position.copy(midPoint);
-
-        // Rotate the laser beam to point from startPosition to endPosition
         laserBeam.lookAt(endPosition);
         laserBeam.rotateX(Math.PI / 2);
 
         scene.add(laserBeam);
 
-        // Add a light source at the start position
-        pointLight = new THREE.PointLight(color, 2.5, 2.5);
+        pointLight = new THREE.PointLight(color, 1, 0.5);
         pointLight.position.copy(startPosition);
+        pointLight.position.y += 0.1;
+        pointLight.castShadow = true;
         scene.add(pointLight);
     }
 
     function removeLaserBeam() {
-        // Remove the laser beam and the light from the scene
         if (laserBeam) {
             scene.remove(laserBeam);
             laserBeam.geometry.dispose();
@@ -124,31 +239,34 @@
     }
 
     function animate() {
-        renderer.render( scene, camera );
+        if (controlsChanged) {
+            clampCameraPosition();
+            controlsChanged = false;
+        }
+        renderer.render(scene, camera);
     }
-
-    let laserBeamAdded = false; // Flag to track if addLaserBeam has been called
 
     async function callAndroidFunction() {
         if (typeof AndroidFunction !== 'undefined' && AndroidFunction.getConnectionStatus) {
-            const connectionStatus = await AndroidFunction.getConnectionStatus(); // Await the async function
+            try {
+                const connectionStatus = await AndroidFunction.getConnectionStatus();
 
-            if (connectionStatus && !laserBeamAdded) {
-                // If connectionStatus is true and addLaserBeam has not been called yet
-                addLaserBeam();
-                laserBeamAdded = true; // Set the flag to true
-            } else if (!connectionStatus && laserBeamAdded) {
-                // If connectionStatus becomes false, remove the laser beam
-                removeLaserBeam();
-                laserBeamAdded = false; // Reset the flag
+                if (connectionStatus && !laserBeamAdded) {
+                    addLaserBeam();
+                    laserBeamAdded = true;
+                } else if (!connectionStatus && laserBeamAdded) {
+                    removeLaserBeam();
+                    laserBeamAdded = false;
+                }
+            } catch (error) {
+                console.error('Error calling Android function:', error);
             }
         } else {
             console.log("AndroidFunction or getConnectionStatus is not available");
         }
     }
 
-    // Call the async function every 5 seconds (5000 milliseconds)
-    setInterval(callAndroidFunction, 3000);
+    renderer.setAnimationLoop(animate);
 </script>
 </body>
 </html>

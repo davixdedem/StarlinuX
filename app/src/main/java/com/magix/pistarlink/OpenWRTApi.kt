@@ -134,5 +134,49 @@ class OpenWRTApi(private val baseUrl: String, private val username: String, priv
             }
         })
     }
+
+    /* Fetch router uptime */
+    fun getRouterUptime(
+        sysAuthToken: String,
+        onSuccess: (String) -> Unit,  // Return uptime as a string
+        onFailure: (String) -> Unit
+    ) {
+        val url = "$baseUrl/cgi-bin/luci/rpc/sys"
+        val jsonPayload = """
+        {
+            "method": "uptime"
+        }
+        """.trimIndent()
+
+        val requestBody = RequestBody.create("application/json".toMediaTypeOrNull(), jsonPayload)
+
+        val request = Request.Builder()
+            .url(url)
+            .addHeader("Content-Type", "application/json")
+            .addHeader("Cookie", "sysauth=$sysAuthToken")
+            .post(requestBody)
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                onFailure("Failed to fetch uptime: ${e.message}")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful) {
+                    val responseBody = response.body?.string() ?: "No response body"
+                    try {
+                        val jsonResponse = JSONObject(responseBody)
+                        val uptime = jsonResponse.optString("uptime", "Unknown")
+                        onSuccess(uptime)
+                    } catch (e: Exception) {
+                        onFailure("Failed to parse JSON response: ${e.message}")
+                    }
+                } else {
+                    onFailure("Failed to fetch uptime with status code: ${response.code}")
+                }
+            }
+        })
+    }
 }
 

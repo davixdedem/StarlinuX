@@ -127,6 +127,7 @@
             android:layout_height="wrap_content"
             android:textAlignment="center"
             android:textColor="@color/white"
+            android:autoLink="web"
             android:text="@string/support_page"
             android:linksClickable="true" />
     </LinearLayout>
