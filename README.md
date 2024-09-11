@@ -141,7 +141,11 @@ This project aims to replace the original Starlink router by utilizing a built-i
 1. Open the Starlink app and navigate to the Settings section.<br>
 2. Select the Router options.<br>
 3. Toggle the <b>Bypass Starlink Router</b> switch.<br>
-This allows you to seamlessly bypass the Starlink router in just a few steps.<br>
+<div align="left">
+  <a href="https://github.com/github_username/repo_name">
+    <img src="images/bypass_mode.png" alt="Logo" width="300" height="300">
+  </a>
+</div>
 
 Unless you’re a developer, you’re not obliged to clone this repository so just download the pre configured OpenWRT image we provide you and flash it into your <b>Raspberry Pi</b>.<br>
 <div align="left">
