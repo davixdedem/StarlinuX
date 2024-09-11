@@ -137,6 +137,12 @@ Just buy the PoE(Power over Ethernet) which powers up all your items from 12v sw
 
 <!-- GETTING STARTED -->
 ## Getting Started
+This project aims to replace the original Starlink router by utilizing a built-in feature of the Starlink app. To enable <b>bypass mode</b>, follow these steps:<br>
+1. Open the Starlink app and navigate to the Settings section.<br>
+2. Select the Router options.<br>
+3. Toggle the <b>Bypass Starlink Router</b> switch.<br>
+This allows you to seamlessly bypass the Starlink router in just a few steps.<br>
+
 Unless you’re a developer, you’re not obliged to clone this repository so just download the pre configured OpenWRT image we provide you and flash it into your <b>Raspberry Pi</b>.<br>
 <div align="left">
   <a href="https://github.com/github_username/repo_name">
