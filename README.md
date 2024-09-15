@@ -135,6 +135,18 @@ Just buy the PoE(Power over Ethernet) which powers up all your items from 12v sw
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
+<!-- USAGE -->
+## Screenshots
+
+<div align="center">
+    <img src="images/homepage.png" alt="Logo" width="214" height="472">
+    <img src="images/active_vpn.png" alt="Logo" width="214" height="472">
+    <img src="images/port_forwarding.png" alt="Logo" width="214" height="472">
+    <img src="images/network_section.png" alt="Logo" width="214" height="472">
+</div>
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 <!-- GETTING STARTED -->
 ## Getting Started
 This project aims to replace the original Starlink router by utilizing a built-in feature of the Starlink app. To enable <b>bypass mode</b>, follow these steps:<br>
@@ -206,16 +218,6 @@ Unless you’re a developer, you’re not obliged to clone this repository so ju
 - <b>Raspberry Pi 5</b>
   - Wi-Fi: 802.11ac or newer
   - Ethernet: Gigabit Ethernet
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-<!-- USAGE -->
-## Usage
-
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
-_For more examples, please refer to the [Documentation](https://example.com)_
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
