@@ -388,13 +388,6 @@ Don't forget to give the project a star! Thanks again!
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-### Top contributors:
-
-<a href="https://github.com/github_username/repo_name/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=github_username/repo_name" alt="contrib.rocks image" />
-</a>
-
-
 
 <!-- LICENSE -->
 ## License
@@ -413,18 +406,6 @@ Davide Polli - [@twitter_handle](https://twitter.com/twitter_handle) - x.pistarl
 Project Link: [https://github.com/davixdedem/Pi-Starlink](https://github.com/davixdedem/Pi-Starlink)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-<!-- ACKNOWLEDGMENTS -->
-## Acknowledgments
-
-* []()
-* []()
-* []()
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
