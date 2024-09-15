@@ -358,12 +358,14 @@ Yes, you do. But don't worry, you'll manage everything from Pi Starlink.
 <!-- ROADMAP -->
 ## Roadmap
 
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
-    - [ ] Nested Feature
+- [X] Virtual Private Network(VPN)
+- [X] Dynamic DNS(DDNS)
+- [X] Port Forwarding
+- [X] Wireless + Ethernet
+- [X] IPv6 + IPv4
+- [ ] DMZ(Work in progress)
 
-See the [open issues](https://github.com/github_username/repo_name/issues) for a full list of proposed features (and known issues).
+See the [open issues](https://github.com/davixdedem/Pi-Starlink/issues) for a full list of proposed features (and known issues).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
