@@ -360,7 +360,10 @@ Yes, you do. But don't worry, you'll manage everything from Pi Starlink.
 ## Roadmap
 
 - [X] Virtual Private Network(VPN)
+  - [X] Own VPN
+  - [ ] Share VPN to friends(Work in progress)
 - [X] Dynamic DNS(DDNS)
+  - [X] NoIP.com
 - [X] Port Forwarding
 - [X] Wireless + Ethernet
 - [X] IPv6 + IPv4
