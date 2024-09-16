@@ -352,6 +352,9 @@ Of course not, Pi Starlink handles the Router while Starlink manages the Dish.
 </details> <details> <summary><b>Do I need to install OpenVPN for Android?</b></summary>
 Yes, you do. But don't worry, you'll manage everything from Pi Starlink.
 
+</details> <details> <summary><b>How to reset the Pi Starlink Router credentials?</b></summary>
+Follow the original instructions provided by <a href="https://openwrt.org/docs/guide-user/troubleshooting/root_password_reset">OpenWRT</a>.
+
 </details>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
