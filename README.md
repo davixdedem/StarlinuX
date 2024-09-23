@@ -405,7 +405,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <!-- PRIVACY POLICY -->
 ## Privacy Policy for Pi Starlink
 
-Pi Starlink is dedicated to safeguarding your privacy. This Privacy Policy outlines how we handle your personal information when you use our mobile application ("App").
+Pi Starlink is dedicated to safeguarding your privacy. This Privacy Policy outlines how we handle your personal information when you use our mobile application (*com.magix.pistarlink*).
 
 **Information We Collect**
 
