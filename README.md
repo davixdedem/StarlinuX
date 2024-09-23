@@ -403,13 +403,13 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- PRIVACY POLICY -->
-## Privacy Policy for Pi Starlink
+## Privacy Policy<br>
 
-Pi Starlink is dedicated to safeguarding your privacy. This Privacy Policy outlines how we handle your personal information when you use our mobile application (*com.magix.pistarlink*).
+Pi Starlink is dedicated to safeguarding your privacy. This Privacy Policy outlines how we handle your personal information when you use our mobile application (*com.magix.pistarlink*).<br>
 
-**Information We Collect**
+**Information We Collect**<br>
 
-When you use our App, we do not collect any personal information. Specifically, we do not gather:
+When you use our App, we do not collect any personal information. Specifically, we do not gather:<br>
 
 - Personal Information: No collection of names, email addresses, or contact information.<br>
 - Device Information: No data regarding your device, such as the operating system or hardware model.<br>
@@ -418,7 +418,7 @@ When you use our App, we do not collect any personal information. Specifically, 
 - Data Security<br>
 - We take reasonable technical and organizational measures to protect your information from unauthorized access, disclosure, or alteration. However, please be aware that no method of transmission over the internet is completely secure, and we cannot guarantee absolute security.<br>
 
-**Your Rights**
+**Your Rights**<br>
 
 - Depending on your location, you may have certain rights concerning your data, including:<br>
 - Access to any personal data we may hold about you.<br>
