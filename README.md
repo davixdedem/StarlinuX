@@ -402,6 +402,34 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+<!-- PRIVACY POLICY -->
+## Privacy Policy
+**Pi Starlink** is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and disclose your personal information when you use our mobile application ("App").<br>
+
+1. Information We Collect<br>
+We may collect and process the following types of information when you use our App:<br>
+- Personal Information: We don't collect personal details such as your name, email address or contact information.<br>
+- Device Information: We don't collect information about your device, such as operating system or hardware model.<br>
+- Usage Data: We don't collect data about how you interact with our App.<br>
+- Location Data: With your consent, we may collect location data for specific features (e.g., Wi-Fi status).<br>
+
+4. Data Security<br>
+We implement appropriate technical and organizational measures to protect your data from unauthorized access, disclosure, or alteration. However, no method of transmission over the internet is 100% secure, so we cannot guarantee absolute security.<br>
+
+6. Your Rights<br>
+Depending on your jurisdiction, you may have the following rights regarding your data:<br>
+Access to the personal data we hold about you.<br>
+Request correction or deletion of your data.<br>
+Withdraw your consent to data collection, if applicable.<br>
+
+7. Third-Party Links<br>
+Our App may contain links to third-party websites or services. This Privacy Policy does not apply to third-party services, and we are not responsible for their privacy practices.<br>
+
+8. Children’s Privacy<br>
+Our App is not intended for children under 13, and we do not knowingly collect personal data from children. If we learn that we have collected data from a child under 13, we will take steps to delete it.<br>
+
+9. Changes to This Privacy Policy<br>
+We may update this Privacy Policy from time to time. We will notify you of any material changes by posting the updated policy in the App and updating the "Last Updated" date at the top of this page.<br>
 
 
 <!-- CONTACT -->
