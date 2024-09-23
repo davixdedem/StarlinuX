@@ -403,33 +403,35 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- PRIVACY POLICY -->
-## Privacy Policy
-**Pi Starlink** is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and disclose your personal information when you use our mobile application ("App").<br>
+## Privacy Policy for Pi Starlink
 
-1. Information We Collect<br>
-We may collect and process the following types of information when you use our App:<br>
-- Personal Information: We don't collect personal details such as your name, email address or contact information.<br>
-- Device Information: We don't collect information about your device, such as operating system or hardware model.<br>
-- Usage Data: We don't collect data about how you interact with our App.<br>
-- Location Data: With your consent, we may collect location data for specific features (e.g., Wi-Fi status).<br>
+Pi Starlink is dedicated to safeguarding your privacy. This Privacy Policy outlines how we handle your personal information when you use our mobile application ("App").
 
-4. Data Security<br>
-We implement appropriate technical and organizational measures to protect your data from unauthorized access, disclosure, or alteration. However, no method of transmission over the internet is 100% secure, so we cannot guarantee absolute security.<br>
+**Information We Collect**
 
-6. Your Rights<br>
-Depending on your jurisdiction, you may have the following rights regarding your data:<br>
-Access to the personal data we hold about you.<br>
-Request correction or deletion of your data.<br>
-Withdraw your consent to data collection, if applicable.<br>
+When you use our App, we do not collect any personal information. Specifically, we do not gather:
 
-7. Third-Party Links<br>
-Our App may contain links to third-party websites or services. This Privacy Policy does not apply to third-party services, and we are not responsible for their privacy practices.<br>
+- Personal Information: No collection of names, email addresses, or contact information.<br>
+- Device Information: No data regarding your device, such as the operating system or hardware model.<br>
+- Usage Data: No tracking of your interactions with the App.<br>
+- Location Data: We do not collect location data, except with your explicit consent for specific features (e.g., Wi-Fi status).<br>
+- Data Security<br>
+- We take reasonable technical and organizational measures to protect your information from unauthorized access, disclosure, or alteration. However, please be aware that no method of transmission over the internet is completely secure, and we cannot guarantee absolute security.<br>
 
-8. Children’s Privacy<br>
-Our App is not intended for children under 13, and we do not knowingly collect personal data from children. If we learn that we have collected data from a child under 13, we will take steps to delete it.<br>
+**Your Rights**
 
-9. Changes to This Privacy Policy<br>
-We may update this Privacy Policy from time to time. We will notify you of any material changes by posting the updated policy in the App and updating the "Last Updated" date at the top of this page.<br>
+- Depending on your location, you may have certain rights concerning your data, including:<br>
+- Access to any personal data we may hold about you.<br>
+- The ability to request corrections or deletions of your data.<br>
+- The option to withdraw your consent for data collection, if applicable.<br>
+- Third-Party Links<br>
+- Our App may include links to third-party websites or services. This Privacy Policy does not extend to these external services, and we are not responsible for their privacy practices.<br>
+
+**Children’s Privacy**
+- Our App is not designed for children under 13, and we do not knowingly collect personal data from this age group. If we discover that we have inadvertently collected data from a child under 13, we will take appropriate measures to delete it.<br>
+
+**Changes to This Privacy Policy**
+We may periodically update this Privacy Policy. Any significant changes will be communicated by posting the revised policy within the App and updating the "Last Updated" date at the top of this document.<br>
 
 
 <!-- CONTACT -->
