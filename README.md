@@ -221,7 +221,7 @@ Unless you’re a developer, you’re not obliged to clone this repository so ju
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- SSH -->
-## How to SSH into Pi Starlink!
+## Need to go deeper, SSH into your Pi Starlink!
 <div align="center">
     <img src="images/ssh.png" alt="Logo" width="80" height="80">
 </div>
