@@ -165,7 +165,7 @@ Unless you’re a developer, you’re not obliged to clone this repository so ju
   </a>
 </div>
 
-1. Download our pre-configured OpenWRT image from <a href="https://github.com/schwabe/ics-openvpn">Google Drive</a>.<br>
+1. Download our pre-configured OpenWRT image from <a href="https://drive.google.com/drive/folders/1pREPO48vvCrU5cWm2z4bHnBf_eGFIXJ8?usp=drive_link">Google Drive</a>.<br>
 3. Flash it into a 32GB micro SDCard.<br>
 4. Plug it into your Raspberry Pi.<br>
 5. Power it up!<br><br>
@@ -176,7 +176,7 @@ Unless you’re a developer, you’re not obliged to clone this repository so ju
   </a>
 </div>
 
-1. Download the Pi-Starlink application from the <a href="https://github.com/schwabe/ics-openvpn">Play Store</a>.<br>
+1. Download the Pi-Starlink application from the <a href="[https://github.com/schwabe/ics-openvpn](https://play.google.com/store/apps/details?id=com.magix.pistarlink)">Play Store</a>.<br>
 2. Install it on your Smartphone.<br>
 3. Connect it to the <b>Pi Starlink</b> Wi-Fi using the following default credentials:<br>
   ```sh
