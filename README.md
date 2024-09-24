@@ -57,7 +57,7 @@
     <li>
       <a href="#getting-started">Features</a>
       <ul>
-        <li><a href="#reach-your-home-from-outside:-set-up-your-own-vpn">VPN</a></li>
+        <li><a href="#reach-your-home-from-outside-set-up-your-own-vpn">VPN</a></li>
       </ul>
     </li>    
     <li><a href="#usage">Usage</a></li>
