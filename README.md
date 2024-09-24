@@ -81,13 +81,13 @@
 </p>  
 
 <div align="center">
-  <a href="https://github.com/github_username/repo_name">
+  <a href="https://drive.google.com/drive/folders/1pREPO48vvCrU5cWm2z4bHnBf_eGFIXJ8?usp=drive_link" target="_blank">
     <img src="images/round_logo_open_wrt.png" alt="Logo" width="300" height="150">
+    <p align="center">
+      <img src="images/googledrive.png" width="25%">
+    </p>
   </a>
 </div>
-<p align="center">
-<img src="images/googledrive.png" width="25%">
-</p> 
 
 Since Starlink provides their clients a public <i>IPv6</i>, which is globally accessible, we leveraged on it building from scratch a custom image of <b>OpenWRT</b> dedicated to Raspberry Pi. 
 This offers a proper and reliable Modem/Router with pre-configured settings studiously assessed for working with the Starlink Dish as plug & play. <br>
@@ -404,13 +404,6 @@ Don't forget to give the project a star! Thanks again!
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-<!-- LICENSE -->
-## License
-
-Distributed under the MIT License. See `LICENSE.txt` for more information.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- PRIVACY POLICY -->
 ## Privacy Policy<br>
