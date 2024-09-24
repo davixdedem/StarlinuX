@@ -42,7 +42,7 @@
   <summary>Table of Contents</summary>
   <ol>
     <li>
-      <a href="#what's-pi-starlink">What's Pi Starlink</a>
+      <a href="#whats-pi-starlink">What's Pi Starlink</a>
       <ul>
         <li><a href="#built-with">Built With</a></li>
       </ul>
