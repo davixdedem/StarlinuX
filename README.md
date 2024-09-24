@@ -454,7 +454,7 @@ We may periodically update this Privacy Policy. Any significant changes will be 
 <!-- CONTACT -->
 ## Contact
 
-Davide Polli - [@twitter_handle](https://twitter.com/twitter_handle) - x.pistarlink@gmail.com
+Davide Polli - [@instagram](https://www.instagram.com/pistarlink/) - x.pistarlink@gmail.com
 
 Project Link: [https://github.com/davixdedem/Pi-Starlink](https://github.com/davixdedem/Pi-Starlink)
 
