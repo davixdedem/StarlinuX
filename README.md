@@ -31,7 +31,7 @@
   <p align="center">
     <!-- <a href="https://github.com/github_username/repo_name"><strong>Explore the docs »</strong></a> -->
     <br />
-    <a href="https://github.com/github_username/repo_name">View Demo</a>
+    <a href="https://github.com/davixdedem/Pi-Starlink/issues/">View Issues</a>
     ·
     <a href="https://github.com/davixdedem/Pi-Starlink/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     ·
