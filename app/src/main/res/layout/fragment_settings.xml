@@ -92,6 +92,18 @@
                         layout="@layout/layout_card_editable" />
 
                     <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/teal_700"
+                        android:textAlignment="center"
+                        android:layout_marginLeft="10sp"
+                        android:layout_marginRight="10sp"
+                        android:linksClickable="true"
+                        android:autoLink="web"
+                        android:text="@string/Changeable_credentials" />
+
+                    <TextView
                         android:id="@+id/wireless_title"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

@@ -78,5 +78,6 @@
     <string name="target_ipv6">Target IPv6</string>
     <string name="destination_port">Destination Port</string>
     <string name="offline">OFFLINE</string>
+    <string name="Changeable_credentials">Please note that username and password are changeable on the Router only, follow <a href="https://openwrt.org/docs/guide-user/troubleshooting/root_password_reset">instructions</a>.</string>
 
 </resources>

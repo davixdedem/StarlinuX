@@ -459,8 +459,16 @@
                         tools:ignore="RtlCompat" />
 
                 </LinearLayout>
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_marginTop="15sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/teal_700"
+                    android:textAlignment="center" />
             </LinearLayout>
         </ScrollView>
+
 
     </LinearLayout>
 

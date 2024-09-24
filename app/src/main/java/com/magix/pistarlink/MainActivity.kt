@@ -1,5 +1,6 @@
 package com.magix.pistarlink
 
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.Menu
 import com.google.android.material.snackbar.Snackbar
@@ -34,6 +35,10 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow
             ), drawerLayout
         )
+
+        // Fixed portrait orientation
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+
         navView.setupWithNavController(navController)
     }
 
@@ -46,5 +51,9 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
     }
 }

@@ -56,6 +56,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.CancellationSignal
 import android.text.Html
+import android.view.WindowManager
+import com.magix.pistarlink.BuildConfig
 import com.ncorti.slidetoact.SlideToActView
 import de.blinkt.openvpn.api.IOpenVPNAPIService
 import android.view.inputmethod.InputMethodManager
@@ -64,6 +66,7 @@ import com.magix.pistarlink.databinding.FragmentHomeBinding
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
+import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
 import com.magix.pistarlink.DbHandler
 import java.net.InetAddress
@@ -184,6 +187,7 @@ class HomeFragment : Fragment() {
     private val setWirelessSSIDCommand = "uci set wireless.@wifi-iface[0].ssid='%s'"
     private val setWirelessPasswordCommand = "uci set wireless.@wifi-iface[0].key='%s'"
     private val restartRouterCommand = "reboot"
+    private val factoryResetCommand = "bash /root/scripts/factory_reset.sh"
 
     /*Configurations*/
     private val onlineStatus = "Online"
@@ -193,9 +197,14 @@ class HomeFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+    }
 
-        /*Binding OpenVPN For Android service, this check permissions too */
-        //bindService()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
+            closeFragment()
+        }
     }
 
     override fun onCreateView(
@@ -243,6 +252,14 @@ class HomeFragment : Fragment() {
         }
 
         bindService()
+
+        // If you want to programmatically trigger the back button action:
+        root.setOnClickListener {
+            val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
+                closeFragment()
+            }
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+        }
 
         return root
     }
@@ -310,6 +327,10 @@ class HomeFragment : Fragment() {
             val clip = ClipData.newPlainText("Copied Text", textToCopy)
             clipboard.setPrimaryClip(clip)
         }
+
+        /*Updating the text for versioning*/
+        val version = BuildConfig.VERSION_NAME
+        binding.textView3.text = "$version"
 
         /*** START - SYSTEM INFORMATION FRAGMENT ***/
         /*Applying effect at Raspberry Pi buttons*/
@@ -824,16 +845,36 @@ class HomeFragment : Fragment() {
                 // Change the icon to pencil
                 binding.fragmentDdnsIncluded.cardLayoutHostname.editValueImage.setImageResource(R.drawable.pen)
 
-                /*Sync the new hostname with the router*/
-                setDDNSConfiguration(setDDNSHostname, hostnameEditText.text.toString())
-                setDDNSConfiguration(setDDNSDomain, hostnameEditText.text.toString())
+                if (hostnameEditText.text.toString() != "") {
+                    println("SETTING AS WRITING...")
+                    /*Sync the new hostname with the router*/
+                    setDDNSConfiguration(setDDNSHostname, hostnameEditText.text.toString())
+                    setDDNSConfiguration(setDDNSDomain, hostnameEditText.text.toString())
 
-                /*Add configuration on database*/
-                dbHandler.updateConfiguration("is_ddns_set", "1")
-                dbHandler.addConfiguration("lastDDNS",hostnameEditText.text.toString())
+                    /*Add configuration on database*/
+                    dbHandler.updateConfiguration("is_ddns_set", "1")
+                    dbHandler.addConfiguration("lastDDNS", hostnameEditText.text.toString())
+                    dbHandler.updateConfiguration("lastDDNS", hostnameEditText.text.toString())
 
-                /*Update the initial value*/
-                hostnameInitialText = hostnameEditText.text.toString()
+                    /*Update the initial value*/
+                    hostnameInitialText = hostnameEditText.text.toString()
+                }
+                else{
+                    val hostname = "N/D"
+                    /*Sync the new hostname with the router*/
+                    setDDNSConfiguration(setDDNSHostname, hostname)
+                    setDDNSConfiguration(setDDNSDomain, hostname)
+
+                    /*Add configuration on database*/
+                    dbHandler.updateConfiguration("is_ddns_set", "0")
+                    dbHandler.addConfiguration("lastDDNS", hostname)
+                    dbHandler.updateConfiguration("lastDDNS", hostname)
+
+                    /*Update the initial value*/
+                    hostnameInitialText = hostname
+
+                    hostnameEditText.setText(hostname)
+                }
 
 
             } else {
@@ -1246,24 +1287,22 @@ class HomeFragment : Fragment() {
             return@setOnTouchListener true
         }
         binding.settingsBtn.setOnTouchListener { view, motionEvent ->
-            if (isBoardReachable) {
-                when (motionEvent.action) {
-                    MotionEvent.ACTION_DOWN -> {
-                        /*Apply opacity effect when pressed*/
-                        view.alpha = 0.5f
-                    }
+            when (motionEvent.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    /*Apply opacity effect when pressed*/
+                    view.alpha = 0.5f
+                }
 
-                    MotionEvent.ACTION_UP -> {
-                        /*Revert back to original opacity*/
-                        view.alpha = 1.0f
-                        /*Call performClick to trigger the click event*/
-                        view.performClick()
-                    }
+                MotionEvent.ACTION_UP -> {
+                    /*Revert back to original opacity*/
+                    view.alpha = 1.0f
+                    /*Call performClick to trigger the click event*/
+                    view.performClick()
+                }
 
-                    MotionEvent.ACTION_CANCEL -> {
-                        /*Revert back to original opacity if the action was canceled*/
-                        view.alpha = 1.0f
-                    }
+                MotionEvent.ACTION_CANCEL -> {
+                    /*Revert back to original opacity if the action was canceled*/
+                    view.alpha = 1.0f
                 }
             }
             /*Return true to indicate that the event has been handled*/
@@ -1308,6 +1347,7 @@ class HomeFragment : Fragment() {
                 callOpenWRTSettings()
             }
             else {
+                Log.d("Settings handler","Clicking settings text")
                 /*Handle its view visibility*/
                 binding.homeMainLayout.visibility = View.GONE
                 binding.fragmentSettingsIncluded.root.visibility = View.VISIBLE
@@ -1342,6 +1382,7 @@ class HomeFragment : Fragment() {
             }
         }
         binding.settingsBtn.setOnClickListener {
+            Log.d("Settings handler","Clicking settings button")
             if (isBoardReachable) {
 
                 /*Handle its view visibility*/
@@ -1367,6 +1408,39 @@ class HomeFragment : Fragment() {
 
                 /*Update resources*/
                 callOpenWRTSettings()
+            }
+            else {
+                /*Handle its view visibility*/
+                binding.homeMainLayout.visibility = View.GONE
+                binding.fragmentSettingsIncluded.root.visibility = View.VISIBLE
+
+                /*Update luci username*/
+                binding.fragmentSettingsIncluded.cardLayoutRouterUsername.cardTitle.text =
+                    "Username"
+                binding.fragmentSettingsIncluded.cardLayoutRouterUsername.cardDescription.setText(
+                    dbHandler.getConfiguration("luci_username")
+                )
+
+                /*Update luci password*/
+                binding.fragmentSettingsIncluded.cardLayoutRouterPassword.cardTitle.text =
+                    "Password"
+                binding.fragmentSettingsIncluded.cardLayoutRouterPassword.cardDescription.setText(
+                    dbHandler.getConfiguration("luci_password")
+                )
+
+                binding.fragmentSettingsIncluded.wirelessTitle.alpha = 0.5F
+                binding.fragmentSettingsIncluded.cardLayoutWirelessSsid.root.alpha = 0.5F
+                binding.fragmentSettingsIncluded.cardLayoutWirelessSsid.cardDescription.setText("N/D")
+                binding.fragmentSettingsIncluded.cardLayoutWirelessSsid.cardTitle.text = "SSID"
+                binding.fragmentSettingsIncluded.cardLayoutWirelessPassword.cardTitle.text = "Password"
+                binding.fragmentSettingsIncluded.cardLayoutWirelessPassword.root.alpha = 0.5F
+                binding.fragmentSettingsIncluded.cardLayoutWirelessPassword.cardDescription.setText("N/D")
+
+                binding.fragmentSettingsIncluded.routerRebootSlide.alpha = 0.3F
+                binding.fragmentSettingsIncluded.routerRebootSlide.isLocked = true
+                binding.fragmentSettingsIncluded.routerFactoryResetSlide.alpha = 0.3F
+                binding.fragmentSettingsIncluded.routerFactoryResetSlide.isLocked = true
+
             }
         }
 
@@ -1714,8 +1788,16 @@ class HomeFragment : Fragment() {
             object : SlideToActView.OnSlideCompleteListener {
                 override fun onSlideComplete(view: SlideToActView) {
                     Log.d("OpenVPN", "Factory Reset Slide activation completed.")
+                    factoryResetPiStarlink()
                 }
             }
+
+        /*Binding Textview link for OpenWRT instructions*/
+        binding.fragmentSettingsIncluded.textView2.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://openwrt.org/docs/guide-user/troubleshooting/root_password_reset"))
+            startActivity(intent)
+        }
+
         /*** START - SETTINGS FRAGMENT ***/
 
         /*Updating resources on time*/
@@ -1798,6 +1880,45 @@ class HomeFragment : Fragment() {
                     Log.d(openWRTTag, "Error: $error")
                     Log.d(openWRTTag, "Response Code: $responseCode")
                     binding.fragmentSettingsIncluded.routerRebootSlide.setCompleted(completed=false,true)
+                }
+            }
+        )
+    }
+
+    /*Reboot Pi Starlink*/
+    private fun factoryResetPiStarlink() {
+        openWRTApi.executeCommand(
+            factoryResetCommand,
+            luciToken,
+            onSuccess = { response, responseCode ->
+                activity?.runOnUiThread {
+                    Log.d(openWRTTag, "Response Code: $responseCode")
+                    val resultString = response.optString("result").trim()
+                    Log.d(openWRTTag, resultString)
+                    if (resultString == "OK"){
+                        Log.d(openWRTTag,"I'm going to delete all OpenVPN For Android profiles.")
+                        val lastUUID = dbHandler.getConfiguration("lastVPNUUID")
+                        if (lastUUID != null) {
+                            val statusDelete = deleteVPNProfile(lastUUID)
+                            if (statusDelete) {
+                                Log.d(
+                                    "VPN-Handler",
+                                    "The OpenVPN profile has been deleted"
+                                )
+
+                                Log.d(openWRTTag,"I'm going to reset the last DDNS.")
+                                dbHandler.updateConfiguration("lastDDNS", "N/D")
+                            }
+                        }
+                    }
+                    binding.fragmentSettingsIncluded.routerFactoryResetSlide.setCompleted(completed=false,true)
+                }
+            },
+            onFailure = { error, responseCode ->
+                activity?.runOnUiThread {
+                    Log.d(openWRTTag, "Error: $error")
+                    Log.d(openWRTTag, "Response Code: $responseCode")
+                    binding.fragmentSettingsIncluded.routerFactoryResetSlide.setCompleted(completed=false,true)
                 }
             }
         )
@@ -2077,7 +2198,7 @@ class HomeFragment : Fragment() {
             for (i in 0 until leasesArray.length()) {
                 val leaseObject = leasesArray.getJSONObject(i)
                 val lease = DhcpLease(
-                    hostname = leaseObject.getString("hostname"),
+                    hostname = if (leaseObject.has("hostname")) leaseObject.getString("hostname") else "N/D",
                     ipaddr = leaseObject.getString("ipaddr"),
                     macAddr = leaseObject.getString("macaddr"),
                 )
@@ -2089,7 +2210,7 @@ class HomeFragment : Fragment() {
             Log.d("OpenWRT Dhcp6", "$leases6Array")
             for (i in 0 until leases6Array.length()) {
                 val lease6Object = leases6Array.getJSONObject(i)
-                val lease6 = lease6Object?.getString("ip6addr")?.let {
+                val lease6 = lease6Object?.getString("ip6addr")?.let { it ->
                     DhcpLease(
                         hostname = lease6Object.optString("hostname").takeIf { it.isNotEmpty() }
                             ?: lease6Object.optString("macaddr").takeIf { it.isNotEmpty() }
@@ -2574,21 +2695,32 @@ class HomeFragment : Fragment() {
                     try {
                         val jsonResult = JSONObject(resultString)
 
+                        /*Check if DDNS is null*/
+                        val hostname = jsonResult.optString("lookup_host")
+                        val username = jsonResult.optString("username")
+                        val password = jsonResult.optString("password")
+                        if (hostname == "N/D"){
+                            Log.d("OpenWRT","DDNS is null, setting resources.")
+                            dbHandler.updateConfiguration("is_ddns_set", "0")
+                            dbHandler.updateConfiguration("lastDDNS", "N/D")
+                            binding.layoutDns.contentLayout.setBackgroundResource(R.drawable.border)
+                        }
+                        else{
+                            dbHandler.updateConfiguration("is_ddns_set", "1")
+                        }
+
                         /* Update resources */
                         /* Hostname */
-                        val hostname = jsonResult.optString("lookup_host")
                         binding.fragmentDdnsIncluded.cardLayoutHostname.cardTitle.text = "Hostname"
                         binding.fragmentDdnsIncluded.cardLayoutHostname.cardDescription.setText(hostname)
                         hostnameInitialText = hostname
 
                         /* Username */
-                        val username = jsonResult.optString("username")
                         binding.fragmentDdnsIncluded.cardLayoutUsername.cardTitle.text = "Username"
                         binding.fragmentDdnsIncluded.cardLayoutUsername.cardDescription.setText(username)
                         usernameInitialText = username
 
                         /* Password */
-                        val password = jsonResult.optString("password")
                         binding.fragmentDdnsIncluded.cardLayoutPassword.cardTitle.text = "Password"
                         binding.fragmentDdnsIncluded.cardLayoutPassword.cardDescription.setText(password)
                         passwordInitialText = password
@@ -2889,13 +3021,18 @@ class HomeFragment : Fragment() {
         if (isDDNSset == "0") {
             binding.layoutDns.cardTitle.text = "DDNS"
             binding.layoutDns.cardDescription.text = "You haven't set up a DDNS yet."
+            binding.layoutDns.contentLayout.setBackgroundResource(R.drawable.border)
         }
         else{
             val lastDDNS = dbHandler.getConfiguration("lastDDNS")
-            binding.layoutDns.cardTitle.text = "DDNS"
-            binding.layoutDns.cardDescription.text = lastDDNS
-            binding.layoutDns.copyIpv4Image.setImageResource(R.drawable.copy)
-            binding.layoutDns.contentLayout.background = null
+            if (lastDDNS != null) {
+                if (lastDDNS != "N/D" && lastDDNS != "" ) {
+                    binding.layoutDns.cardTitle.text = "DDNS"
+                    binding.layoutDns.cardDescription.text = lastDDNS
+                    binding.layoutDns.copyIpv4Image.setImageResource(R.drawable.copy)
+                    binding.layoutDns.contentLayout.background = null
+                }
+            }
         }
     }
 
@@ -3939,7 +4076,7 @@ class HomeFragment : Fragment() {
         binding.fragmentVpnIncluded.vpnStatusTitle.text = "CONNECTING..."
 
         val ddns = dbHandler.getConfiguration("lastDDNS")
-        if (ddns != null) {
+        if (ddns != null && ddns != "" && ddns != "N/D") {
             Log.d("VPN-Handler", "DDNS has been set: $ddns")
             val lastOpenVPNSync = dbHandler.getConfiguration("lastVPNSync")?.toLong()
             Log.d("VPN-Handler", "Last sync is about $lastOpenVPNSync")
@@ -4265,6 +4402,22 @@ class HomeFragment : Fragment() {
             dnsCallback
         )
     }
+
+    private fun closeFragment(){
+        if (binding.homeMainLayout.visibility != View.VISIBLE) {
+            binding.fragmentVpnIncluded.root.visibility = View.GONE
+            binding.fragmentDdnsIncluded.root.visibility = View.GONE
+            binding.fragmentSettingsIncluded.root.visibility = View.GONE
+            binding.fragmentNetworkIncluded.root.visibility = View.GONE
+            binding.fragmentPortForwardingIncluded.root.visibility = View.GONE
+            binding.fragmentSupportIncluded.root.visibility = View.GONE
+            binding.homeMainLayout.visibility = View.VISIBLE
+        }
+        else{
+            requireActivity().moveTaskToBack(true)
+        }
+    }
+
 }
 
 /*
