@@ -44,7 +44,7 @@
     <li>
       <a href="#whats-pi-starlink">What's Pi Starlink</a>
       <ul>
-        <li><a href="#built-with">Built With</a></li>
+        <li><a href="#screenshots">Screenshots</a></li>
       </ul>
     </li>
     <li>
@@ -54,6 +54,12 @@
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
+    <li>
+      <a href="#getting-started">Features</a>
+      <ul>
+        <li><a href="#reach-your-home-from-outside:-set-up-your-own-vpn">VPN</a></li>
+      </ul>
+    </li>    
     <li><a href="#usage">Usage</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
@@ -148,6 +154,7 @@ This project aims to replace the original Starlink router by utilizing a built-i
   </a>
 </div>
 
+## Installation
 Unless you’re a developer, you’re not obliged to clone this repository so just download the pre configured OpenWRT image we provide you and flash it into your <b>Raspberry Pi</b>.<br>
 <div align="left">
   <a href="https://github.com/github_username/repo_name">
