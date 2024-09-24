@@ -29,7 +29,6 @@
 <h3 align="center">The Rasberry Pi's unofficial solution for Starlink.</h3>
 
   <p align="center">
-    <!-- <a href="https://github.com/github_username/repo_name"><strong>Explore the docs »</strong></a> -->
     <br />
     <a href="https://github.com/davixdedem/Pi-Starlink/issues/">View Issues</a>
     ·
@@ -71,13 +70,15 @@
 ## What's Pi Starlink?
 
 <div align="center">
-  <a href="https://github.com/github_username/repo_name">
+  <a href="https://play.google.com/store/apps/details?id=com.magix.pistarlink" target="_blank">
     <img src="images/round_logo.png" alt="Logo" width="300" height="150">
   </a>
 </div>
 <p align="center">
-<img src="https://camo.githubusercontent.com/1ddf90e524a4bfe8b77f9a6902d54fc708380389b7e0d7f9ad29196a799e77db/68747470733a2f2f706c61792e676f6f676c652e636f6d2f696e746c2f656e5f75732f6261646765732f696d616765732f67656e657269632f656e2d706c61792d62616467652e706e67" width="25%">
-<img src="https://camo.githubusercontent.com/0014f07b7f169b7232d26d242bb2f8ef598dea7169bd8766385d70d6be8127a1/68747470733a2f2f662d64726f69642e6f72672f62616467652f6765742d69742d6f6e2e706e67" width="25%">
+<a href="https://play.google.com/store/apps/details?id=com.magix.pistarlink" target="_blank">
+  <img src="https://camo.githubusercontent.com/1ddf90e524a4bfe8b77f9a6902d54fc708380389b7e0d7f9ad29196a799e77db/68747470733a2f2f706c61792e676f6f676c652e636f6d2f696e746c2f656e5f75732f6261646765732f696d616765732f67656e657269632f656e2d706c61792d62616467652e706e67" width="25%" alt="Play Store Badge">
+</a>
+<!--<img src="https://camo.githubusercontent.com/0014f07b7f169b7232d26d242bb2f8ef598dea7169bd8766385d70d6be8127a1/68747470733a2f2f662d64726f69642e6f72672f62616467652f6765742d69742d6f6e2e706e67" width="25%">-->
 </p>  
 
 <div align="center">
