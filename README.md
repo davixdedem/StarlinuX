@@ -220,6 +220,25 @@ Unless you’re a developer, you’re not obliged to clone this repository so ju
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+<!-- SSH -->
+## How to SSH into Pi Starlink!
+<div align="center">
+    <img src="images/ssh.png" alt="Logo" width="80" height="80">
+</div>
+1. First of all, be sure your Pi Starlink is reachable.<br>
+2. SSH into Pi Starlink through CLI:<br>
+
+```sh
+ssh root@192.168.1.1
+```
+3. Use the default password:
+```sh
+t*iP9Tk6na3VPeq
+```
+4. Congrats, you're in!
+5. Remember to change the default credentials.
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 <!-- VPN setting -->
 ## Reach your home from outside: set up your own VPN!
 <div align="center">
