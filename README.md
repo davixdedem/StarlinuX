@@ -176,7 +176,7 @@ Unless you’re a developer, you’re not obliged to clone this repository so ju
   </a>
 </div>
 
-1. Download the Pi-Starlink application from the <a href="[https://github.com/schwabe/ics-openvpn](https://play.google.com/store/apps/details?id=com.magix.pistarlink)">Play Store</a>.<br>
+1. Download the Pi-Starlink application from the <a href="https://play.google.com/store/apps/details?id=com.magix.pistarlink">Play Store</a>.<br>
 2. Install it on your Smartphone.<br>
 3. Connect it to the <b>Pi Starlink</b> Wi-Fi using the following default credentials:<br>
   ```sh
