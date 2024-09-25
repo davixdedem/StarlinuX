@@ -81,6 +81,9 @@
     <img src="images/round_logo.png" alt="Logo" width="300" height="150">
   </a>
 </div>
+<div align="center">
+    Available in 14 days...
+</div>
 <p align="center">
 <a href="https://play.google.com/store/apps/details?id=com.magix.pistarlink" target="_blank">
   <img src="https://camo.githubusercontent.com/1ddf90e524a4bfe8b77f9a6902d54fc708380389b7e0d7f9ad29196a799e77db/68747470733a2f2f706c61792e676f6f676c652e636f6d2f696e746c2f656e5f75732f6261646765732f696d616765732f67656e657269632f656e2d706c61792d62616467652e706e67" width="25%" alt="Play Store Badge">
