@@ -354,7 +354,7 @@ t*iP9Tk6na3VPeq
     </a>
 </p>
 
-There is no competitor speaking about Ethernet, as the cable is still the perfect solution if your goal is to reduce any latency while you’re playing your fav game online. So, we’d like to suggest you the most reliable Ethernet Port Extender that we figured out and that we’re currenly pushing off the edge getting amazing results.
+There is no competitor speaking about Ethernet, as the cable is still the perfect solution if your goal is to reduce any latency while you’re playing your fav game online. So, we’d like to suggest you the most reliable Ethernet Port Extender that we figured out and that we’re currently pushing off the edge getting amazing results.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
