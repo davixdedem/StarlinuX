@@ -82,7 +82,8 @@
   </a>
 </div>
 <div align="center">
-    Available in 14 days...
+    Available in 14 days...<br>
+    You can download the APK from the <b>Releases.</b>
 </div>
 <p align="center">
 <a href="https://play.google.com/store/apps/details?id=com.magix.pistarlink" target="_blank">
