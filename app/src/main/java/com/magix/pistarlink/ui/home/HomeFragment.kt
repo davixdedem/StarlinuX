@@ -2706,7 +2706,11 @@ class HomeFragment : Fragment() {
                             binding.layoutDns.contentLayout.setBackgroundResource(R.drawable.border)
                         }
                         else{
+                            dbHandler.addConfiguration("is_ddns_set", "1")
                             dbHandler.updateConfiguration("is_ddns_set", "1")
+
+                            dbHandler.addConfiguration("lastDDNS", hostname)
+                            dbHandler.updateConfiguration("lastDDNS", hostname)
                         }
 
                         /* Update resources */
@@ -3025,6 +3029,7 @@ class HomeFragment : Fragment() {
         }
         else{
             val lastDDNS = dbHandler.getConfiguration("lastDDNS")
+            println("lastDDNS is $lastDDNS")
             if (lastDDNS != null) {
                 if (lastDDNS != "N/D" && lastDDNS != "" ) {
                     binding.layoutDns.cardTitle.text = "DDNS"
@@ -3032,6 +3037,11 @@ class HomeFragment : Fragment() {
                     binding.layoutDns.copyIpv4Image.setImageResource(R.drawable.copy)
                     binding.layoutDns.contentLayout.background = null
                 }
+            }
+            else{
+                binding.layoutDns.cardTitle.text = "DDNS"
+                binding.layoutDns.cardDescription.text = "You haven't set up a DDNS yet."
+                binding.layoutDns.contentLayout.setBackgroundResource(R.drawable.border)
             }
         }
     }
@@ -4232,6 +4242,57 @@ class HomeFragment : Fragment() {
                                 connectVPN(profileUUID!!)
                             }
                         }
+                    }
+                }
+            }
+            else{
+                Log.d("VPN-Handler", "No DDNS has been set up, proceeding without.")
+                val executor = Executors.newSingleThreadExecutor()
+                context?.let {
+                    val vpnList = listVPNs()
+                    if (vpnList.isNotEmpty()) {
+                        val matchingProfile = vpnList.find { it.contains("Pi-Starlink") }
+                        if (matchingProfile != null) {
+                            profileUUID = matchingProfile.split(":").getOrNull(1)?.trim()
+                            if (profileUUID != null) {
+                                profileUUID?.let {
+                                    dbHandler.updateConfiguration(
+                                        "lastUUID",
+                                        it
+                                    )
+                                    Log.d("VPN-Handler", "Updating the last VPN sync.")
+                                    val currentTimeStamp = System.currentTimeMillis().toString()
+                                    dbHandler.updateConfiguration("lastVPNSync", currentTimeStamp)
+                                    Log.d(
+                                        "VPN-Handler",
+                                        "All done! Connecting to VPN with UUID: $profileUUID."
+                                    )
+
+                                    /*Avoid OpenVPN For Android bug, check if is the first time*/
+                                    val isFirstVPN = dbHandler.getConfiguration("isFirstVPN")
+                                    Log.d("VPN-Handler", "isFirstVPN: $isFirstVPN")
+                                    if (isFirstVPN != null) {
+                                        if (isFirstVPN == "0") {
+                                            connectVPN(profileUUID!!)
+                                        } else if (isFirstVPN == "1") {
+                                            Log.d(
+                                                "VPN-Handler",
+                                                "This is the first VPN activation ever."
+                                            )
+                                            //startOpenVPNProfile(context!!,"Pi-Starlink")
+                                            dbHandler.updateConfiguration("isFirstVPN", "0")
+                                            connectVPN(profileUUID!!)
+                                        }
+                                    }
+                                }
+                            } else {
+                                Log.e("VPN-Handler", "instance of profileUUID is null.")
+                            }
+                        } else {
+                            Log.e("VPN-Handler", "No one of the profiles contain 'Pi-Starlink'")
+                        }
+                    } else {
+                        Log.e("VPN-Handler", "The vpn list is empty.")
                     }
                 }
             }

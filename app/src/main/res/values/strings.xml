@@ -33,7 +33,7 @@
     <string name="system">System</string>
     <string name="memory">Memory</string>
     <string name="storage">Storage</string>
-    <string name="support_page">For more information, visit <a href="https://github.com/davixdedem/Pi-Starlink">\nhttps://github.com/davixdedem/Pi-Starlink</a>.</string>
+    <string name="support_page">For more information, visit <a href="https://github.com/davixdedem/Pi-Starlink">\nhttps://github.com/davixdedem/Pi-Starlink</a></string>
     <string name="support_welcome">
         Hey folks, I\'m Davide: a Software Engineer with a passion for Cyber Security coming from the beautiful country of Italy.\n\n
 
