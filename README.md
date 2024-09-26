@@ -83,7 +83,7 @@
 </div>
 <div align="center">
     Available in 14 days...<br>
-    ...in the meantime download the last <a href="https://github.com/davixdedem/Pi-Starlink/releases/tag/Pi-Starlink-0.0.5-Nebula" target="_blank">Release</a>.</b>
+    ...in the meantime download the last <a href="https://github.com/davixdedem/Pi-Starlink/releases/tag/Pi-Starlink-0.0.6-Nebula" target="_blank">Release</a>.</b>
 </div>
 <p align="center">
 <a href="https://play.google.com/store/apps/details?id=com.magix.pistarlink" target="_blank">
