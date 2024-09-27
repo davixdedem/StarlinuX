@@ -201,21 +201,23 @@ Unless you’re a developer, you’re not obliged to clone this repository so ju
 - Network: Wi-Fi or Mobile Data<br>
 
 ### Minimum Requirements for your Raspberry Pi.
-- Raspberry Pi 3 Model B+
-    - Wi-Fi: 802.11n
-    - Ethernet: 10/100 Mbps
+<b>We are currently running specific tests to make the project compatible with Pi 3 Model B/B+,Pi 400 and Pi 4 Model B.</b><br>
 
-- Raspberry Pi 4 Model B
-    - Wi-Fi: 802.11ac
-    - Ethernet: Gigabit Ethernet
+~~- Raspberry Pi 3 Model B+~~
+    ~~- Wi-Fi: 802.11n~~
+    ~~- Ethernet: 10/100 Mbps~~
 
-- Raspberry Pi 400
-    - Wi-Fi: 802.11ac
-    - Ethernet: Gigabit Ethernet
+~~- Raspberry Pi 4 Model B~~
+    ~~- Wi-Fi: 802.11ac~~
+    ~~- Ethernet: Gigabit Ethernet~~
 
-- Raspberry Pi 3 Model B
-    - Wi-Fi: 802.11n
-    - Ethernet: 10/100 Mbps
+~~- Raspberry Pi 400~~
+    ~~- Wi-Fi: 802.11ac~~
+    ~~- Ethernet: Gigabit Ethernet~~
+
+~~- Raspberry Pi 3 Model B~~
+    ~~- Wi-Fi: 802.11n~~
+    ~~- Ethernet: 10/100 Mbps~~
 
 #### Recommended Model
 - <b>Raspberry Pi 5</b>
