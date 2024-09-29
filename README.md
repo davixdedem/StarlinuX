@@ -377,10 +377,6 @@ nc -6 [IPv6_address] 5555
 ```sh
 ssh root@192.168.1.1
 ```
-3. Use the default password:
-```sh
-t*iP9Tk6na3VPeq
-```
 4. Congrats, you're in!
 5. Remember to change the default credentials.
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
