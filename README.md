@@ -169,6 +169,12 @@ This project aims to replace the original Starlink router by utilizing a built-i
 
 <!-- BUILD YOUR OWN IMAGE -->
 ## Build your own OpenWRT image
+<div align="left">
+  <a href="https://github.com/github_username/repo_name">
+    <img src="images/round_logo_open_wrt.png" alt="Logo" width="100" height="50">
+  </a>
+</div>
+
 Depending on your Raspberry Pi model, download its official OpenWRT image from the [OpenWRT Website](https://openwrt.org/toh/raspberry_pi_foundation/raspberry_pi).
 
 - Download the appropriate OpenWRT image for your Raspberry Pi model.
@@ -209,17 +215,13 @@ bash Third.sh
 - Once all the scripts have been executed, your Raspberry Pi should be configured and connected to Starlink, you can now use our <b>Android application</b>!
 
 ## Installation
-Unless you’re a developer, you’re not obliged to clone this repository so just download the pre configured OpenWRT image we provide you and flash it into your <b>Raspberry Pi</b>.<br>
 <div align="left">
   <a href="https://github.com/github_username/repo_name">
     <img src="images/round_logo_open_wrt.png" alt="Logo" width="100" height="50">
   </a>
 </div>
 
-1. Build your own pre-configured OpenWRT image following <a href="#build-your-own-openwrt-image">the instructions</a>.<br>
-3. Flash it into a 32GB micro SDCard.<br>
-4. Plug it into your Raspberry Pi.<br>
-5. Power it up!<br><br>
+- Build your own pre-configured OpenWRT image following <a href="#build-your-own-openwrt-image">the instructions</a>.<br>
 
 <div align="left">
   <a href="https://github.com/github_username/repo_name">
@@ -227,14 +229,14 @@ Unless you’re a developer, you’re not obliged to clone this repository so ju
   </a>
 </div>
 
-1. Download the Pi-Starlink application from the <a href="https://play.google.com/store/apps/details?id=com.magix.pistarlink">Play Store</a>.<br>
-2. Install it on your Smartphone.<br>
-3. Connect it to the <b>Pi Starlink</b> Wi-Fi using the following default credentials:<br>
+- Download the Pi-Starlink application from the <a href="https://play.google.com/store/apps/details?id=com.magix.pistarlink">Play Store</a>.<br>
+- Install it on your Smartphone.<br>
+- Connect it to the <b>Pi Starlink</b> Wi-Fi using the following default credentials:<br>
   ```sh
   SSID: Pi-Starlink
   Password: pistarlink
   ```
-4. Open the app, you're in!<br>
+- Open the app, you're in!<br>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
