@@ -228,7 +228,7 @@ bash Third.sh
   </a>
 </div>
 
-- Download the Pi-Starlink application from the <a href="https://play.google.com/store/apps/details?id=com.magix.pistarlink">Play Store</a>.<br>
+- Download the Pi-Starlink application from the last <a href="https://github.com/davixdedem/Pi-Starlink/releases/tag/Pi-Starlink-0.0.8-Nebula" target="_blank">Release</a>.<br>
 - Install it on your Smartphone.<br>
 - Connect it to the <b>Pi Starlink</b> Wi-Fi using the following default credentials:<br>
   ```sh
