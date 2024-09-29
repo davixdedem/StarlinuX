@@ -82,7 +82,7 @@
   </a>
 </div>
 <div align="center">
-    Available in 14 days...<br>
+    Available in a few days...<br>
     ...in the meantime download the last <a href="https://github.com/davixdedem/Pi-Starlink/releases/tag/Pi-Starlink-0.0.6-Nebula" target="_blank">Release</a>.</b>
 </div>
 <p align="center">
@@ -95,9 +95,14 @@
 <div align="center">
   <a href="https://drive.google.com/drive/folders/1pREPO48vvCrU5cWm2z4bHnBf_eGFIXJ8?usp=drive_link" target="_blank">
     <img src="images/round_logo_open_wrt.png" alt="Logo" width="300" height="150">
+  <div align="center">
+      For security reasons we don't provide a pre-build OpenWRT image,<br>
+      ...build your own from scratch in a <b>few minutes</b>!</a>.</b>
+  </div>    
     <p align="center">
-      <img src="images/googledrive.png" width="25%">
+      <a href="#build-your-own-openwrt-image">Follow the instructions</a>
     </p>
+    <br>
   </a>
 </div>
 
@@ -160,6 +165,47 @@ This project aims to replace the original Starlink router by utilizing a built-i
     <img src="images/bypass_mode.png" alt="Logo" width="300" height="300">
   </a>
 </div>
+
+<!-- BUILD YOUR OWN IMAGE -->
+## Build your own OpenWRT image
+Depending on your Raspberry Pi model, download its official OpenWRT image from the [OpenWRT Website](https://openwrt.org/toh/raspberry_pi_foundation/raspberry_pi).
+
+- Download the appropriate OpenWRT image for your Raspberry Pi model.
+- Flash the OpenWRT image onto the MicroSD card using [Etcher](https://www.balena.io/etcher/) or any similar tool.
+- Insert the MicroSD card into your Raspberry Pi.
+- Power up the Raspberry Pi.
+- Plug an Ethernet cable into the Ethernet port on the Raspberry Pi and connect it to your laptop/computer.
+- Verify that you can access OpenWRT by pinging its default IP address:
+```sh
+ping 192.168.1.1
+```
+- Clone the repository from GitHub:
+```sh
+git clone --branch dev https://github.com/davixdedem/Pi-Starlink.git
+```
+- Navigate to the <b>auto_install</b> directory.
+```sh
+cd Pi-Starlink/auto_install
+```
+- Run *First.sh* with:
+```sh
+ssh root@192.168.1.1 'ash -s' < First.sh 2>&1
+```
+- <b>Now connect Raspberry Pi to Starlink in place of the original Router.</b>
+- Connect to the Wi-Fi:
+```sh
+SSID: Pi-Starlink
+Password: pistarlink
+```
+- Run *Second.sh* with:<br>
+```sh
+ssh root@192.168.1.1 'ash -s' < Second.sh 2>&1
+```
+- Run *Third.sh* with:<br>
+```sh
+bash Third.sh
+```
+- Once all the scripts have been executed, your Raspberry Pi should be configured and connected to Starlink, you can now use our <b>Android application</b>!
 
 ## Installation
 Unless you’re a developer, you’re not obliged to clone this repository so just download the pre configured OpenWRT image we provide you and flash it into your <b>Raspberry Pi</b>.<br>
