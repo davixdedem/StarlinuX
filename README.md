@@ -97,8 +97,7 @@
   <a href="https://drive.google.com/drive/folders/1pREPO48vvCrU5cWm2z4bHnBf_eGFIXJ8?usp=drive_link" target="_blank">
     <img src="images/round_logo_open_wrt.png" alt="Logo" width="300" height="150">
   <div align="center">
-      For security reasons we don't provide a pre-build OpenWRT image,<br>
-      ...build your own from scratch in a <b>few minutes</b>!</a>.</b>
+      ...build your own Pi Starlink from scratch in a <b>few minutes</b>!</a>.</b>
   </div>    
     <p align="center">
       <a href="#build-your-own-openwrt-image">Follow the instructions</a>
