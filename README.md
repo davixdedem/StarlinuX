@@ -57,6 +57,7 @@
     <li>
       <a href="#getting-started">Usage</a>
       <ul>
+        <li><a href="#build-your-own-openwrt-image">Build your own OpenWRT image</a></li>
         <li><a href="#reach-your-home-from-outside-set-up-your-own-vpn">Reach your home from outside: set up your own VPN!</a></li>
         <li><a href="#get-rid-of-dynamic-ip-set-up-your-personal-ddns">Get rid of dynamic IP: set up your personal DDNS!</a></li>
         <li><a href="#got-a-game-server-or-a-web-page-set-up-port-forwarding">Got a Game Server or a Web Page? Set up Port Forwarding!</a></li>
