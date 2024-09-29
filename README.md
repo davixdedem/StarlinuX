@@ -51,6 +51,7 @@
       <a href="#getting-started">Getting Started</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#build-your-own-openwrt-image">Build your own OpenWRT image</a></li>
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
@@ -82,7 +83,7 @@
   </a>
 </div>
 <div align="center">
-    Available in 14 days...<br>
+    Available in a few days...<br>
     ...in the meantime download the last <a href="https://github.com/davixdedem/Pi-Starlink/releases/tag/Pi-Starlink-0.0.6-Nebula" target="_blank">Release</a>.</b>
 </div>
 <p align="center">
@@ -95,9 +96,13 @@
 <div align="center">
   <a href="https://drive.google.com/drive/folders/1pREPO48vvCrU5cWm2z4bHnBf_eGFIXJ8?usp=drive_link" target="_blank">
     <img src="images/round_logo_open_wrt.png" alt="Logo" width="300" height="150">
+  <div align="center">
+      ...build your own OpenWRT image from scratch in a <b>few minutes</b>!</a>.</b>
+  </div>    
     <p align="center">
-      <img src="images/googledrive.png" width="25%">
+      <a href="#build-your-own-openwrt-image">Follow the instructions</a>
     </p>
+    <br>
   </a>
 </div>
 
@@ -161,18 +166,61 @@ This project aims to replace the original Starlink router by utilizing a built-i
   </a>
 </div>
 
-## Installation
-Unless you’re a developer, you’re not obliged to clone this repository so just download the pre configured OpenWRT image we provide you and flash it into your <b>Raspberry Pi</b>.<br>
+<!-- BUILD YOUR OWN IMAGE -->
+## Build your own OpenWRT image
 <div align="left">
   <a href="https://github.com/github_username/repo_name">
     <img src="images/round_logo_open_wrt.png" alt="Logo" width="100" height="50">
   </a>
 </div>
 
-1. Download our pre-configured OpenWRT image from <a href="https://drive.google.com/drive/folders/1pREPO48vvCrU5cWm2z4bHnBf_eGFIXJ8?usp=drive_link">Google Drive</a>.<br>
-3. Flash it into a 32GB micro SDCard.<br>
-4. Plug it into your Raspberry Pi.<br>
-5. Power it up!<br><br>
+Depending on your Raspberry Pi model, download its official OpenWRT image from the [OpenWRT Website](https://openwrt.org/toh/raspberry_pi_foundation/raspberry_pi).
+
+- Download the appropriate OpenWRT image for your Raspberry Pi model.
+- Flash the OpenWRT image onto the MicroSD card using [Etcher](https://www.balena.io/etcher/) or any similar tool.
+- Insert the MicroSD card into your Raspberry Pi.
+- Power up the Raspberry Pi.
+- Plug an Ethernet cable into the Ethernet port on the Raspberry Pi and connect it to your laptop/computer.
+- Verify that you can access OpenWRT by pinging its default IP address:
+```sh
+ping 192.168.1.1
+```
+- Clone the repository from GitHub:
+```sh
+git clone --branch main https://github.com/davixdedem/Pi-Starlink.git
+```
+- Navigate to the <b>auto_install</b> directory.
+```sh
+cd Pi-Starlink/auto_install
+```
+- Run *First.sh* with:
+```sh
+ssh root@192.168.1.1 'ash -s' < First.sh 2>&1
+```
+- <b>Now connect Raspberry Pi to Starlink in place of the original Router.</b>
+- Connect to the Wi-Fi:
+```sh
+SSID: Pi-Starlink
+Password: pistarlink
+```
+- Run *Second.sh* with:<br>
+```sh
+ssh root@192.168.1.1 'ash -s' < Second.sh 2>&1
+```
+- Run *Third.sh* with:<br>
+```sh
+bash Third.sh
+```
+- Once all the scripts have been executed, your Raspberry Pi should be configured and connected to Starlink, you can now use our <b>Android application</b>!
+
+## Installation
+<div align="left">
+  <a href="https://github.com/github_username/repo_name">
+    <img src="images/round_logo_open_wrt.png" alt="Logo" width="100" height="50">
+  </a>
+</div>
+
+- Build your own pre-configured OpenWRT image following <a href="#build-your-own-openwrt-image">the instructions</a>.<br>
 
 <div align="left">
   <a href="https://github.com/github_username/repo_name">
@@ -180,14 +228,14 @@ Unless you’re a developer, you’re not obliged to clone this repository so ju
   </a>
 </div>
 
-1. Download the Pi-Starlink application from the <a href="https://play.google.com/store/apps/details?id=com.magix.pistarlink">Play Store</a>.<br>
-2. Install it on your Smartphone.<br>
-3. Connect it to the <b>Pi Starlink</b> Wi-Fi using the following default credentials:<br>
+- Download the Pi-Starlink application from the <a href="https://play.google.com/store/apps/details?id=com.magix.pistarlink">Play Store</a>.<br>
+- Install it on your Smartphone.<br>
+- Connect it to the <b>Pi Starlink</b> Wi-Fi using the following default credentials:<br>
   ```sh
   SSID: Pi-Starlink
   Password: pistarlink
   ```
-4. Open the app, you're in!<br>
+- Open the app, you're in!<br>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -201,23 +249,17 @@ Unless you’re a developer, you’re not obliged to clone this repository so ju
 - Network: Wi-Fi or Mobile Data<br>
 
 ### Minimum Requirements for your Raspberry Pi.
-<b>We are currently running specific tests to make the project compatible with Pi 3 Model B/B+,Pi 400 and Pi 4 Model B.</b><br>
+- Raspberry Pi 3 Model B+
+    - Wi-Fi: 802.11n
+    - Ethernet: 10/100 Mbps
 
-~~- Raspberry Pi 3 Model B+~~
-    ~~- Wi-Fi: 802.11n~~
-    ~~- Ethernet: 10/100 Mbps~~
+- Raspberry Pi 4 Model B
+    - Wi-Fi: 802.11ac
+    - Ethernet: Gigabit Ethernet
 
-~~- Raspberry Pi 4 Model B~~
-    ~~- Wi-Fi: 802.11ac~~
-    ~~- Ethernet: Gigabit Ethernet~~
-
-~~- Raspberry Pi 400~~
-    ~~- Wi-Fi: 802.11ac~~
-    ~~- Ethernet: Gigabit Ethernet~~
-
-~~- Raspberry Pi 3 Model B~~
-    ~~- Wi-Fi: 802.11n~~
-    ~~- Ethernet: 10/100 Mbps~~
+- Raspberry Pi 3 Model B
+    - Wi-Fi: 802.11n
+    - Ethernet: 10/100 Mbps
 
 #### Recommended Model
 - <b>Raspberry Pi 5</b>
