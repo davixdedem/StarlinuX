@@ -215,7 +215,7 @@ Unless you’re a developer, you’re not obliged to clone this repository so ju
   </a>
 </div>
 
-1. Download our pre-configured OpenWRT image from <a href="https://drive.google.com/drive/folders/1pREPO48vvCrU5cWm2z4bHnBf_eGFIXJ8?usp=drive_link">Google Drive</a>.<br>
+1. Build your own pre-configured OpenWRT image following <a href="#build-your-own-openwrt-image">the instructions</a>.<br>
 3. Flash it into a 32GB micro SDCard.<br>
 4. Plug it into your Raspberry Pi.<br>
 5. Power it up!<br><br>
@@ -247,23 +247,17 @@ Unless you’re a developer, you’re not obliged to clone this repository so ju
 - Network: Wi-Fi or Mobile Data<br>
 
 ### Minimum Requirements for your Raspberry Pi.
-<b>We are currently running specific tests to make the project compatible with Pi 3 Model B/B+,Pi 400 and Pi 4 Model B.</b><br>
+- Raspberry Pi 3 Model B+
+    - Wi-Fi: 802.11n
+    - Ethernet: 10/100 Mbps
 
-~~- Raspberry Pi 3 Model B+~~
-    ~~- Wi-Fi: 802.11n~~
-    ~~- Ethernet: 10/100 Mbps~~
+- Raspberry Pi 4 Model B
+    - Wi-Fi: 802.11ac
+    - Ethernet: Gigabit Ethernet
 
-~~- Raspberry Pi 4 Model B~~
-    ~~- Wi-Fi: 802.11ac~~
-    ~~- Ethernet: Gigabit Ethernet~~
-
-~~- Raspberry Pi 400~~
-    ~~- Wi-Fi: 802.11ac~~
-    ~~- Ethernet: Gigabit Ethernet~~
-
-~~- Raspberry Pi 3 Model B~~
-    ~~- Wi-Fi: 802.11n~~
-    ~~- Ethernet: 10/100 Mbps~~
+- Raspberry Pi 3 Model B
+    - Wi-Fi: 802.11n
+    - Ethernet: 10/100 Mbps
 
 #### Recommended Model
 - <b>Raspberry Pi 5</b>
