@@ -187,7 +187,7 @@ ping 192.168.1.1
 ```
 - Clone the repository from GitHub:
 ```sh
-git clone --branch main https://github.com/davixdedem/Pi-Starlink.git
+git clone --branch master https://github.com/davixdedem/Pi-Starlink.git
 ```
 - Navigate to the <b>auto_install</b> directory.
 ```sh
