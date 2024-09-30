@@ -1,79 +1,72 @@
 package com.magix.pistarlink.ui.home
 
-import kotlin.math.pow
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
-import android.graphics.Color
-import android.os.Bundle
-import android.os.IBinder
-import android.os.RemoteException
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
-import android.webkit.WebView
-import android.webkit.WebViewClient
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ProgressBar
-import android.widget.TextView
-import androidx.fragment.app.Fragment
-import com.magix.pistarlink.OpenWRTApi
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import org.json.JSONArray
-import java.io.File
-import kotlin.math.log10
-import java.io.IOException
-import org.json.JSONObject
-import org.json.JSONException
-import java.io.BufferedReader
-import android.widget.Spinner
-import com.magix.pistarlink.R
-import android.widget.EditText
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.InputStreamReader
-import kotlinx.coroutines.launch
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import kotlinx.coroutines.isActive
-import com.suke.widget.SwitchButton
-import android.content.ComponentName
 import android.animation.ObjectAnimator
+import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
 import android.content.ServiceConnection
+import android.graphics.Color
 import android.net.ConnectivityManager
 import android.net.DnsResolver
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.os.CancellationSignal
+import android.os.IBinder
+import android.os.RemoteException
 import android.text.Html
-import android.view.WindowManager
-import com.magix.pistarlink.BuildConfig
-import com.ncorti.slidetoact.SlideToActView
-import de.blinkt.openvpn.api.IOpenVPNAPIService
-import android.view.inputmethod.InputMethodManager
-import de.blinkt.openvpn.api.IOpenVPNStatusCallback
-import com.magix.pistarlink.databinding.FragmentHomeBinding
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.inputmethod.InputMethodManager
 import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.ProgressBar
+import android.widget.Spinner
+import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import com.magix.pistarlink.BuildConfig
 import com.magix.pistarlink.DbHandler
+import com.magix.pistarlink.OpenWRTApi
+import com.magix.pistarlink.R
+import com.magix.pistarlink.databinding.FragmentHomeBinding
+import com.ncorti.slidetoact.SlideToActView
+import com.suke.widget.SwitchButton
+import de.blinkt.openvpn.api.IOpenVPNAPIService
+import de.blinkt.openvpn.api.IOpenVPNStatusCallback
+import kotlinx.coroutines.*
+import org.json.JSONArray
+import org.json.JSONException
+import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStreamReader
 import java.net.InetAddress
 import java.net.NetworkInterface
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
-import kotlinx.coroutines.*
+import kotlin.math.log10
+import kotlin.math.pow
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
@@ -1330,9 +1323,17 @@ class HomeFragment : Fragment() {
                 /*Update luci password*/
                 binding.fragmentSettingsIncluded.cardLayoutRouterPassword.cardTitle.text =
                     "Password"
-                binding.fragmentSettingsIncluded.cardLayoutRouterPassword.cardDescription.setText(
-                    dbHandler.getConfiguration("luci_password")
-                )
+                val password = dbHandler.getConfiguration("luci_password")
+                println("current luci password is $password")
+                if (password.isNullOrEmpty()) {
+                    binding.fragmentSettingsIncluded.cardLayoutRouterPassword.cardDescription.setText(
+                        "N/D"
+                    )
+                } else {
+                    binding.fragmentSettingsIncluded.cardLayoutRouterPassword.cardDescription.setText(
+                        password
+                    )
+                }
 
                 binding.fragmentSettingsIncluded.wirelessTitle.alpha = 1F
                 binding.fragmentSettingsIncluded.cardLayoutWirelessSsid.root.alpha = 1F
@@ -1362,9 +1363,17 @@ class HomeFragment : Fragment() {
                 /*Update luci password*/
                 binding.fragmentSettingsIncluded.cardLayoutRouterPassword.cardTitle.text =
                     "Password"
-                binding.fragmentSettingsIncluded.cardLayoutRouterPassword.cardDescription.setText(
-                    dbHandler.getConfiguration("luci_password")
-                )
+                val password = dbHandler.getConfiguration("luci_password")
+                println("current luci password is $password")
+                if (password.isNullOrEmpty()) {
+                    binding.fragmentSettingsIncluded.cardLayoutRouterPassword.cardDescription.setText(
+                        "N/D"
+                    )
+                } else {
+                    binding.fragmentSettingsIncluded.cardLayoutRouterPassword.cardDescription.setText(
+                        password
+                    )
+                }
 
                 binding.fragmentSettingsIncluded.wirelessTitle.alpha = 0.5F
                 binding.fragmentSettingsIncluded.cardLayoutWirelessSsid.root.alpha = 0.5F
@@ -1798,7 +1807,7 @@ class HomeFragment : Fragment() {
             startActivity(intent)
         }
 
-        /*** START - SETTINGS FRAGMENT ***/
+        /*** STOP - SETTINGS FRAGMENT ***/
 
         /*Updating resources on time*/
         job = CoroutineScope(Dispatchers.IO).launch {
@@ -2823,7 +2832,7 @@ class HomeFragment : Fragment() {
             Log.w(openWRTTag, "luciToken is null or empty. Aborting the operation.")
             return
         }
-        val composedCmd = String.format(command, name,) + " && " + commitFirewallCommand
+        val composedCmd = String.format(command, name) + " && " + commitFirewallCommand
         Log.d("OpenWRT","Composed command: $composedCmd")
         openWRTApi.executeCommand(
             composedCmd ,
@@ -4365,7 +4374,7 @@ class HomeFragment : Fragment() {
 
         /*Luci Webpage*/
         dbHandler.addConfiguration("luci_username","root")
-        dbHandler.addConfiguration("luci_password","t*iP9Tk6na3VPeq")
+        dbHandler.addConfiguration("luci_password","")
 
         /*DDNS*/
         dbHandler.addConfiguration("is_ddns_set","0")
@@ -4472,6 +4481,7 @@ class HomeFragment : Fragment() {
             binding.fragmentNetworkIncluded.root.visibility = View.GONE
             binding.fragmentPortForwardingIncluded.root.visibility = View.GONE
             binding.fragmentSupportIncluded.root.visibility = View.GONE
+            binding.fragmentSystemIncluded.root.visibility = View.GONE
             binding.homeMainLayout.visibility = View.VISIBLE
         }
         else{

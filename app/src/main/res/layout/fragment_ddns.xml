@@ -85,6 +85,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10sp"
                         android:textColor="@color/white"
+                        android:autoLink="web"
                         android:text="@string/register_and_sign_up" />
 
                     <TextView
