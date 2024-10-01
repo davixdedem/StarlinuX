@@ -115,8 +115,7 @@ This offers a proper and reliable Modem/Router with pre-configured settings stud
 <br>
 
 The mobile application of <b>Pi Starlink</b> will allow you to set up your own free VPN all over IPv6 in a few easy steps and reach your home network while ensuring adequate security you need to surf the net safely.
-The VPN is based on <i>OpenVPN</i>, which is free works with the APIs provided by the fork project of <a href="https://github.com/schwabe/ics-openvpn"><i>OpenVPN for Android</i></a> or with <a href="https://github.com/WireGuard/wireguard-android"><i>Wireguard</i></a>, which is <b>faster</b> and <b>stronger</b> than its younger brother OpenVPN. Pi Starlink is not only oriented to the normal Starlink customers but even to people who want
-to host their own public server globally as our application has specific features for managing <b>port forwarding</b> rules. In case you get an ethernet port extender, we’ll be able to set up a proper <b>DMZ</b>, all is up to you!<br>
+You'll get two choices to set up your VPN: <i><b>OpenVPN</b></i> or <i><b>Wireguard</b></i>, is up to you. The first one works with the APIs provided by the fork project of <a href="https://github.com/schwabe/ics-openvpn"><i>OpenVPN for Android</i></a> while the second option, which is <b>faster</b> and more <b>robust</b> than its younger brother,also provides APIs through the <a href="https://github.com/WireGuard/wireguard-android"><i>Wireguard</i></a> project. Pi Starlink is not only oriented to the normal Starlink customers but even to people who want to host their own public server globally as our application has specific feature  for managing <b>port forwarding</b> rules. In case you get an ethernet port extender, we’ll be able to set up a proper <b>DMZ</b>, all is up to you!<br>
 
 <div align="center">
   <i><b>...IPv6, what a Saviour!</b></i>
@@ -320,7 +319,7 @@ tail -f /var/log/openvpn_status.log
 <div align="center"><b>Wireguard + Pi Starlink</b></div><br>
 1. First of all, be sure you've already installed <a href="https://play.google.com/store/apps/details?id=com.wireguard.android"><i>Wireguard</i></a> on your Smartphone.<br>
 2. In Pi Starlink, go to the <i><b>Virtual Private Network(VPN)</b></i> section.<br>
-3. Choose the Wireguard section.
+3. Choose the Wireguard section.<br>
 4. Slide the configuration button, Pi Starlink will take a while to configure Wireguard depending on your Raspberry Pi efficiency.<br>
 5. Once is done, turn off your Wi-Fi connection and use only your <b>Mobile Network</b>.<br>
 6. Slide the activation button, your smartphone will be assigned a <b>local IPv4 address</b>.<br>
