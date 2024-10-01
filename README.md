@@ -115,7 +115,7 @@ This offers a proper and reliable Modem/Router with pre-configured settings stud
 <br>
 
 The mobile application of <b>Pi Starlink</b> will allow you to set up your own free VPN all over IPv6 in a few easy steps and reach your home network while ensuring adequate security you need to surf the net safely.
-The VPN is based on <i>OpenVPN</i>, which is free and also, it works with the APIs provided by the fork project of <a href="https://github.com/schwabe/ics-openvpn"><i>OpenVPN for Android</i></a>. Pi Starlink is not only oriented to the normal Starlink customers but even to people who want
+The VPN is based on <i>OpenVPN</i>, which is free works with the APIs provided by the fork project of <a href="https://github.com/schwabe/ics-openvpn"><i>OpenVPN for Android</i></a> or with <a href="https://github.com/WireGuard/wireguard-android"><i>Wireguard</i></a>, which is <b>faster</b> and <b>stronger</b> than its younger brother OpenVPN. Pi Starlink is not only oriented to the normal Starlink customers but even to people who want
 to host their own public server globally as our application has specific features for managing <b>port forwarding</b> rules. In case you get an ethernet port extender, we’ll be able to set up a proper <b>DMZ</b>, all is up to you!<br>
 
 <div align="center">
