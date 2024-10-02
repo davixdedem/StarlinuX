@@ -192,7 +192,7 @@ git clone --branch dev https://github.com/davixdedem/Pi-Starlink.git
 ```sh
 cd Pi-Starlink/auto_install
 ```
-- Run *First.sh* with:
+- Run the following command:
 ```sh
 ssh root@192.168.1.1 'ash -s' < First.sh 2>&1
 ```
@@ -202,13 +202,9 @@ ssh root@192.168.1.1 'ash -s' < First.sh 2>&1
 SSID: Pi-Starlink
 Password: pistarlink
 ```
-- Run *Second.sh* with:<br>
+- Run the last command:<br>
 ```sh
-ssh root@192.168.1.1 'ash -s' < Second.sh 2>&1
-```
-- Run *Third.sh* with:<br>
-```sh
-bash Third.sh
+ssh root@192.168.1.1 'ash -s' < Second.sh 2>&1 && bash Third.sh
 ```
 - Once all the scripts have been executed, your Raspberry Pi should be configured and connected to Starlink, you can now use our <b>Android application</b>!
 
