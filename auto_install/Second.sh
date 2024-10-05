@@ -19,10 +19,6 @@ echo "Installing OpenVPN server and EasyRSA..."
 opkg install openvpn-openssl 
 opkg install openvpn-easy-rsa
 
-# Install Wireguard Server
-echo "Installing Wireguard server..."
-opkg install wireguard-tools
-
 # Install Nohup
 echo "Installing Nohup..."
 opkg install coreutils-nohup
@@ -30,6 +26,9 @@ opkg install coreutils-nohup
 # Install bash
 echo "Installing Bash..."
 opkg install bash
+
+# Install nano
+opkg install nano
 
 # Install SCP
 echo "Installing SCP (openssh-sftp-server)..."
