@@ -50,7 +50,8 @@
     <string name="openvpn_page">For more information, visit <a href="http://192.168.1.1">OpenVPN For Android</a>.</string>
     <string name="dhcp_title">DHCP</string>
     <string name="dhcp6_title">DHCP6</string>
-    <string name="vpn_title">VPN</string>
+    <string name="vpn_title">OpenVPN</string>
+    <string name="vpn_title_wireguard">Wireguard</string>
     <string name="connected_devices">Connected Devices</string>
     <string name="profiles">Profile</string>
     <string name="connection_title">Connection:</string>
@@ -79,5 +80,7 @@
     <string name="destination_port">Destination Port</string>
     <string name="offline">OFFLINE</string>
     <string name="Changeable_credentials">Please note that username and password are changeable on the Router only, follow <a href="https://openwrt.org/docs/guide-user/troubleshooting/root_password_reset">instructions</a>.</string>
+    <string name="about_openvpn">OpenVPN is an open-source VPN protocol that provides secure point-to-point or site-to-site connections. It uses SSL/TLS for key exchange, allowing encrypted data transfer over the internet. It\'s widely used for its flexibility, security, and support for various platforms.</string>
+    <string name="about_wireguard">WireGuard is a modern, open-source VPN protocol designed for simplicity, speed, and security. It uses state-of-the-art cryptography, offering faster performance and more robust security compared to OpenVPN.</string>
 
 </resources>

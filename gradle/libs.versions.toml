@@ -35,6 +35,7 @@ constraintlayoutCore = "1.0.4"
 slidetoact = "0.11.0"
 slidetoconfirm = "1.0.2"
 switchButton = "0.0.3"
+tunnel = "1.0.20230706"
 
 [libraries]
 androidx-cardview = { module = "androidx.cardview:cardview", version.ref = "cardview" }
@@ -72,6 +73,7 @@ androidx-constraintlayout-core = { group = "androidx.constraintlayout", name = "
 slidetoact = { module = "com.ncorti:slidetoact", version.ref = "slidetoact" }
 slidetoconfirm = { module = "com.github.chinalwb:slidetoconfirm", version.ref = "slidetoconfirm" }
 switch-button = { module = "com.github.zcweng:switch-button", version.ref = "switchButton" }
+tunnel = { module = "com.wireguard.android:tunnel", version.ref = "tunnel" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

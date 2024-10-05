@@ -11,10 +11,10 @@ android {
 
     defaultConfig {
         applicationId = "com.magix.pistarlink"
-        minSdk = 34
+        minSdk = 33
         targetSdk = 34
-        versionCode = 8
-        versionName = "Pi-Starlink-0.0.8-Nebula"
+        versionCode = 10
+        versionName = "Pi-Starlink-0.1.0-Nebula"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
 
@@ -36,17 +36,15 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         viewBinding = true
     }
-
-
 
 }
 
@@ -74,4 +72,5 @@ dependencies {
     implementation(libs.slidetoact)
     implementation(libs.switch.button)
     implementation(libs.minidns.hla)
+    implementation(libs.tunnel)
 }

@@ -30,6 +30,13 @@
         android:layout_height="match_parent" />
 
     <include
+        layout="@layout/fragment_vpn_wg"
+        android:id="@+id/fragment_vpn_included_wg"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <include
         layout="@layout/fragment_ddns"
         android:id="@+id/fragment_ddns_included"
         android:visibility="gone"
