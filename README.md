@@ -175,18 +175,19 @@ This project aims to replace the original Starlink router by utilizing a built-i
 
 Depending on your Raspberry Pi model, download its official OpenWRT image from the [OpenWRT Website](https://openwrt.org/toh/raspberry_pi_foundation/raspberry_pi).
 
+```sh
+git clone --branch dev https://github.com/davixdedem/Pi-Starlink.git
+```
 - Download the appropriate OpenWRT image for your Raspberry Pi model.
 - Flash the OpenWRT image onto the MicroSD card using [Etcher](https://www.balena.io/etcher/) or any similar tool.
 - Insert the MicroSD card into your Raspberry Pi.
+- Clone the repository from GitHub:
 - Power up the Raspberry Pi.
-- Plug an Ethernet cable into the Ethernet port on the Raspberry Pi and connect it to your laptop/computer.
-- Verify that you can access OpenWRT by pinging its default IP address:
+- Plug an Ethernet cable into the Ethernet port on the Raspberry Pi and connect it to your laptop/computer.<br>
+- Verify that you can access OpenWRT by pinging its default IP address:<br>
+  *(You may disconnect your Wi-Fi interface in order to be sure to reach your Raspberry Pi via cable)*<br>
 ```sh
 ping 192.168.1.1
-```
-- Clone the repository from GitHub:
-```sh
-git clone --branch dev https://github.com/davixdedem/Pi-Starlink.git
 ```
 - Navigate to the <b>auto_install</b> directory.
 ```sh
@@ -310,7 +311,7 @@ tail -f /var/log/openvpn_status.log
 ```
 
 <div align="center">
-    <img src="images/vpn_plus_pi.png" alt="Logo" width="220" height="90">
+    <img src="images/wg_plus_pi.png" alt="Logo" width="220" height="90">
 </div>
 <div align="center"><b>Wireguard + Pi Starlink</b></div><br>
 1. First of all, be sure you've already installed <a href="https://play.google.com/store/apps/details?id=com.wireguard.android"><i>Wireguard</i></a> on your Smartphone.<br>
