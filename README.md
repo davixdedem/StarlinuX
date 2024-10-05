@@ -147,7 +147,7 @@ Just buy the PoE(Power over Ethernet) which powers up all your items from 12v sw
 
 <div align="center">
     <img src="images/homepage.png" alt="Logo" width="214" height="472">
-    <img src="images/active_vpn.png" alt="Logo" width="214" height="472">
+    <img src="images/wg_inactive.png" alt="Logo" width="214" height="472">
     <img src="images/port_forwarding.png" alt="Logo" width="214" height="472">
 </div>
 
