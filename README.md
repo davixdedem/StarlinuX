@@ -84,7 +84,7 @@
 </div>
 <div align="center">
     Available in a few days...<br>
-    ...in the meantime download the last <a href="https://github.com/davixdedem/Pi-Starlink/releases/tag/Pi-Starlink-0.0.8-Nebula" target="_blank">Release</a>.</b>
+    ...in the meantime download the last <a href="https://github.com/davixdedem/Pi-Starlink/releases/tag/Pi-Starlink-0.0.6-Nebula" target="_blank">Release</a>.</b>
 </div>
 <p align="center">
 <a href="https://play.google.com/store/apps/details?id=com.magix.pistarlink" target="_blank">
@@ -115,8 +115,7 @@ This offers a proper and reliable Modem/Router with pre-configured settings stud
 <br>
 
 The mobile application of <b>Pi Starlink</b> will allow you to set up your own free VPN all over IPv6 in a few easy steps and reach your home network while ensuring adequate security you need to surf the net safely.
-The VPN is based on <i>OpenVPN</i>, which is free and also, it works with the APIs provided by the fork project of <a href="https://github.com/schwabe/ics-openvpn"><i>OpenVPN for Android</i></a>. Pi Starlink is not only oriented to the normal Starlink customers but even to people who want
-to host their own public server globally as our application has specific features for managing <b>port forwarding</b> rules. In case you get an ethernet port extender, we’ll be able to set up a proper <b>DMZ</b>, all is up to you!<br>
+You'll get two choices to set up your VPN: <i><b>OpenVPN</b></i> or <i><b>Wireguard</b></i>. The first one works with the APIs provided by the fork project of <a href="https://github.com/schwabe/ics-openvpn"><i>OpenVPN for Android</i></a> while the second option, which is <b>faster</b> and more <b>robust</b> than its younger brother,also provides APIs through the <a href="https://github.com/wireGuard/"><i>Wireguard</i></a> project. Pi Starlink is not only oriented to the normal Starlink customers but even to people who want to host their own public server globally as our application has specific feature  for managing <b>port forwarding</b> rules. In case you get an ethernet port extender, we’ll be able to set up a proper <b>DMZ</b>, all is up to you!<br>
 
 <div align="center">
   <i><b>...IPv6, what a Saviour!</b></i>
@@ -176,24 +175,25 @@ This project aims to replace the original Starlink router by utilizing a built-i
 
 Depending on your Raspberry Pi model, download its official OpenWRT image from the [OpenWRT Website](https://openwrt.org/toh/raspberry_pi_foundation/raspberry_pi).
 
+```sh
+git clone --branch master https://github.com/davixdedem/Pi-Starlink.git
+```
 - Download the appropriate OpenWRT image for your Raspberry Pi model.
 - Flash the OpenWRT image onto the MicroSD card using [Etcher](https://www.balena.io/etcher/) or any similar tool.
 - Insert the MicroSD card into your Raspberry Pi.
+- Clone the repository from GitHub:
 - Power up the Raspberry Pi.
-- Plug an Ethernet cable into the Ethernet port on the Raspberry Pi and connect it to your laptop/computer.
-- Verify that you can access OpenWRT by pinging its default IP address:
+- Plug an Ethernet cable into the Ethernet port on the Raspberry Pi and connect it to your laptop/computer.<br>
+- Verify that you can access OpenWRT by pinging its default IP address:<br>
+  *(You may disconnect your Wi-Fi interface in order to be sure to reach your Raspberry Pi via cable)*<br>
 ```sh
 ping 192.168.1.1
-```
-- Clone the repository from GitHub:
-```sh
-git clone --branch master https://github.com/davixdedem/Pi-Starlink.git
 ```
 - Navigate to the <b>auto_install</b> directory.
 ```sh
 cd Pi-Starlink/auto_install
 ```
-- Run *First.sh* with:
+- Run the following command:
 ```sh
 ssh root@192.168.1.1 'ash -s' < First.sh 2>&1
 ```
@@ -203,13 +203,9 @@ ssh root@192.168.1.1 'ash -s' < First.sh 2>&1
 SSID: Pi-Starlink
 Password: pistarlink
 ```
-- Run *Second.sh* with:<br>
+- Run the last command:<br>
 ```sh
-ssh root@192.168.1.1 'ash -s' < Second.sh 2>&1
-```
-- Run *Third.sh* with:<br>
-```sh
-bash Third.sh
+ssh root@192.168.1.1 'ash -s' < Second.sh 2>&1 && bash Third.sh
 ```
 - Once all the scripts have been executed, your Raspberry Pi should be configured and connected to Starlink, you can now use our <b>Android application</b>!
 
@@ -228,7 +224,7 @@ bash Third.sh
   </a>
 </div>
 
-- Download the Pi-Starlink application from the last <a href="https://github.com/davixdedem/Pi-Starlink/releases/tag/Pi-Starlink-0.0.8-Nebula" target="_blank">Release</a>.<br>
+- Download the Pi-Starlink application from the <a href="https://play.google.com/store/apps/details?id=com.magix.pistarlink">Play Store</a>.<br>
 - Install it on your Smartphone.<br>
 - Connect it to the <b>Pi Starlink</b> Wi-Fi using the following default credentials:<br>
   ```sh
@@ -273,6 +269,7 @@ bash Third.sh
 <div align="center">
     <img src="images/vpn_plus_pi.png" alt="Logo" width="220" height="90">
 </div>
+<div align="center"><b>OpenVPN + Pi Starlink</b></div><br>
 1. First of all, be sure you've already installed <a href="https://github.com/schwabe/ics-openvpn"><i>OpenVPN for Android</i></a> on your Smartphone.<br>
 2. In Pi Starlink, go to the <i><b>Virtual Private Network(VPN)</b></i> section.<br>
 3. Slide the configuration button, Pi Starlink will take a few minutes to configure OpenVPN depending on your Raspberry Pi efficiency.<br>
@@ -313,6 +310,46 @@ tail -f /var/log/openvpn.log
 tail -f /var/log/openvpn_status.log
 ```
 
+<div align="center">
+    <img src="images/wg_plus_pi.png" alt="Logo" width="220" height="90">
+</div>
+<div align="center"><b>Wireguard + Pi Starlink</b></div><br>
+1. In Pi Starlink, go to the <i><b>Virtual Private Network(VPN)</b></i> section.<br>
+2. Choose the Wireguard section.<br>
+3. Slide the configuration button, Pi Starlink will take a while to configure Wireguard depending on your Raspberry Pi efficiency.<br>
+4. Once is done, turn off your Wi-Fi connection and use only your <b>Mobile Network</b>.<br>
+5. Slide the activation button, your smartphone will be assigned a <b>local IPv4 address</b>.<br>
+6. Congrats, you're a virtually home! <br>
+7. For disconnecting, slide it back.<br>
+
+### Some tips to check if it works:
+- <b>From your Smartphone:</b>
+1. Once you're connected to the VPN,try to open your router page <b>http://192.168.1.1</b> from your Smartphone.
+2. If you reach it, it means everything is working!
+
+- <b>From an external device:</b>
+1. Once your Smartphone is connected to the VPN, check its assigned local IPv4 into the <i>Virtual Private Networn(VPN)</i> section, in this case is <b>192.168.8.2</b>.
+2. Use a device connected on the local network to ping your Smartphone.
+```sh
+ping 192.168.8.2
+```
+3. You should see the following output.
+```sh
+PING 192.168.8.2 (192.168.8.2) 56(84) bytes of data.
+64 bytes from 192.168.8.2: icmp_seq=1 ttl=63 time=128 ms
+64 bytes from 192.168.8.2: icmp_seq=2 ttl=63 time=114 ms
+64 bytes from 192.168.8.2: icmp_seq=3 ttl=63 time=138 ms
+64 bytes from 192.168.8.2: icmp_seq=4 ttl=63 time=109 ms
+```
+### For any further data:
+If you want to check live the configuration process:
+```sh
+tail -f /tmp/wireguard_output.log
+```
+To check the Wireguard status:
+```sh
+wg
+```
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- DDNS setting -->
@@ -377,6 +414,10 @@ nc -6 [IPv6_address] 5555
 ```sh
 ssh root@192.168.1.1
 ```
+3. Use the default password:
+```sh
+t*iP9Tk6na3VPeq
+```
 4. Congrats, you're in!
 5. Remember to change the default credentials.
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
@@ -389,7 +430,7 @@ ssh root@192.168.1.1
     </a>
 </div>
 <p align="center">
-    <a href="https://a.aliexpress.com/_EJTirc9">
+    <a href="https://a.aliexpress.com/_EyMgZR7">
         <img src="images/aliexpress.png" width="25%">
     </a>
 </p>
