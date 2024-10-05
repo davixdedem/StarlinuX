@@ -115,7 +115,7 @@ This offers a proper and reliable Modem/Router with pre-configured settings stud
 <br>
 
 The mobile application of <b>Pi Starlink</b> will allow you to set up your own free VPN all over IPv6 in a few easy steps and reach your home network while ensuring adequate security you need to surf the net safely.
-You'll get two choices to set up your VPN: <i><b>OpenVPN</b></i> or <i><b>Wireguard</b></i>. The first one works with the APIs provided by the fork project of <a href="https://github.com/schwabe/ics-openvpn"><i>OpenVPN for Android</i></a> while the second option, which is <b>faster</b> and more <b>robust</b> than its younger brother,also provides APIs through the <a href="https://github.com/WireGuard/wireguard-android"><i>Wireguard</i></a> project. Pi Starlink is not only oriented to the normal Starlink customers but even to people who want to host their own public server globally as our application has specific feature  for managing <b>port forwarding</b> rules. In case you get an ethernet port extender, we’ll be able to set up a proper <b>DMZ</b>, all is up to you!<br>
+You'll get two choices to set up your VPN: <i><b>OpenVPN</b></i> or <i><b>Wireguard</b></i>. The first one works with the APIs provided by the fork project of <a href="https://github.com/schwabe/ics-openvpn"><i>OpenVPN for Android</i></a> while the second option, which is <b>faster</b> and more <b>robust</b> than its younger brother,also provides APIs through the <a href="https://github.com/wireGuard/"><i>Wireguard</i></a> project. Pi Starlink is not only oriented to the normal Starlink customers but even to people who want to host their own public server globally as our application has specific feature  for managing <b>port forwarding</b> rules. In case you get an ethernet port extender, we’ll be able to set up a proper <b>DMZ</b>, all is up to you!<br>
 
 <div align="center">
   <i><b>...IPv6, what a Saviour!</b></i>
@@ -314,14 +314,13 @@ tail -f /var/log/openvpn_status.log
     <img src="images/wg_plus_pi.png" alt="Logo" width="220" height="90">
 </div>
 <div align="center"><b>Wireguard + Pi Starlink</b></div><br>
-1. First of all, be sure you've already installed <a href="https://play.google.com/store/apps/details?id=com.wireguard.android"><i>Wireguard</i></a> on your Smartphone.<br>
-2. In Pi Starlink, go to the <i><b>Virtual Private Network(VPN)</b></i> section.<br>
-3. Choose the Wireguard section.<br>
-4. Slide the configuration button, Pi Starlink will take a while to configure Wireguard depending on your Raspberry Pi efficiency.<br>
-5. Once is done, turn off your Wi-Fi connection and use only your <b>Mobile Network</b>.<br>
-6. Slide the activation button, your smartphone will be assigned a <b>local IPv4 address</b>.<br>
-7. Congrats, you're a virtually home! <br>
-8. For disconnecting, slide it back.<br>
+1. In Pi Starlink, go to the <i><b>Virtual Private Network(VPN)</b></i> section.<br>
+2. Choose the Wireguard section.<br>
+3. Slide the configuration button, Pi Starlink will take a while to configure Wireguard depending on your Raspberry Pi efficiency.<br>
+4. Once is done, turn off your Wi-Fi connection and use only your <b>Mobile Network</b>.<br>
+5. Slide the activation button, your smartphone will be assigned a <b>local IPv4 address</b>.<br>
+6. Congrats, you're a virtually home! <br>
+7. For disconnecting, slide it back.<br>
 
 ### Some tips to check if it works:
 - <b>From your Smartphone:</b>
@@ -329,18 +328,18 @@ tail -f /var/log/openvpn_status.log
 2. If you reach it, it means everything is working!
 
 - <b>From an external device:</b>
-1. Once your Smartphone is connected to the VPN, check its assigned local IPv4 into the <i>Virtual Private Networn(VPN)</i> section, in this case is <b>192.168.9.2</b>.
+1. Once your Smartphone is connected to the VPN, check its assigned local IPv4 into the <i>Virtual Private Networn(VPN)</i> section, in this case is <b>192.168.8.2</b>.
 2. Use a device connected on the local network to ping your Smartphone.
 ```sh
-ping 192.168.9.2
+ping 192.168.8.2
 ```
 3. You should see the following output.
 ```sh
-PING 192.168.9.2 (192.168.9.2) 56(84) bytes of data.
-64 bytes from 192.168.9.2: icmp_seq=1 ttl=63 time=128 ms
-64 bytes from 192.168.9.2: icmp_seq=2 ttl=63 time=114 ms
-64 bytes from 192.168.9.2: icmp_seq=3 ttl=63 time=138 ms
-64 bytes from 192.168.9.2: icmp_seq=4 ttl=63 time=109 ms
+PING 192.168.8.2 (192.168.8.2) 56(84) bytes of data.
+64 bytes from 192.168.8.2: icmp_seq=1 ttl=63 time=128 ms
+64 bytes from 192.168.8.2: icmp_seq=2 ttl=63 time=114 ms
+64 bytes from 192.168.8.2: icmp_seq=3 ttl=63 time=138 ms
+64 bytes from 192.168.8.2: icmp_seq=4 ttl=63 time=109 ms
 ```
 ### For any further data:
 If you want to check live the configuration process:
