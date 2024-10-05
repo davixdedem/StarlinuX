@@ -347,12 +347,9 @@ If you want to check live the configuration process:
 ```sh
 tail -f /tmp/wireguard_output.log
 ```
-To check the OpenVPN logs:
+To check the Wireguard status:
 ```sh
-tail -f /var/log/wireguard.log
-```
-```sh
-tail -f /var/log/wireguard_status.log
+wg
 ```
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
