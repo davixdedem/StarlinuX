@@ -27,6 +27,9 @@ opkg install coreutils-nohup
 echo "Installing Bash..."
 opkg install bash
 
+# Install nano
+opkg install nano
+
 # Install SCP
 echo "Installing SCP (openssh-sftp-server)..."
 opkg install openssh-sftp-server
