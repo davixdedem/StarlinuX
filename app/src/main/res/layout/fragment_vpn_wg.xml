@@ -216,7 +216,7 @@
                         android:textSize="15sp" />
 
                     <LinearLayout
-                        android:id="@+id/vpn_card_container"
+                        android:id="@+id/vpn_card_container_wg"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"

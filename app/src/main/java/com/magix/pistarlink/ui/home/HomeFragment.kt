@@ -101,6 +101,7 @@ class HomeFragment : Fragment() {
     private val profileName = "Pi-Starlink"
     private val icsOpenvpnPermission: Int = 7
     private val vpnDevices = mutableListOf<DhcpLease>()
+    private val wgVpnDevices = mutableListOf<DhcpLease>()
     private val maxExpirationTimer = 3600
 
     /*Wireguard*/
@@ -159,6 +160,7 @@ class HomeFragment : Fragment() {
     private val getIPv6addressCommand = "ip -6 addr show dev eth0 | grep inet6 | awk '{ print \$2 }' | awk -F'/' '{ print \$1 }' | grep '^2a0d' | head -n 1; ip -4 addr show dev eth0 | grep inet | awk '{ print \$2 }' | awk -F'/' '{ print \$1 }' | head -n 1"
     private val getConnectedDevices = "ubus call luci-rpc getDHCPLeases"
     private val getOpenVPNConnectedDevicesCommand = "bash /root/scripts/openvpn_devices.sh"
+    private val getWireguardConnectedDevicesCommand = "bash /root/scripts/wireguard_devices.sh"
     private val setupVPNCommand = "bash /root/scripts/openvpn_configure_callback.sh"
     private val checkVPNConfigStatusCommand = "cat /root/scripts/vpn_config_status"
     private val setupWireguardCommand = "bash /root/scripts/wireguard_configure_callback.sh"
@@ -591,19 +593,30 @@ class HomeFragment : Fragment() {
         binding.vpnSectionText.setOnClickListener {
             /*Check last VPN used*/
             val lastVPNUsed = dbHandler.getConfiguration("lastVPNUsed")
+            Log.d("VPN-Handler","Last VPN is: $lastVPNUsed")
 
             /*lastVPNUsed is OpenVPN*/
             if (lastVPNUsed == "OpenVPN") {
                 binding.homeMainLayout.visibility = View.GONE
                 binding.fragmentVpnIncluded.root.visibility = View.VISIBLE
+
+                updateVPNLayout()
+
+                if (isBoardReachable) {
+                    getOpenVPNConnectedDevices()
+                }
             }
 
             /*lastVPNUsed is Wireguard*/
             else  {
-                updateWireguardVPNLayout()
-
                 binding.homeMainLayout.visibility = View.GONE
                 binding.fragmentVpnIncludedWg.root.visibility = View.VISIBLE
+
+                updateWireguardVPNLayout()
+
+                if (isBoardReachable) {
+                    getWireguardConnectedDevices()
+                }
             }
 
             binding.fragmentVpnIncluded.vpnActiveStatus.visibility = View.GONE
@@ -612,12 +625,6 @@ class HomeFragment : Fragment() {
             canCallHomeAPi = false
 
             /*Get the current VPN chosen*/
-
-            updateVPNLayout()
-
-            if (isBoardReachable) {
-                getOpenVPNConnectedDevices()
-            }
 
         }
         binding.vpnSectionBtn.setOnClickListener {
@@ -639,15 +646,22 @@ class HomeFragment : Fragment() {
 
         /*Binding OpenVPN switcher*/
         binding.fragmentVpnIncluded.titleSbcInfo.setOnClickListener {
-            binding.fragmentVpnIncludedWg.root.visibility = View.GONE
-            binding.fragmentVpnIncluded.root.visibility = View.VISIBLE
+            if (!isWireguardConnected) {
+                binding.fragmentVpnIncludedWg.root.visibility = View.GONE
+                binding.fragmentVpnIncluded.root.visibility = View.VISIBLE
+            }
         }
         binding.fragmentVpnIncluded.titleSbcInfoWg.setOnClickListener {
-            binding.fragmentVpnIncluded.root.visibility = View.GONE
-            binding.fragmentVpnIncludedWg.root.visibility = View.VISIBLE
-
+            if (!isVpnConnected) {
+                binding.fragmentVpnIncluded.root.visibility = View.GONE
+                binding.fragmentVpnIncludedWg.root.visibility = View.VISIBLE
+            }
             /*Update wireguard layout*/
             updateWireguardVPNLayout()
+
+            if (isBoardReachable) {
+                getWireguardConnectedDevices()
+            }
         }
 
         /*Binding Vpn exit info button*/
@@ -757,8 +771,11 @@ class HomeFragment : Fragment() {
 
         /*Binding Wireguard switcher*/
         binding.fragmentVpnIncludedWg.titleSbcInfo.setOnClickListener {
-            binding.fragmentVpnIncludedWg.root.visibility = View.GONE
-            binding.fragmentVpnIncluded.root.visibility = View.VISIBLE
+            if (!isWireguardConnected) {
+                updateVPNLayout()
+                binding.fragmentVpnIncludedWg.root.visibility = View.GONE
+                binding.fragmentVpnIncluded.root.visibility = View.VISIBLE
+            }
         }
         binding.fragmentVpnIncludedWg.titleSbcInfoWg.setOnClickListener {
             binding.fragmentVpnIncluded.root.visibility = View.GONE
@@ -2289,6 +2306,7 @@ class HomeFragment : Fragment() {
             binding.layoutDns.cardDescription.text = "Your Pi-Starlink is unreachable, connect to Wi-Fi or through VPN."
             context?.let { ContextCompat.getColor(it, R.color.teal_900) }
                 ?.let { binding.layoutDns.root.setBackgroundColor(it) }
+            binding.layoutDns.contentLayout.setBackgroundResource(R.drawable.border)
         }
     }
 
@@ -2677,7 +2695,7 @@ class HomeFragment : Fragment() {
         }
 
         openWRTApi.executeCommand(
-            getOpenVPNConnectedDevicesCommand,
+            getWireguardConnectedDevicesCommand,
             luciToken,
             onSuccess = { response, responseCode ->
                 /* Handle the successful response, update UI on the main thread */
@@ -2686,24 +2704,24 @@ class HomeFragment : Fragment() {
                     Log.d(openWRTTag, response.toString())
 
                     /* Emptying the cards */
-                    vpnDevices.clear()
-                    val parentLayout = view?.findViewById<LinearLayout>(R.id.vpn_card_container)
+                    wgVpnDevices.clear()
+                    val parentLayout = view?.findViewById<LinearLayout>(R.id.vpn_card_container_wg)
                     parentLayout?.removeAllViews()
 
                     /* Parsing the JSON Object */
                     try {
                         val resultString = response.optString("result")
-                        Log.d("OpenVPN", "resultString: $resultString")
+                        Log.d("Wireguard", "resultString: $resultString")
 
                         val jsonObject = JSONObject(resultString)
 
                         val vpnArray: JSONArray = jsonObject.optJSONArray("ROUTING TABLE") ?: JSONArray()
 
                         if (vpnArray.length() == 0) {
-                            Log.d("OpenVPN", "ROUTING TABLE array is empty")
-                            binding.fragmentVpnIncluded.noConnectedDevice.visibility = View.VISIBLE
+                            Log.d("Wireguard", "ROUTING TABLE array is empty")
+                            binding.fragmentVpnIncludedWg.noConnectedDevice.visibility = View.VISIBLE
                         } else {
-                            binding.fragmentVpnIncluded.noConnectedDevice.visibility = View.GONE
+                            binding.fragmentVpnIncludedWg.noConnectedDevice.visibility = View.GONE
                             for (i in 0 until vpnArray.length()) {
                                 val leaseObject = vpnArray.getJSONObject(i)
 
@@ -2716,7 +2734,7 @@ class HomeFragment : Fragment() {
                                     ipaddr = virtualAddress,
                                     macAddr = realAddress,
                                 )
-                                vpnDevices.add(lease)
+                                wgVpnDevices.add(lease)
                             }
                         }
 
@@ -2729,7 +2747,7 @@ class HomeFragment : Fragment() {
                     }
 
                     /* Adding the network devices cards */
-                    addVpnCards()
+                    addWgVpnCards()
                 }
             },
             onFailure = { error, responseCode ->
@@ -4049,6 +4067,34 @@ class HomeFragment : Fragment() {
 
     }
 
+    /*Adding network cards at the view based on the array*/
+    private fun addWgVpnCards() {
+        val parentLayout = view?.findViewById<LinearLayout>(R.id.vpn_card_container_wg)
+
+        for (lease in wgVpnDevices) {
+            val inflater = LayoutInflater.from(context)
+            val cardView = inflater.inflate(R.layout.layout_card_network, parentLayout, false)
+
+            cardView.findViewById<TextView>(R.id.card_title_hostname).text = lease.hostname
+            cardView.findViewById<TextView>(R.id.card_description_ip_addr).text = lease.ipaddr
+            cardView.findViewById<TextView>(R.id.card_description_mac_addr).text = lease.macAddr
+            parentLayout?.addView(cardView)
+
+            /*Binding clipboard IPv4 button*/
+            cardView.findViewById<ImageView>(R.id.copy_ipv4_image).setOnClickListener {
+                val clip = ClipData.newPlainText("Copied Text", lease.ipaddr)
+                clipboard.setPrimaryClip(clip)
+            }
+
+            /*Binding clipboard Mac Address button*/
+            cardView.findViewById<ImageView>(R.id.copy_macaddr_image).setOnClickListener {
+                val clip = ClipData.newPlainText("Copied Text", lease.macAddr)
+                clipboard.setPrimaryClip(clip)
+            }
+        }
+
+    }
+
     /*Updates the VPN Layout base on profile existence*/
     private fun updateVPNLayout() {
 
@@ -4537,7 +4583,6 @@ class HomeFragment : Fragment() {
     /* Connects to Wireguard using Android built-in VpnService */
     private fun connectWireguard() {
         tunnel = WgTunnel()
-
         val intentPrepare: Intent? = GoBackend.VpnService.prepare(context)
 
         // Handle VPN permission if necessary
@@ -4550,13 +4595,17 @@ class HomeFragment : Fragment() {
             try {
                 // Fetch values from the database
                 val privateKey = dbHandler.getConfiguration("PrivateKey") ?: ""
-                val address = dbHandler.getConfiguration("Address") ?: ""
+                val addresses = dbHandler.getConfiguration("Address") ?: ""
+                val address1 = addresses.split(",").getOrNull(0)?.trim() ?: ""
+                val address2 = addresses.split(",").getOrNull(1)?.trim() ?: ""
                 val dns = dbHandler.getConfiguration("DNS") ?: ""
                 val publicKey = dbHandler.getConfiguration("PublicKey") ?: ""
                 val presharedKey = dbHandler.getConfiguration("PresharedKey") ?: ""
                 val endpoint = dbHandler.getConfiguration("Endpoint") ?: ""
                 val allowedIPs = dbHandler.getConfiguration("AllowedIPs") ?: "0.0.0.0/0"
                 val persistentKeepalive = dbHandler.getConfiguration("PersistentKeepalive")?.toIntOrNull() ?: 25
+                println(address1)
+                println(address2)
 
                 // Build the interface and peer configurations
                 val interfaceBuilder = Interface.Builder()
@@ -4569,7 +4618,8 @@ class HomeFragment : Fragment() {
                     Config.Builder()
                         .setInterface(
                             interfaceBuilder
-                                .addAddress(InetNetwork.parse(address))  // Address from DB
+                                .addAddress(InetNetwork.parse(address1))  // Address from DB
+                                .addAddress(InetNetwork.parse(address2))  // Address from DB
                                 .parsePrivateKey(privateKey)  // Private key from DB
                                 .addDnsServer(InetAddress.getByName(dns))  // DNS from DB
                                 .build()
