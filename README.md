@@ -174,14 +174,13 @@ This project aims to replace the original Starlink router by utilizing a built-i
 </div>
 
 Depending on your Raspberry Pi model, download its official OpenWRT image from the [OpenWRT Website](https://openwrt.org/toh/raspberry_pi_foundation/raspberry_pi).
-
+- Clone the repository from GitHub:
 ```sh
 git clone --branch master https://github.com/davixdedem/Pi-Starlink.git
 ```
 - Download the appropriate OpenWRT image for your Raspberry Pi model.
 - Flash the OpenWRT image onto the MicroSD card using [Etcher](https://www.balena.io/etcher/) or any similar tool.
 - Insert the MicroSD card into your Raspberry Pi.
-- Clone the repository from GitHub:
 - Power up the Raspberry Pi.
 - Plug an Ethernet cable into the Ethernet port on the Raspberry Pi and connect it to your laptop/computer.<br>
 - Verify that you can access OpenWRT by pinging its default IP address:<br>
