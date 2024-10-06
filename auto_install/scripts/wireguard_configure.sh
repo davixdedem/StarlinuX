@@ -5,6 +5,7 @@ echo "1" > /root/scripts/wireguard_config_status
 # Install packages
 opkg update
 opkg install wireguard-tools
+opkg instal luci-proto-wireguard
  
 # Configuration parameters
 VPN_IF="vpn"
@@ -91,7 +92,7 @@ fi
 cat << EOF > "$CONFIG_FILE"
 [Interface]
 PrivateKey = $(cat $CLIENT_KEY)
-Address = 192.168.8.2/24 
+Address = 192.168.8.2/24,fd00:9::2/128
 DNS = 8.8.8.8
 
 [Peer]
