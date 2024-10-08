@@ -21,7 +21,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/github_username/repo_name">
-    <img src="images/logo2.png" alt="Logo" width="500" height="80">
+    <img src="images/logo2.png" alt="Logo" width="500" height="100">
   </a>
 
 <h3 align="center">The Rasberry Pi's unofficial solution for Starlink.</h3>
