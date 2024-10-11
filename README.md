@@ -79,7 +79,7 @@
 
 <div align="center">
   <a href="https://play.google.com/store/apps/details?id=com.magix.pistarlink" target="_blank">
-    <img src="images/round_logo.png" alt="Logo" width="300" height="150">
+    <img src="images/round_logo2.png" alt="Logo" width="300" height="150">
   </a>
 </div>
 <div align="center">
@@ -219,7 +219,7 @@ ssh root@192.168.1.1 'ash -s' < Second.sh 2>&1 && bash Third.sh
 
 <div align="left">
   <a href="https://github.com/github_username/repo_name">
-    <img src="images/round_logo.png" alt="Logo" width="100" height="50">
+    <img src="images/round_logo2.png" alt="Logo" width="100" height="50">
   </a>
 </div>
 
