@@ -42,7 +42,7 @@
   <summary>Table of Contents</summary>
   <ol>
     <li>
-      <a href="#whats-pi-starlink">What's Pi Starlink</a>
+      <a href="#whats-starlinux">What's StarlinuX</a>
       <ul>
         <li><a href="#screenshots">Screenshots</a></li>
       </ul>
@@ -61,7 +61,7 @@
         <li><a href="#reach-your-home-from-outside-set-up-your-own-vpn">Reach your home from outside: set up your own VPN!</a></li>
         <li><a href="#get-rid-of-dynamic-ip-set-up-your-personal-ddns">Get rid of dynamic IP: set up your personal DDNS!</a></li>
         <li><a href="#got-a-game-server-or-a-web-page-set-up-port-forwarding">Got a Game Server or a Web Page? Set up Port Forwarding!</a></li>
-        <li><a href="#need-to-go-deeper-ssh-into-your-pi-starlink">Need to go deeper, SSH into your Pi Starlink!</a></li>
+        <li><a href="#need-to-go-deeper-ssh-into-your-starlinux">Need to go deeper, SSH into your StarlinuX!</a></li>
         <li><a href="#in-need-of-more-ethernet-ports-get-an-extender">In need of more ethernet ports? Get an extender!</a></li> 
       </ul>
     </li>    
@@ -403,7 +403,7 @@ nc -6 [IPv6_address] 5555
 ```
 
 <!-- SSH -->
-## Need to go deeper, SSH into your Pi Starlink!
+## Need to go deeper, SSH into your StarlinuX!
 <div align="center">
     <img src="images/ssh.png" alt="Logo" width="80" height="80">
 </div>
