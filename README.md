@@ -24,7 +24,7 @@
     <img src="images/logo2.png" alt="Logo" width="500" height="100">
   </a>
 
-<h3 align="center">The Rasberry Pi's unofficial solution for Starlink.</h3>
+<h3 align="center">A Rasberry Pi's unofficial solution for Starlink.</h3>
 
   <p align="center">
     <br />
@@ -75,7 +75,7 @@
 
 
 <!-- ABOUT THE PROJECT -->
-## What's Pi Starlink?
+## What's StarlinuX?
 
 <div align="center">
   <a href="https://play.google.com/store/apps/details?id=com.magix.pistarlink" target="_blank">
