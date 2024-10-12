@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Pi Starlink</string>
+    <string name="app_name">StarlinuX</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
@@ -72,7 +72,7 @@
     <string name="a_short_and_sweet_story">A SHORT AND SWEET STORY</string>
     <string name="router">ROUTER</string>
     <string name="wireless">WIRELESS</string>
-    <string name="pi_starlink">PI STARLINK</string>
+    <string name="pi_starlink">STARLINUX</string>
     <string name="Angular"><![CDATA[>]]></string>
     <string name="configuration">Configuration</string>
     <string name="external_port">External Port</string>

@@ -1,7 +1,6 @@
 package com.magix.pistarlink.ui.home
 
-import java.net.Inet4Address
-import java.util.Collections
+import android.Manifest
 import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.ClipData
@@ -10,12 +9,14 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.net.ConnectivityManager
 import android.net.DnsResolver
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.Uri
+import android.os.AsyncTask
 import android.os.Build
 import android.os.Bundle
 import android.os.CancellationSignal
@@ -42,15 +43,18 @@ import android.widget.ProgressBar
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.activity.addCallback
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.magix.pistarlink.BuildConfig
 import com.magix.pistarlink.DbHandler
+import com.magix.pistarlink.MyVpnService
 import com.magix.pistarlink.OpenWRTApi
 import com.magix.pistarlink.R
 import com.magix.pistarlink.databinding.FragmentHomeBinding
 import com.ncorti.slidetoact.SlideToActView
 import com.suke.widget.SwitchButton
+import com.wireguard.android.backend.Backend
 import com.wireguard.android.backend.GoBackend
 import com.wireguard.android.backend.Tunnel
 import com.wireguard.config.Config
@@ -70,14 +74,16 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStreamReader
+import java.net.Inet4Address
 import java.net.InetAddress
 import java.net.NetworkInterface
+import java.util.Collections
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 import kotlin.math.log10
 import kotlin.math.pow
 
-class HomeFragment : Fragment() {
+class HomeFragment : Fragment(), MyVpnServiceCallback {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private lateinit var webView: WebView
@@ -87,7 +93,7 @@ class HomeFragment : Fragment() {
     private lateinit var luciToken: String
     private lateinit var job: Job
     private var canCallHomeAPi = false
-    public var isBoardReachable = false
+    var isBoardReachable = false
     private lateinit var dbHandler: DbHandler
     private lateinit var luciUsername : String
     private lateinit var luciPassword : String
@@ -104,7 +110,11 @@ class HomeFragment : Fragment() {
     private val wgVpnDevices = mutableListOf<DhcpLease>()
     private val maxExpirationTimer = 3600
 
+    /*Notifcations*/
+    private val NOTIFICATION_PERMISSION_REQUEST_CODE = 1001
+
     /*Wireguard*/
+    private lateinit var backend: Backend
     private lateinit var tunnel: Tunnel
     private var isWireguardConnected = false
     private var wireguardVPNIPv4Addr = ""
@@ -152,7 +162,6 @@ class HomeFragment : Fragment() {
 
     /*Luci Configurations*/
     private val baseUrl = "http://192.168.1.1"
-    private var maxSessionTime = 3600
 
     /*Luci Commands*/
     private val systemBoardCommand = "ubus call system board"
@@ -176,7 +185,6 @@ class HomeFragment : Fragment() {
     private val setDDNSPassword = "uci set ddns.myddns_ipv6.password="
     private val commitDDNSCommand  = "uci commit ddns"
     private val getRedirectFirewallRulesCommand  = "bash /root/scripts/port_forwarding_configurations.sh"
-    private val setPortForwardingNameCommand = "uci set firewall.@redirect['%s'].name='%s'"
     private val setPortForwardingExternalPortCommand = "uci set firewall.@redirect['%s'].src_dport='%s'"
     private val setPortForwardingDestinationPortCommand = "uci set firewall.@redirect['%s'].dest_port='%s'"
     private val setPortForwardingTargetIPCommand = "uci set firewall.@redirect['%s'].dest_ip='%s'"
@@ -216,9 +224,11 @@ class HomeFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
+        /*Callback for back button*/
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
             closeFragment()
         }
+
     }
 
     override fun onCreateView(
@@ -236,8 +246,6 @@ class HomeFragment : Fragment() {
         prepareDBConfig()
 
         /*Init the OpenWRTApi class*/
-/*        private val username = "root"
-        private val password = "t*iP9Tk6na3VPeq"*/
         luciUsername = dbHandler.getConfiguration("luci_username").toString()
         luciPassword = dbHandler.getConfiguration("luci_password").toString()
         Log.d("OpenWRT","$luciUsername,$luciPassword")
@@ -265,6 +273,7 @@ class HomeFragment : Fragment() {
             binding.layoutVpn.root.visibility = View.GONE
         }
 
+        /*Binding OpenVPN Service*/
         bindService()
 
         // If you want to programmatically trigger the back button action:
@@ -274,7 +283,6 @@ class HomeFragment : Fragment() {
             }
             requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
         }
-
 
         return root
     }
@@ -1998,6 +2006,21 @@ class HomeFragment : Fragment() {
                 delay(10000)  // Always delay to keep the loop running
             }
         }
+
+        /*Ask notification permission*/
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (activity?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.POST_NOTIFICATIONS) } != PackageManager.PERMISSION_GRANTED) {
+                // Request the POST_NOTIFICATIONS permission
+                activity?.let {
+                    ActivityCompat.requestPermissions(
+                        it,
+                        arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                        NOTIFICATION_PERMISSION_REQUEST_CODE
+                    )
+                }
+            }
+        }
+
     }
 
     override fun onDestroyView() {
@@ -2006,7 +2029,7 @@ class HomeFragment : Fragment() {
 
         /*Disconnecting VPN and unbind its service*/
         disconnectVPN()
-        //unbindService()
+        unbindService()
 
         /*Detach database*/
         dbHandler.close()
@@ -2039,7 +2062,7 @@ class HomeFragment : Fragment() {
         }
         else{
             binding.layoutVpn.root.visibility = View.GONE
-            bindService()
+            //bindService()
         }
     }
 
@@ -2184,7 +2207,7 @@ class HomeFragment : Fragment() {
                         updateBoardStatus(false)
 
                         /*Update resources*/
-                        binding.layoutDns.cardDescription.text = "Failed to log into Pi-Starlink. Please check your credentials in Settings."
+                        binding.layoutDns.cardDescription.text = "Failed to log into StarlinuX. Please check your credentials in Settings."
                     }
                 }
             },
@@ -2232,7 +2255,6 @@ class HomeFragment : Fragment() {
         // Return null if no VPN IPv4 address is found
         return null
     }
-
 
     /*Updates the board status resources*/
     private fun updateBoardStatus(isOnline: Boolean) {
@@ -2303,7 +2325,7 @@ class HomeFragment : Fragment() {
 
             /*DDNS*/
             binding.layoutDns.cardTitle.text = "OFFLINE"
-            binding.layoutDns.cardDescription.text = "Your Pi-Starlink is unreachable, connect to Wi-Fi or through VPN."
+            binding.layoutDns.cardDescription.text = "Your StarlinuX is unreachable, connect to Wi-Fi or through VPN."
             context?.let { ContextCompat.getColor(it, R.color.teal_900) }
                 ?.let { binding.layoutDns.root.setBackgroundColor(it) }
             binding.layoutDns.contentLayout.setBackgroundResource(R.drawable.border)
@@ -4070,7 +4092,6 @@ class HomeFragment : Fragment() {
     /*Adding network cards at the view based on the array*/
     private fun addWgVpnCards() {
         val parentLayout = view?.findViewById<LinearLayout>(R.id.vpn_card_container_wg)
-
         for (lease in wgVpnDevices) {
             val inflater = LayoutInflater.from(context)
             val cardView = inflater.inflate(R.layout.layout_card_network, parentLayout, false)
@@ -4110,7 +4131,7 @@ class HomeFragment : Fragment() {
             if (!isBoardReachable){
                 Log.d("VPN-Configuration","Board is unreachable.")
                 binding.fragmentVpnIncluded.vpnConfigStatus.visibility = View.VISIBLE
-                binding.fragmentVpnIncluded.vpnConfigStatus.text = "Pi-Starlink is unreachable, please connect to its Wi-Fi."
+                binding.fragmentVpnIncluded.vpnConfigStatus.text = "StarlinuX is unreachable, please connect to its Wi-Fi."
                 binding.fragmentVpnIncluded.vpnConfigActiveSlide.visibility = View.GONE
             }
 
@@ -4184,7 +4205,7 @@ class HomeFragment : Fragment() {
             if (!isBoardReachable){
                 Log.d("Wireguard-Configuration","Board is unreachable.")
                 binding.fragmentVpnIncludedWg.vpnConfigStatus.visibility = View.VISIBLE
-                binding.fragmentVpnIncludedWg.vpnConfigStatus.text = "Pi-Starlink is unreachable, please connect to its Wi-Fi."
+                binding.fragmentVpnIncludedWg.vpnConfigStatus.text = "StarlinuX is unreachable, please connect to its Wi-Fi."
                 binding.fragmentVpnIncludedWg.vpnConfigActiveSlide.visibility = View.GONE
             }
 
@@ -4580,42 +4601,38 @@ class HomeFragment : Fragment() {
         }
     }
 
-    /* Connects to Wireguard using Android built-in VpnService */
+    /* Connects to Wireguard Tunnel*/
+/*    private fun connectWireguard(){
+        Log.d("Wireguard-Handler", "Connecting to Wireguard VPN")
+        myVpnService?.connectWireguard()
+        myVpnService?.setCallback(this)
+    }*/
+
     private fun connectWireguard() {
         tunnel = WgTunnel()
-        val intentPrepare: Intent? = GoBackend.VpnService.prepare(context)
-
-        // Handle VPN permission if necessary
+        val intentPrepare = GoBackend.VpnService.prepare(activity)
         if (intentPrepare != null) {
             startActivityForResult(intentPrepare, 0)
-            return  // Wait for the result before proceeding
         }
+        val interfaceBuilder = Interface.Builder()
+        val peerBuilder = Peer.Builder()
+        backend = GoBackend(activity)
 
-        CoroutineScope(Dispatchers.IO).launch {
+        val privateKey = dbHandler.getConfiguration("PrivateKey") ?: ""
+        val addresses = dbHandler.getConfiguration("Address") ?: ""
+        val address1 = addresses.split(",").getOrNull(0)?.trim() ?: ""
+        val address2 = addresses.split(",").getOrNull(1)?.trim() ?: ""
+        val dns = dbHandler.getConfiguration("DNS") ?: ""
+        val publicKey = dbHandler.getConfiguration("PublicKey") ?: ""
+        val presharedKey = dbHandler.getConfiguration("PresharedKey") ?: ""
+        val endpoint = dbHandler.getConfiguration("Endpoint") ?: ""
+        val allowedIPs = dbHandler.getConfiguration("AllowedIPs") ?: "0.0.0.0/0"
+        val persistentKeepalive = dbHandler.getConfiguration("PersistentKeepalive")?.toIntOrNull() ?: 25
+
+        AsyncTask.execute {
             try {
-                // Fetch values from the database
-                val privateKey = dbHandler.getConfiguration("PrivateKey") ?: ""
-                val addresses = dbHandler.getConfiguration("Address") ?: ""
-                val address1 = addresses.split(",").getOrNull(0)?.trim() ?: ""
-                val address2 = addresses.split(",").getOrNull(1)?.trim() ?: ""
-                val dns = dbHandler.getConfiguration("DNS") ?: ""
-                val publicKey = dbHandler.getConfiguration("PublicKey") ?: ""
-                val presharedKey = dbHandler.getConfiguration("PresharedKey") ?: ""
-                val endpoint = dbHandler.getConfiguration("Endpoint") ?: ""
-                val allowedIPs = dbHandler.getConfiguration("AllowedIPs") ?: "0.0.0.0/0"
-                val persistentKeepalive = dbHandler.getConfiguration("PersistentKeepalive")?.toIntOrNull() ?: 25
-                println(address1)
-                println(address2)
-
-                // Build the interface and peer configurations
-                val interfaceBuilder = Interface.Builder()
-                val peerBuilder = Peer.Builder()
-
-                // Set up the WireGuard VPN using the retrieved configurations
-                context?.let { GoBackend(it) }?.setState(
-                    tunnel,
-                    Tunnel.State.UP,
-                    Config.Builder()
+                backend.setState(
+                    tunnel, Tunnel.State.UP, Config.Builder()
                         .setInterface(
                             interfaceBuilder
                                 .addAddress(InetNetwork.parse(address1))  // Address from DB
@@ -4636,27 +4653,23 @@ class HomeFragment : Fragment() {
                         .build()
                 )
 
-                // If successful, mark VPN as connected and update the UI on the main thread
-                withContext(Dispatchers.Main) {
-                    isWireguardConnected = true
+                // If successful, mark VPN as connected and update the UI
+                dbHandler.addConfiguration("lastVPNUsed", "Wireguard")
+                dbHandler.updateConfiguration("lastVPNUsed", "Wireguard")
 
-                    /*Add or update lastVPNUsed*/
-                    dbHandler.addConfiguration("lastVPNUsed","Wireguard")
-                    dbHandler.updateConfiguration("lastVPNUsed","Wireguard")
-
-                    /*Fetch the acquired IPv4*/
-                    val acquiredIPv4 = getVpnIPv4Address()
-                    if (acquiredIPv4 != null){
-                        wireguardVPNIPv4Addr = acquiredIPv4
-                    }
-
-                    updateWireguardActivationSliderStatus(true)
-                    Log.d("Wireguard-Handler", "VPN connected successfully. Status updated.")
+                // Fetch the acquired IPv4
+                val acquiredIpv4 = getVpnIPv4Address()
+                if (acquiredIpv4 != null){
+                    wireguardVPNIPv4Addr = acquiredIpv4
                 }
 
-            } catch (e: Exception) {
+                // VPN connection established successfully
+                activity?.runOnUiThread {
+                    updateWireguardActivationSliderStatus(true) // Update UI on the main thread
+                    isWireguardConnected = true
+                }
+            } catch (e: java.lang.Exception) {
                 e.printStackTrace()
-                Log.e("Wireguard-Handler", "Failed to establish the VPN connection: ${e.message}")
             }
         }
     }
@@ -4749,44 +4762,13 @@ class HomeFragment : Fragment() {
         }
     }
 
-    /*Disconnects the Wireguard VPN*/
-    private fun disconnectWireguardVPN() {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-
-                /*Ensure the GoBackend is properly initialized and tunnel is referenced correctly*/
-                val backend = context?.let { GoBackend(it) }
-
-                /*Backend is not null*/
-                if (backend != null) {
-
-                    /*Attempt to disconnect*/
-                    backend.setState(tunnel, Tunnel.State.DOWN, null)  // Set VPN state to DOWN to disconnect
-                    Log.d("Wireguard", "VPN disconnected successfully")
-
-                    /*Update the UI on the main thread*/
-                    activity?.runOnUiThread {
-                        isWireguardConnected = false
-                        updateWireguardActivationSliderStatus(false)
-                        prepareStartProfile(0)
-                    }
-                } else {
-                    Log.e("Wireguard", "Failed to initialize GoBackend")
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Log.e("Wireguard", "Failed to disconnect VPN: ${e.message}")
-            }
-        }
-    }
-
     /*Update the activating slider status*/
     private fun updateActivationSliderStatus(activated: Boolean){
         Log.d("VPN-Handler","Updating VPN resources: $activated")
         if (activated) {
             binding.fragmentVpnIncluded.vpnActiveSlide.isReversed = true
             binding.fragmentVpnIncluded.vpnActiveSlide.outerColor =
-                Color.parseColor("#FF0000") /*Red*/
+                Color.parseColor("#FF0000") //Red
             binding.fragmentVpnIncluded.vpnActiveSlide.setCompleted(completed = false, true)
             binding.fragmentVpnIncluded.vpnActiveSlide.text = "Slide to disconnect"
             binding.fragmentVpnIncluded.vpnStatusTitle.text = "CONNECTED as $myOpenVPNIPv4Addr"
@@ -4794,10 +4776,27 @@ class HomeFragment : Fragment() {
         else{
             binding.fragmentVpnIncluded.vpnActiveSlide.isReversed = false
             binding.fragmentVpnIncluded.vpnActiveSlide.outerColor =
-                Color.parseColor("#1F1F1E") /*White*/
+                Color.parseColor("#1F1F1E") //White
             binding.fragmentVpnIncluded.vpnActiveSlide.text = "Slide to active"
             binding.fragmentVpnIncluded.vpnStatusTitle.text = "DISCONNECTED"
             binding.fragmentVpnIncluded.vpnActiveSlide.setCompleted(completed = false, true)
+        }
+    }
+
+    /*Disconnects to Wireguard Tunnel*/
+    private fun disconnectWireguardVPN() {
+        println("DISCONNECTING")
+        AsyncTask.execute {
+            try {
+                backend.setState(tunnel, Tunnel.State.DOWN, null)
+                // VPN connection disconnected successfully
+                activity?.runOnUiThread {
+                    updateWireguardActivationSliderStatus(false) // Update UI on the main thread
+                    isWireguardConnected = false
+                }
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
@@ -5236,6 +5235,7 @@ class HomeFragment : Fragment() {
                     context?.let { ctx ->
 
                         /*Fetch IPv6*/
+                        Log.d("Wireguard-Handler","Fetching IPv6 of DDNS: $ddns")
                         getIpAddresses(ctx, ddns, executor) { _, ipv6 ->
 
                             /*IPv6 is not null*/
@@ -5265,11 +5265,11 @@ class HomeFragment : Fragment() {
                                     connectWireguard()
 
                                 } else {
-                                    Log.e("VPN-Handler", "The vpn list is empty.")
+                                    Log.e("Wireguard-Handler", "The vpn list is empty.")
                                 }
                             } else {
                                 Log.e(
-                                    "VPN-Handler",
+                                    "Wireguard-Handler",
                                     "IPv6 address not found. Skipping renewing process and I'll try to connect the VPN anyways."
                                 )
                             }
@@ -5277,7 +5277,7 @@ class HomeFragment : Fragment() {
                     }
                 } else {
                     Log.d(
-                        "VPN-Handler",
+                        "Wireguard-Handler",
                         "The time difference doesn't exceed its timer. Connecting to VPN."
                     )
                     /*Connect to Wireguard tunnel*/
@@ -5480,6 +5480,15 @@ class HomeFragment : Fragment() {
         }
     }
 
+    override fun onVpnStatusUpdated(status: Boolean) {
+        println("GOT IT!")
+        // This method will be called from MyVpnService
+        activity?.runOnUiThread {
+            updateWireguardActivationSliderStatus(true) // Update UI on the main thread
+            isWireguardConnected = true
+        }
+    }
+
 }
 
 /*
@@ -5555,7 +5564,6 @@ class JavaScriptInterface(
     private val context: Context,
     private val homeFragment: HomeFragment
 ) {
-
     @JavascriptInterface
     fun getConnectionStatus(): Boolean {
         Log.d("Webview", "getConnectionStatus has been called from Javascript")
@@ -5569,9 +5577,11 @@ class WgTunnel : Tunnel {
     override fun getName(): String {
         return "wgpreconf"
     }
-
     override fun onStateChange(newState: Tunnel.State) {
         Log.d("Wireguard-State", "A new state has been recorded: $newState")
     }
 }
 
+interface MyVpnServiceCallback {
+    fun onVpnStatusUpdated(status: Boolean)
+}

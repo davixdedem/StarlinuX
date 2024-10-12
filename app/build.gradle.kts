@@ -13,8 +13,8 @@ android {
         applicationId = "com.magix.pistarlink"
         minSdk = 33
         targetSdk = 34
-        versionCode = 13
-        versionName = "Pi-Starlink-0.1.2-Nebula"
+        versionCode = 15
+        versionName = "Pi-Starlink-0.1.4-Nebula"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
 
