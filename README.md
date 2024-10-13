@@ -21,10 +21,10 @@
 <br />
 <div align="center">
   <a href="https://github.com/github_username/repo_name">
-    <img src="images/logo2.png" alt="Logo" width="500" height="60">
+    <img src="images/logo2.png" alt="Logo" width="500" height="100">
   </a>
 
-<h3 align="center">The Rasberry Pi's unofficial solution for Starlink.</h3>
+<h3 align="center">A Rasberry Pi's unofficial solution for Starlink.</h3>
 
   <p align="center">
     <br />
@@ -42,7 +42,7 @@
   <summary>Table of Contents</summary>
   <ol>
     <li>
-      <a href="#whats-pi-starlink">What's Pi Starlink</a>
+      <a href="#whats-starlinux">What's StarlinuX</a>
       <ul>
         <li><a href="#screenshots">Screenshots</a></li>
       </ul>
@@ -61,7 +61,7 @@
         <li><a href="#reach-your-home-from-outside-set-up-your-own-vpn">Reach your home from outside: set up your own VPN!</a></li>
         <li><a href="#get-rid-of-dynamic-ip-set-up-your-personal-ddns">Get rid of dynamic IP: set up your personal DDNS!</a></li>
         <li><a href="#got-a-game-server-or-a-web-page-set-up-port-forwarding">Got a Game Server or a Web Page? Set up Port Forwarding!</a></li>
-        <li><a href="#need-to-go-deeper-ssh-into-your-pi-starlink">Need to go deeper, SSH into your Pi Starlink!</a></li>
+        <li><a href="#need-to-go-deeper-ssh-into-your-starlinux">Need to go deeper, SSH into your StarlinuX!</a></li>
         <li><a href="#in-need-of-more-ethernet-ports-get-an-extender">In need of more ethernet ports? Get an extender!</a></li> 
       </ul>
     </li>    
@@ -75,16 +75,16 @@
 
 
 <!-- ABOUT THE PROJECT -->
-## What's Pi Starlink?
+## What's StarlinuX?
 
 <div align="center">
   <a href="https://play.google.com/store/apps/details?id=com.magix.pistarlink" target="_blank">
-    <img src="images/round_logo.png" alt="Logo" width="300" height="150">
+    <img src="images/round_logo2.png" alt="Logo" width="300" height="150">
   </a>
 </div>
 <div align="center">
     Available in a few days...<br>
-    ...in the meantime download the last <a href="https://github.com/davixdedem/Pi-Starlink/releases/tag/Pi-Starlink-0.1.2-Nebula" target="_blank">Release</a>.</b>
+    ...in the meantime download the latest <a href="https://github.com/davixdedem/Pi-Starlink/releases/" target="_blank">Release</a>.</b>
 </div>
 <p align="center">
 <a href="https://play.google.com/store/apps/details?id=com.magix.pistarlink" target="_blank">
@@ -114,8 +114,8 @@ This offers a proper and reliable Modem/Router with pre-configured settings stud
 </div>
 <br>
 
-The mobile application of <b>Pi Starlink</b> will allow you to set up your own free VPN all over IPv6 in a few easy steps and reach your home network while ensuring adequate security you need to surf the net safely.
-You'll get two choices to set up your VPN: <i><b>OpenVPN</b></i> or <i><b>Wireguard</b></i>. The first one works with the APIs provided by the fork project of <a href="https://github.com/schwabe/ics-openvpn"><i>OpenVPN for Android</i></a> while the second option, which is <b>faster</b> and more <b>robust</b> than its younger brother,also provides APIs through the <a href="https://github.com/wireGuard/"><i>Wireguard</i></a> project. Pi Starlink is not only oriented to the normal Starlink customers but even to people who want to host their own public server globally as our application has specific feature  for managing <b>port forwarding</b> rules. In case you get an ethernet port extender, we’ll be able to set up a proper <b>DMZ</b>, all is up to you!<br>
+The mobile application of <b>StarlinuX</b> will allow you to set up your own free VPN all over IPv6 in a few easy steps and reach your home network while ensuring adequate security you need to surf the net safely.
+You'll get two choices to set up your VPN: <i><b>OpenVPN</b></i> or <i><b>Wireguard</b></i>. The first one works with the APIs provided by the fork project of <a href="https://github.com/schwabe/ics-openvpn"><i>OpenVPN for Android</i></a> while the second option, which is <b>faster</b> and more <b>robust</b> than its younger brother,also provides APIs through the <a href="https://github.com/wireGuard/"><i>Wireguard</i></a> project. StarlinuX is not only oriented to the normal Starlink customers but even to people who want to host their own public server globally as our application has specific feature  for managing <b>port forwarding</b> rules. In case you get an ethernet port extender, we’ll be able to set up a proper <b>DMZ</b>, all is up to you!<br>
 
 <div align="center">
   <i><b>...IPv6, what a Saviour!</b></i>
@@ -135,7 +135,7 @@ people to you want to reach your game server, or your web page! We tried to rais
   </a>
 </div>
 
-One of the main goals of this project is power saving, because Pi Starlink replaced the original Starlink router, which has a higher power consumption compared to the low cost <b>Single Board Computer</b> we’re working on.
+One of the main goals of this project is power saving, because StarlinuX replaced the original Starlink router, which has a higher power consumption compared to the low cost <b>Single Board Computer</b> we’re working on.
 As a matter of fact, most of the Starlink vanlifer users might be interested in this project as the power is a critical point they used to facing every day when they travel, and that’s now something very reachable.
 Just buy the PoE(Power over Ethernet) which powers up all your items from 12v switching to 46v avoiding any A.C inverter.<br>
 
@@ -147,7 +147,7 @@ Just buy the PoE(Power over Ethernet) which powers up all your items from 12v sw
 
 <div align="center">
     <img src="images/homepage.png" alt="Logo" width="214" height="472">
-    <img src="images/active_vpn.png" alt="Logo" width="214" height="472">
+    <img src="images/wg_inactive.png" alt="Logo" width="214" height="472">
     <img src="images/port_forwarding.png" alt="Logo" width="214" height="472">
 </div>
 
@@ -174,14 +174,13 @@ This project aims to replace the original Starlink router by utilizing a built-i
 </div>
 
 Depending on your Raspberry Pi model, download its official OpenWRT image from the [OpenWRT Website](https://openwrt.org/toh/raspberry_pi_foundation/raspberry_pi).
-
+- Clone the repository from GitHub:
 ```sh
-git clone --branch dev https://github.com/davixdedem/Pi-Starlink.git
+git clone --branch master https://github.com/davixdedem/Pi-Starlink.git
 ```
 - Download the appropriate OpenWRT image for your Raspberry Pi model.
 - Flash the OpenWRT image onto the MicroSD card using [Etcher](https://www.balena.io/etcher/) or any similar tool.
 - Insert the MicroSD card into your Raspberry Pi.
-- Clone the repository from GitHub:
 - Power up the Raspberry Pi.
 - Plug an Ethernet cable into the Ethernet port on the Raspberry Pi and connect it to your laptop/computer.<br>
 - Verify that you can access OpenWRT by pinging its default IP address:<br>
@@ -220,13 +219,13 @@ ssh root@192.168.1.1 'ash -s' < Second.sh 2>&1 && bash Third.sh
 
 <div align="left">
   <a href="https://github.com/github_username/repo_name">
-    <img src="images/round_logo.png" alt="Logo" width="100" height="50">
+    <img src="images/round_logo2.png" alt="Logo" width="100" height="50">
   </a>
 </div>
 
 - Download the Pi-Starlink application from the <a href="https://play.google.com/store/apps/details?id=com.magix.pistarlink">Play Store</a>.<br>
 - Install it on your Smartphone.<br>
-- Connect it to the <b>Pi Starlink</b> Wi-Fi using the following default credentials:<br>
+- Connect it to the <b>StarlinuX</b> Wi-Fi using the following default credentials:<br>
   ```sh
   SSID: Pi-Starlink
   Password: pistarlink
@@ -269,10 +268,10 @@ ssh root@192.168.1.1 'ash -s' < Second.sh 2>&1 && bash Third.sh
 <div align="center">
     <img src="images/vpn_plus_pi.png" alt="Logo" width="220" height="90">
 </div>
-<div align="center"><b>OpenVPN + Pi Starlink</b></div><br>
+<div align="center"><b>OpenVPN + StarlinuX</b></div><br>
 1. First of all, be sure you've already installed <a href="https://github.com/schwabe/ics-openvpn"><i>OpenVPN for Android</i></a> on your Smartphone.<br>
-2. In Pi Starlink, go to the <i><b>Virtual Private Network(VPN)</b></i> section.<br>
-3. Slide the configuration button, Pi Starlink will take a few minutes to configure OpenVPN depending on your Raspberry Pi efficiency.<br>
+2. In StarlinuX, go to the <i><b>Virtual Private Network(VPN)</b></i> section.<br>
+3. Slide the configuration button, StarlinuX will take a few minutes to configure OpenVPN depending on your Raspberry Pi efficiency.<br>
 4. Once is done, turn off your Wi-Fi connection and use only your <b>Mobile Network</b>.<br>
 5. Slide the activation button, your smartphone will be assigned a <b>local IPv4 address</b>.<br>
 6. Congrats, you're a virtually home! <br>
@@ -313,10 +312,10 @@ tail -f /var/log/openvpn_status.log
 <div align="center">
     <img src="images/wg_plus_pi.png" alt="Logo" width="220" height="90">
 </div>
-<div align="center"><b>Wireguard + Pi Starlink</b></div><br>
-1. In Pi Starlink, go to the <i><b>Virtual Private Network(VPN)</b></i> section.<br>
+<div align="center"><b>Wireguard + StarlinuX</b></div><br>
+1. In StarlinuX, go to the <i><b>Virtual Private Network(VPN)</b></i> section.<br>
 2. Choose the Wireguard section.<br>
-3. Slide the configuration button, Pi Starlink will take a while to configure Wireguard depending on your Raspberry Pi efficiency.<br>
+3. Slide the configuration button, StarlinuX will take a while to configure Wireguard depending on your Raspberry Pi efficiency.<br>
 4. Once is done, turn off your Wi-Fi connection and use only your <b>Mobile Network</b>.<br>
 5. Slide the activation button, your smartphone will be assigned a <b>local IPv4 address</b>.<br>
 6. Congrats, you're a virtually home! <br>
@@ -360,10 +359,10 @@ wg
 1. First of all, register and sign up at <a href="https://my.noip.com">https://my.noip.com</a><br>
 2. Create a new hostname through the control panel.(e.g <i>my-starlink-home.ddns.net</i>) <br>
 3. Setup a new DDNS key, you'll receive <b>username</b> and <b>password</b>.<br>
-4. In Pi Starlink, go to the <i><b>Dynamic DNS(DDNS)</b></i> section.<br>
+4. In StarlinuX, go to the <i><b>Dynamic DNS(DDNS)</b></i> section.<br>
 5. Fill out the form with the <b>hostname</b> and your <b>DDNS key credentials</b>.<br>
 6. Congrats, you've set up your DDNS!<br>
-7. Pi Starlink will take care to sync your FQDN with the current IPv6 on time.<br>
+7. StarlinuX will take care to sync your FQDN with the current IPv6 on time.<br>
 
 ### Some tips to check if it works:
 - <b>From any Linux device:</b>
@@ -387,7 +386,7 @@ Address: 2a0d:3344:....
 <div align="center">
     <img src="images/db.png" alt="Logo" width="80" height="80">
 </div>
-1. In the Pi Starlink Application, go to the <i><b>Port Forwarding</b></i> section.<br>
+1. In the StarlinuX Application, go to the <i><b>Port Forwarding</b></i> section.<br>
 2. As default, there are a couple of pre configured rules(HTTP and SSH).<br>
 3. Add a new rule clicking on the (+) button.<br>
 4. Edit the <b>External Port</b> with that one everybody should point to.<br>
@@ -404,12 +403,12 @@ nc -6 [IPv6_address] 5555
 ```
 
 <!-- SSH -->
-## Need to go deeper, SSH into your Pi Starlink!
+## Need to go deeper, SSH into your StarlinuX!
 <div align="center">
     <img src="images/ssh.png" alt="Logo" width="80" height="80">
 </div>
-1. First of all, be sure your Pi Starlink is reachable.<br>
-2. SSH into Pi Starlink:<br>
+1. First of all, be sure your StarlinuX is reachable.<br>
+2. SSH into StarlinuX:<br>
 
 ```sh
 ssh root@192.168.1.1
@@ -454,12 +453,12 @@ Try connecting to the VPN. If you're missing IPv6, an alert will advise you. Alt
 The easiest way is to set up Port Forwarding. Go to the dedicated section in the app.
 
 </details> <details> <summary><b>Does this application substitute the original Starlink app?</b></summary>
-Of course not, Pi Starlink handles the Router while Starlink manages the Dish.
+Of course not, StarlinuX handles the Router while Starlink manages the Dish.
 
 </details> <details> <summary><b>Do I need to install OpenVPN for Android?</b></summary>
-Yes, you do. But don't worry, you'll manage everything from Pi Starlink.
+Yes, you do. But don't worry, you'll manage everything from StarlinuX.
 
-</details> <details> <summary><b>How to reset the Pi Starlink Router credentials?</b></summary>
+</details> <details> <summary><b>How to reset the StarlinuX Router credentials?</b></summary>
 Follow the original instructions provided by <a href="https://openwrt.org/docs/guide-user/troubleshooting/root_password_reset">OpenWRT</a>.
 
 </details>
@@ -505,7 +504,7 @@ Don't forget to give the project a star! Thanks again!
 <!-- PRIVACY POLICY -->
 ## Privacy Policy<br>
 
-Pi Starlink is dedicated to safeguarding your privacy. This Privacy Policy outlines how we handle your personal information when you use our mobile application (*com.magix.pistarlink*).<br>
+StarlinuX is dedicated to safeguarding your privacy. This Privacy Policy outlines how we handle your personal information when you use our mobile application (*com.magix.pistarlink*).<br>
 
 **Information We Collect**<br>
 
