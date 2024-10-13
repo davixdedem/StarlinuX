@@ -199,8 +199,8 @@ ssh root@192.168.1.1 'ash -s' < First.sh 2>&1
 - <b>Now connect Raspberry Pi to Starlink in place of the original Router.</b>
 - Connect to the Wi-Fi:
 ```sh
-SSID: Pi-Starlink
-Password: pistarlink
+SSID: StarlinuX
+Password: starlinux
 ```
 - Run the last command:<br>
 ```sh
@@ -227,8 +227,8 @@ ssh root@192.168.1.1 'ash -s' < Second.sh 2>&1 && bash Third.sh
 - Install it on your Smartphone.<br>
 - Connect it to the <b>StarlinuX</b> Wi-Fi using the following default credentials:<br>
   ```sh
-  SSID: Pi-Starlink
-  Password: pistarlink
+  SSID: StarlinuX
+  Password: starlinux
   ```
 - Open the app, you're in!<br>
 
