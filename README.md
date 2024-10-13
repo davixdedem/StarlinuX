@@ -28,11 +28,11 @@
 
   <p align="center">
     <br />
-    <a href="https://github.com/davixdedem/Pi-Starlink/issues/">View Issues</a>
+    <a href="https://github.com/davixdedem/StarlinuX/issues/">View Issues</a>
     ·
-    <a href="https://github.com/davixdedem/Pi-Starlink/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
+    <a href="https://github.com/davixdedem/StarlinuX/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     ·
-    <a href="https://github.com/davixdedem/Pi-Starlink/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
+    <a href="https://github.com/davixdedem/StarlinuX/issues/new?labels=enhancement&template=feature-request---.md">Request Feature</a>
   </p>
 </div>
 
@@ -84,7 +84,7 @@
 </div>
 <div align="center">
     Available in a few days...<br>
-    ...in the meantime download the latest <a href="https://github.com/davixdedem/Pi-Starlink/releases/" target="_blank">Release</a>.</b>
+    ...in the meantime download the latest <a href="https://github.com/davixdedem/StarlinuX/releases/" target="_blank">Release</a>.</b>
 </div>
 <p align="center">
 <a href="https://play.google.com/store/apps/details?id=com.magix.pistarlink" target="_blank">
@@ -176,7 +176,7 @@ This project aims to replace the original Starlink router by utilizing a built-i
 Depending on your Raspberry Pi model, download its official OpenWRT image from the [OpenWRT Website](https://openwrt.org/toh/raspberry_pi_foundation/raspberry_pi).
 - Clone the repository from GitHub:
 ```sh
-git clone --branch master https://github.com/davixdedem/Pi-Starlink.git
+git clone --branch master https://github.com/davixdedem/StarlinuX.git
 ```
 - Download the appropriate OpenWRT image for your Raspberry Pi model.
 - Flash the OpenWRT image onto the MicroSD card using [Etcher](https://www.balena.io/etcher/) or any similar tool.
@@ -190,7 +190,7 @@ ping 192.168.1.1
 ```
 - Navigate to the <b>auto_install</b> directory.
 ```sh
-cd Pi-Starlink/auto_install
+cd StarlinuX/auto_install
 ```
 - Run the following command:
 ```sh
@@ -199,8 +199,8 @@ ssh root@192.168.1.1 'ash -s' < First.sh 2>&1
 - <b>Now connect Raspberry Pi to Starlink in place of the original Router.</b>
 - Connect to the Wi-Fi:
 ```sh
-SSID: Pi-Starlink
-Password: pistarlink
+SSID: StarlinuX
+Password: starlinux
 ```
 - Run the last command:<br>
 ```sh
@@ -227,8 +227,8 @@ ssh root@192.168.1.1 'ash -s' < Second.sh 2>&1 && bash Third.sh
 - Install it on your Smartphone.<br>
 - Connect it to the <b>StarlinuX</b> Wi-Fi using the following default credentials:<br>
   ```sh
-  SSID: Pi-Starlink
-  Password: pistarlink
+  SSID: StarlinuX
+  Password: starlinux
   ```
 - Open the app, you're in!<br>
 
@@ -244,17 +244,7 @@ ssh root@192.168.1.1 'ash -s' < Second.sh 2>&1 && bash Third.sh
 - Network: Wi-Fi or Mobile Data<br>
 
 ### Minimum Requirements for your Raspberry Pi.
-- Raspberry Pi 3 Model B+
-    - Wi-Fi: 802.11n
-    - Ethernet: 10/100 Mbps
-
-- Raspberry Pi 4 Model B
-    - Wi-Fi: 802.11ac
-    - Ethernet: Gigabit Ethernet
-
-- Raspberry Pi 3 Model B
-    - Wi-Fi: 802.11n
-    - Ethernet: 10/100 Mbps
+- All the Raspberry Pi listed here: [Raspberry Pi - OpenWRT](https://openwrt.org/toh/raspberry_pi_foundation/raspberry_pi).
 
 #### Recommended Model
 - <b>Raspberry Pi 5</b>
