@@ -244,17 +244,7 @@ ssh root@192.168.1.1 'ash -s' < Second.sh 2>&1 && bash Third.sh
 - Network: Wi-Fi or Mobile Data<br>
 
 ### Minimum Requirements for your Raspberry Pi.
-- Raspberry Pi 3 Model B+
-    - Wi-Fi: 802.11n
-    - Ethernet: 10/100 Mbps
-
-- Raspberry Pi 4 Model B
-    - Wi-Fi: 802.11ac
-    - Ethernet: Gigabit Ethernet
-
-- Raspberry Pi 3 Model B
-    - Wi-Fi: 802.11n
-    - Ethernet: 10/100 Mbps
+- All the Raspberry Pi listed here: [OpenWRT Website](https://openwrt.org/toh/raspberry_pi_foundation/raspberry_pi).
 
 #### Recommended Model
 - <b>Raspberry Pi 5</b>
