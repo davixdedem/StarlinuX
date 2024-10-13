@@ -18,8 +18,8 @@ uci commit firewall
 /etc/init.d/firewall restart
 
 #4. Reset Wi-Fi SSID and Password
-uci set wireless.@wifi-iface[0].ssid='Pi-Starlink'
-uci set wireless.@wifi-iface[0].key='pistarlink'
+uci set wireless.@wifi-iface[0].ssid='StarlinuX'
+uci set wireless.@wifi-iface[0].key='starlinux'
 uci commit wireless
 
 #5. Echo OK before reboot
