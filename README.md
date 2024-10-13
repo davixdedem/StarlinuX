@@ -244,7 +244,7 @@ ssh root@192.168.1.1 'ash -s' < Second.sh 2>&1 && bash Third.sh
 - Network: Wi-Fi or Mobile Data<br>
 
 ### Minimum Requirements for your Raspberry Pi.
-- All the Raspberry Pi listed here: [OpenWRT Website](https://openwrt.org/toh/raspberry_pi_foundation/raspberry_pi).
+- All the Raspberry Pi listed here: [Raspberry Pi - OpenWRT](https://openwrt.org/toh/raspberry_pi_foundation/raspberry_pi).
 
 #### Recommended Model
 - <b>Raspberry Pi 5</b>
