@@ -195,7 +195,7 @@ cd StarlinuX/auto_install
 ```sh
 ssh root@192.168.1.1 'ash -s' < First.sh 2>&1
 ```
-- <b>Now connect your  to Starlink in place of the original Router.</b>
+- <b>Now connect your Hardware to Starlink in place of the original Router.</b>
 - Connect to the Wi-Fi:
 ```sh
 SSID: StarlinuX
