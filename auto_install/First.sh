@@ -25,18 +25,18 @@ modify_wireless_config() {
   sed -i "s/option disabled '1'/option disabled '0'/" $wireless_config
   
   # Set SSID and security
-  sed -i "s/option ssid '.*'/option ssid 'Pi-Starlink'/" $wireless_config
+  sed -i "s/option ssid '.*'/option ssid 'StarlinuX'/" $wireless_config
   sed -i "s/option encryption '.*'/option encryption 'psk2'/" $wireless_config
   # Set band (2g or 5g)
   sed -i "s/option band '.*'/option band '$band'/" $wireless_config
 
   # Check if 'option key' exists in the configuration file
   if grep -q "option key" "$wireless_config"; then
-      # If it exists, replace the existing key with 'pistarlink'
-      sed -i "s/option key '.*'/option key 'pistarlink'/" "$wireless_config"
+      # If it exists, replace the existing key with 'StarlinuX'
+      sed -i "s/option key '.*'/option key 'starlinux'/" "$wireless_config"
   else
       # If it doesn't exist, add the 'option key' line under the SSID configuration
-      sed -i "/option ssid 'Pi-Starlink'/a \    option key 'pistarlink'" "$wireless_config"
+      sed -i "/option ssid 'StarlinuX'/a \    option key 'starlinux'" "$wireless_config"
   fi
   
   echo "Wireless configuration updated successfully!"
@@ -303,6 +303,6 @@ modify_network_config
 configure_firewall
 
 # Restart network and firewall services to apply changes
-echo "Configuration completed successfully! Connect Pi Starlink to your Starlink Dish."
+echo "Configuration completed successfully! Connect StarlinuX to your Starlink Dish."
 poweroff
 

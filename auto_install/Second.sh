@@ -1,6 +1,6 @@
 #!/bin/ash
 
-# Plug Pi Starlink to StarLink Dish and connect to the Wi-Fi "Pi-Starlink
+# Plug StarlinuX to StarLink Dish and connect to the Wi-Fi "StarlinuX"
 
 # Enabling APIs
 echo "Enabling necessary APIs..."
