@@ -106,7 +106,7 @@
   </a>
 </div>
 
-Since Starlink provides their clients a public <i>IPv6</i>, which is globally accessible, we leveraged on it building from scratch a custom image of <b>OpenWRT</b> dedicated to Raspberry Pi.
+Since Starlink provides its clients with a public <i>IPv6</i>, which is globally accessible, we have leveraged this to provide you with easy steps to build a custom <b>OpenWRT</b> image tailored to your compatible hardware.
 This offers a proper and reliable Modem/Router with pre-configured settings studiously assessed for working with the Starlink Dish as plug & play. <br>
 
 <div align="center">
@@ -173,18 +173,17 @@ This project aims to replace the original Starlink router by utilizing a built-i
   </a>
 </div>
 
-Depending on your Raspberry Pi model, download its official OpenWRT image from the [OpenWRT Website](https://openwrt.org/toh/raspberry_pi_foundation/raspberry_pi).
+Depending on your Hardware model, download its official OpenWRT image from the [OpenWRT Website](https://openwrt.org/toh/start).
 - Clone the repository from GitHub:
 ```sh
 git clone --branch master https://github.com/davixdedem/StarlinuX.git
 ```
-- Download the appropriate OpenWRT image for your Raspberry Pi model.
-- Flash the OpenWRT image onto the MicroSD card using [Etcher](https://www.balena.io/etcher/) or any similar tool.
-- Insert the MicroSD card into your Raspberry Pi.
-- Power up the Raspberry Pi.
-- Plug an Ethernet cable into the Ethernet port on the Raspberry Pi and connect it to your laptop/computer.<br>
+- Download the appropriate OpenWRT image for your Modem/Router.
+- Flash the OpenWRT image following its dedicated instructions.
+- Power up your Modem/Router.
+- Plug an Ethernet cable into the Ethernet port on the Router and connect it to your laptop/computer.<br>
 - Verify that you can access OpenWRT by pinging its default IP address:<br>
-  *(You may disconnect your Wi-Fi interface in order to be sure to reach your Raspberry Pi via cable)*<br>
+  *(You may disconnect your Wi-Fi interface in order to be sure to reach your Router via cable)*<br>
 ```sh
 ping 192.168.1.1
 ```
@@ -196,7 +195,7 @@ cd StarlinuX/auto_install
 ```sh
 ssh root@192.168.1.1 'ash -s' < First.sh 2>&1
 ```
-- <b>Now connect Raspberry Pi to Starlink in place of the original Router.</b>
+- <b>Now connect your  to Starlink in place of the original Router.</b>
 - Connect to the Wi-Fi:
 ```sh
 SSID: StarlinuX
@@ -206,7 +205,7 @@ Password: starlinux
 ```sh
 ssh root@192.168.1.1 'ash -s' < Second.sh 2>&1 && bash Third.sh
 ```
-- Once all the scripts have been executed, your Raspberry Pi should be configured and connected to Starlink, you can now use our <b>Android application</b>!
+- Once all the scripts have been executed, your Modem/router should be configured and connected to Starlink, you can now use our <b>Android application</b>!
 
 ## Installation
 <div align="left">
@@ -243,13 +242,8 @@ ssh root@192.168.1.1 'ash -s' < Second.sh 2>&1 && bash Third.sh
 - Screen Resolution: HD (720p) or higher<br>
 - Network: Wi-Fi or Mobile Data<br>
 
-### Minimum Requirements for your Raspberry Pi.
-- All the Raspberry Pi listed here: [Raspberry Pi - OpenWRT](https://openwrt.org/toh/raspberry_pi_foundation/raspberry_pi).
-
-#### Recommended Model
-- <b>Raspberry Pi 5</b>
-    - Wi-Fi: 802.11ac or newer
-    - Ethernet: Gigabit Ethernet
+### Minimum Requirements for your Modem/Router.
+- All the Hardwares listed here: [Table of Hardware - OpenWRT](https://openwrt.org/toh/start).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
