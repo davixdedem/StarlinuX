@@ -24,7 +24,7 @@
     <img src="images/logo2.png" alt="Logo" width="500" height="100">
   </a>
 
-<h3 align="center">Starlink-ready Linux for SBCs..</h3>
+<h3 align="center">Starlink-ready Linux for Single Board Computers.</h3>
 
   <p align="center">
     <br />
