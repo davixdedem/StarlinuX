@@ -62,7 +62,6 @@
         <li><a href="#get-rid-of-dynamic-ip-set-up-your-personal-ddns">Get rid of dynamic IP: set up your personal DDNS!</a></li>
         <li><a href="#got-a-game-server-or-a-web-page-set-up-port-forwarding">Got a Game Server or a Web Page? Set up Port Forwarding!</a></li>
         <li><a href="#need-to-go-deeper-ssh-into-your-starlinux">Need to go deeper, SSH into your StarlinuX!</a></li>
-        <li><a href="#in-need-of-more-ethernet-ports-get-an-extender">In need of more ethernet ports? Get an extender!</a></li> 
       </ul>
     </li>    
     <li><a href="#faq">FAQ</a></li>
@@ -403,23 +402,6 @@ t*iP9Tk6na3VPeq
 ```
 4. Congrats, you're in!
 5. Remember to change the default credentials.
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- Ethernet Extender -->
-## In need of more ethernet ports? Get an extender!
-<div align="center">
-    <a href="https://a.aliexpress.com/_EyMgZR7">
-        <img src="images/extender.png" alt="Logo" width="600" height="300">
-    </a>
-</div>
-<p align="center">
-    <a href="https://a.aliexpress.com/_EyMgZR7">
-        <img src="images/aliexpress.png" width="25%">
-    </a>
-</p>
-
-There is no competitor speaking about Ethernet, as the cable is still the perfect solution if your goal is to reduce any latency while you’re playing your fav game online. So, we’d like to suggest you the most reliable Ethernet Port Extender that we figured out and that we’re currently pushing off the edge getting amazing results.
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- FAQ -->
