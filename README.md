@@ -179,8 +179,8 @@ Depending on your SBC model,check its compatibility and download its official Op
 git clone --branch master https://github.com/davixdedem/StarlinuX.git
 ```
 - Download the appropriate OpenWRT image for your SBC.
-- Flash the OpenWRT image following its dedicated instructions.
-- Power up your SBC.
+- Flash the OpenWRT image on the SDCard following its dedicated instructions.
+- Power up your Single Board Computer.
 - Plug an Ethernet cable into the Ethernet port on the SBC and connect it to your laptop/computer.<br>
 - Verify that you can access OpenWRT by pinging its default IP address:<br>
   *(You may disconnect your Wi-Fi interface in order to be sure to reach your Router via cable)*<br>
@@ -195,7 +195,7 @@ cd StarlinuX/auto_install
 ```sh
 ssh root@192.168.1.1 'ash -s' < First.sh 2>&1
 ```
-- <b>Now connect your SBC to Starlink in place of the original Router.</b>
+- <b>Now connect your SBC to Starlink in place of the original Starlink Router.</b>
 - Connect to the Wi-Fi:
 ```sh
 SSID: StarlinuX
@@ -243,7 +243,7 @@ ssh root@192.168.1.1 'ash -s' < Second.sh 2>&1 && bash Third.sh
 - Network: Wi-Fi or Mobile Data<br>
 
 ### Minimum Requirements for your Modem/Router.
-- All the SBCs listed here: [Table of Hardware - OpenWRT](https://openwrt.org/toh/start).
+- All the SBCs listed here: [Table of Hardware](https://openwrt.org/toh/start).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
