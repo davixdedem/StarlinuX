@@ -3,20 +3,8 @@
 # Function to check SBC model and set WiFi band
 check_sbc_model() {
   local model=$(cat /proc/device-tree/model)
-
-  if [[ "$model" == *"Raspberry Pi 3"* ]]; then
-    echo "Detected Raspberry Pi 3 - enabling 2.4GHz WiFi (2g)"
-    band="2g"
-  elif [[ "$model" == *"Raspberry Pi 4"* || "$model" == *"Raspberry Pi 5"* ]]; then
-    echo "Detected Raspberry Pi 4/5 - enabling 5GHz WiFi (5g)"
-    band="5g"
-  elif [[ "$model" == *"Banana Pi"* || "$model" == *"Orange Pi"* || "$model" == *"NanoPi"* ]]; then
-    echo "Detected a compatible Banana Pi, Orange Pi, or NanoPi - assuming 2.4GHz WiFi (2g)"
-    band="2g"  # Change as needed based on SBC's WiFi capabilities
-  else
-    echo "Detected SBC: $model - assuming 2.4GHz WiFi (2g)"
-    band="2g"  # Defaulting to 2g unless explicitly supported otherwise
-  fi
+  echo "Detected SBC: $model"
+  band="2g"  # Defaulting to 2g 
 }
 
 # Function to modify wireless configuration
