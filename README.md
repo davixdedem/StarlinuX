@@ -135,7 +135,7 @@ people to you want to reach your game server, or your web page! We tried to rais
   </a>
 </div>
 
-One of the main goals of this project is power saving, because StarlinuX replaced the original Starlink router, which has a higher power consumption compared to the low cost <b>Single Board Computer</b> we’re working on.
+One of the main goals of this project is power saving, because StarlinuX replaced the original Starlink router, which has a higher power consumption compared to most of the low-cost <b>Single Board Computer</b> we’re working with.
 As a matter of fact, most of the Starlink vanlifer users might be interested in this project as the power is a critical point they used to facing every day when they travel, and that’s now something very reachable.
 Just buy the PoE(Power over Ethernet) which powers up all your items from 12v avoiding any A.C inverter.<br>
 
@@ -173,7 +173,7 @@ This project aims to replace the original Starlink router by utilizing a built-i
   </a>
 </div>
 
-Depending on your SBC model,check its compatibility and download its official OpenWRT image from the [OpenWRT Website - Table of Hardware](https://openwrt.org/toh/start).
+Depending on your SBC model,check its compatibility and download its official OpenWRT image from the [Table of Hardware](https://openwrt.org/toh/start).
 - Clone the repository from GitHub:
 ```sh
 git clone --branch master https://github.com/davixdedem/StarlinuX.git
