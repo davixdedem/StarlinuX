@@ -1,17 +1,21 @@
 #!/bin/ash
 
-# Function to check Raspberry Pi model
-check_rpi_model() {
+# Function to check SBC model and set WiFi band
+check_sbc_model() {
   local model=$(cat /proc/device-tree/model)
+
   if [[ "$model" == *"Raspberry Pi 3"* ]]; then
     echo "Detected Raspberry Pi 3 - enabling 2.4GHz WiFi (2g)"
     band="2g"
   elif [[ "$model" == *"Raspberry Pi 4"* || "$model" == *"Raspberry Pi 5"* ]]; then
     echo "Detected Raspberry Pi 4/5 - enabling 5GHz WiFi (5g)"
     band="5g"
+  elif [[ "$model" == *"Banana Pi"* || "$model" == *"Orange Pi"* || "$model" == *"NanoPi"* ]]; then
+    echo "Detected a compatible Banana Pi, Orange Pi, or NanoPi - assuming 2.4GHz WiFi (2g)"
+    band="2g"  # Change as needed based on SBC's WiFi capabilities
   else
-    echo "Unsupported Raspberry Pi model. Exiting..."
-    exit 1
+    echo "Detected SBC: $model - assuming 2.4GHz WiFi (2g)"
+    band="2g"  # Defaulting to 2g unless explicitly supported otherwise
   fi
 }
 
@@ -285,24 +289,17 @@ EOL
 }
 
 # Main script execution
-echo "Starting Raspberry Pi wireless, DHCP, network, and firewall configuration..."
+echo "Starting SBC wireless, DHCP, network, and firewall configuration..."
 
-# Check the Raspberry Pi model and set band accordingly
-check_rpi_model
+# Check the SBC model and set WiFi band
+check_sbc_model
 
-# Modify the wireless configuration based on the model
+# Modify wireless, DHCP, and network configurations
 modify_wireless_config
-
-# Modify the DHCP configuration to include 'wan6'
 modify_dhcp_config
-
-# Modify the network configuration with the provided settings
 modify_network_config
 
-# Configure the firewall with hardcoded rules
+# Hardcode firewall configuration
 configure_firewall
 
-# Restart network and firewall services to apply changes
-echo "Configuration completed successfully! Connect StarlinuX to your Starlink Dish."
-poweroff
-
+echo "Configuration process completed!"
