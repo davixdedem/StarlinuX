@@ -235,12 +235,12 @@ ssh root@192.168.1.1 'ash -s' < Second.sh 2>&1 && bash Third.sh
 
 ## Prerequisites
 ### Minimum Requirements for your Smartphone.
-- Operating System: Android 14 (API Level 34)<br>
+- Operating System: Android 13 (API Level 33)<br>
 - Processor: ARMv8 or equivalent<br>
 - RAM: 4 GB or more<br>
 - Storage: 100 MB of free space (for app installation and data)<br>
 - Screen Resolution: HD (720p) or higher<br>
-- Network: Wi-Fi or Mobile Data<br>
+- Network: Wi-Fi and Mobile Data<br>
 
 ### Minimum Requirements for your Modem/Router.
 - All the SBCs listed here: [Table of Hardware](https://openwrt.org/toh/start).
