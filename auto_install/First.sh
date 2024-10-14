@@ -302,4 +302,4 @@ modify_network_config
 # Hardcode firewall configuration
 configure_firewall
 
-echo "Configuration process completed!"
+echo "Configuration completed! Connect StarlinuX to your Starlink Dish."
