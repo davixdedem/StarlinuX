@@ -1,42 +1,54 @@
 #!/bin/ash
 
-# Function to check Raspberry Pi model
-check_rpi_model() {
+# Function to check SBC model and set WiFi band
+check_sbc_model() {
   local model=$(cat /proc/device-tree/model)
-  if [[ "$model" == *"Raspberry Pi 3"* ]]; then
-    echo "Detected Raspberry Pi 3 - enabling 2.4GHz WiFi (2g)"
-    band="2g"
-  elif [[ "$model" == *"Raspberry Pi 4"* || "$model" == *"Raspberry Pi 5"* ]]; then
-    echo "Detected Raspberry Pi 4/5 - enabling 5GHz WiFi (5g)"
-    band="5g"
-  else
-    echo "Unsupported Raspberry Pi model. Exiting..."
-    exit 1
-  fi
+  echo "Detected SBC: $model"
+  band="2g"  # Defaulting to 2g
 }
 
 # Function to modify wireless configuration
 modify_wireless_config() {
   local wireless_config="/etc/config/wireless"
-
+  
   echo "Modifying wireless configuration..."
 
   # Enable wireless
-  sed -i "s/option disabled '1'/option disabled '0'/" $wireless_config
+  sed -i "s/option disabled '1'/option disabled '0'/" $wireless_config || {
+    echo "Failed to enable wireless."
+    return 1
+  }
   
   # Set SSID and security
-  sed -i "s/option ssid '.*'/option ssid 'StarlinuX'/" $wireless_config
-  sed -i "s/option encryption '.*'/option encryption 'psk2'/" $wireless_config
+  sed -i "s/option ssid '.*'/option ssid 'StarlinuX'/" $wireless_config || {
+    echo "Failed to set SSID."
+    return 1
+  }
+  
+  sed -i "s/option encryption '.*'/option encryption 'psk2'/" $wireless_config || {
+    echo "Failed to set encryption."
+    return 1
+  }
+  
   # Set band (2g or 5g)
-  sed -i "s/option band '.*'/option band '$band'/" $wireless_config
+  sed -i "s/option band '.*'/option band '$band'/" $wireless_config || {
+    echo "Failed to set WiFi band."
+    return 1
+  }
 
   # Check if 'option key' exists in the configuration file
   if grep -q "option key" "$wireless_config"; then
       # If it exists, replace the existing key with 'StarlinuX'
-      sed -i "s/option key '.*'/option key 'starlinux'/" "$wireless_config"
+      sed -i "s/option key '.*'/option key 'starlinux'/" "$wireless_config" || {
+        echo "Failed to update key."
+        return 1
+      }
   else
       # If it doesn't exist, add the 'option key' line under the SSID configuration
-      sed -i "/option ssid 'StarlinuX'/a \    option key 'starlinux'" "$wireless_config"
+      sed -i "/option ssid 'StarlinuX'/a \    option key 'starlinux'" "$wireless_config" || {
+        echo "Failed to add key."
+        return 1
+      }
   fi
   
   echo "Wireless configuration updated successfully!"
@@ -53,7 +65,6 @@ modify_dhcp_config() {
     # Add the 'wan6' DHCP configuration if it doesn't exist
     echo "Adding DHCP configuration for 'wan6'..."
     cat <<EOL >> $dhcp_config
-
 config dhcp 'wan6'
     option interface 'wan6'
     option ignore '1'
@@ -72,7 +83,6 @@ modify_network_config() {
 
   # Append the required network configuration
   cat <<EOL >> $network_config
-
 config device
 	option name 'br-lan'
 	option type 'bridge'
@@ -273,36 +283,21 @@ config redirect
 	option family 'ipv6'
 	option enabled '0'
 
-config rule 'ovpn'
-	option name 'Allow-OpenVPN'
-	option src 'wan'
-	option dest_port '1194'
-	option proto 'udp'
-	option target 'ACCEPT'
+config rule
+	option name 'Reject-Internet-Access'
+	option src 'lan'
+	option dest 'wan'
+	option target 'REJECT'
 EOL
 
-  echo "Firewall configuration applied successfully!"
+  echo "Firewall configuration hardcoded successfully!"
 }
 
-# Main script execution
-echo "Starting Raspberry Pi wireless, DHCP, network, and firewall configuration..."
-
-# Check the Raspberry Pi model and set band accordingly
-check_rpi_model
-
-# Modify the wireless configuration based on the model
+# Main execution flow
+check_sbc_model
 modify_wireless_config
-
-# Modify the DHCP configuration to include 'wan6'
 modify_dhcp_config
-
-# Modify the network configuration with the provided settings
 modify_network_config
-
-# Configure the firewall with hardcoded rules
 configure_firewall
 
-# Restart network and firewall services to apply changes
-echo "Configuration completed successfully! Connect StarlinuX to your Starlink Dish."
-poweroff
-
+echo "Configuration completed! Connect StarlinuX to your Starlink Dish."
