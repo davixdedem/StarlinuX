@@ -24,7 +24,7 @@
     <img src="images/logo2.png" alt="Logo" width="500" height="100">
   </a>
 
-<h3 align="center">An unofficial Linux solution for Starlink.</h3>
+<h3 align="center">A tailored Linux solution for enterprise Starlink connectivity.</h3>
 
   <p align="center">
     <br />
