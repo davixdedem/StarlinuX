@@ -222,7 +222,7 @@ ssh root@192.168.1.1 'ash -s' < Second.sh 2>&1 && bash Third.sh
   </a>
 </div>
 
-- Download the StarlinuX application from the <a href="https://github.com/davixdedem/StarlinuX/releases/" target="_blank">Last Releases</a> .<br>
+- Download the StarlinuX application from the latest<a href="https://github.com/davixdedem/StarlinuX/releases/" target="_blank">Releases</a> .<br>
 - Install it on your Smartphone.<br>
 - Connect it to the <b>StarlinuX</b> Wi-Fi using the following default credentials:<br>
   ```sh
