@@ -24,7 +24,7 @@
     <img src="images/logo2.png" alt="Logo" width="500" height="100">
   </a>
 
-<h3 align="center">A tailored Linux solution for enterprise Starlink connectivity.</h3>
+<h3 align="center">Starlink-ready Linux for SBCs..</h3>
 
   <p align="center">
     <br />
@@ -106,7 +106,7 @@
   </a>
 </div>
 
-Since Starlink provides its clients with a public <i>IPv6</i>, which is globally accessible, we have leveraged this to provide you with easy steps to build a custom <b>OpenWRT</b> image tailored to your compatible hardware.
+Since Starlink provides its clients with a public <i>IPv6</i>, which is globally accessible, we have leveraged this to provide you with easy steps to build a custom <b>OpenWRT</b> image tailored to your compatible Single Board Computer.
 This offers a proper and reliable Modem/Router with pre-configured settings studiously assessed for working with the Starlink Dish as plug & play. <br>
 
 <div align="center">
@@ -115,7 +115,7 @@ This offers a proper and reliable Modem/Router with pre-configured settings stud
 <br>
 
 The mobile application of <b>StarlinuX</b> will allow you to set up your own free VPN all over IPv6 in a few easy steps and reach your home network while ensuring adequate security you need to surf the net safely.
-You'll get two choices to set up your VPN: <i><b>OpenVPN</b></i> or <i><b>Wireguard</b></i>. The first one works with the APIs provided by the fork project of <a href="https://github.com/schwabe/ics-openvpn"><i>OpenVPN for Android</i></a> while the second option, which is <b>faster</b> and more <b>robust</b> than its younger brother,also provides APIs through the <a href="https://github.com/wireGuard/"><i>Wireguard</i></a> project. StarlinuX is not only oriented to the normal Starlink customers but even to people who want to host their own public server globally as our application has specific feature  for managing <b>port forwarding</b> rules. In case you get an ethernet port extender, we’ll be able to set up a proper <b>DMZ</b>, all is up to you!<br>
+You'll get two choices to set up your VPN: <i><b>OpenVPN</b></i> or <i><b>Wireguard</b></i>. The first one works with the APIs provided by the fork project of <a href="https://github.com/schwabe/ics-openvpn"><i>OpenVPN for Android</i></a> while the second option, which is <b>faster</b> and more <b>robust</b> than its younger brother, works standalone. StarlinuX is not only oriented to the normal Starlink customers but even to people who want to host their own public server globally as our application has specific feature for managing <b>port forwarding</b> rules. In case you get an ethernet port extender, we’ll be able to set up a proper <b>DMZ</b>, all is up to you!<br>
 
 <div align="center">
   <i><b>...IPv6, what a Saviour!</b></i>
@@ -137,7 +137,7 @@ people to you want to reach your game server, or your web page! We tried to rais
 
 One of the main goals of this project is power saving, because StarlinuX replaced the original Starlink router, which has a higher power consumption compared to the low cost <b>Single Board Computer</b> we’re working on.
 As a matter of fact, most of the Starlink vanlifer users might be interested in this project as the power is a critical point they used to facing every day when they travel, and that’s now something very reachable.
-Just buy the PoE(Power over Ethernet) which powers up all your items from 12v switching to 46v avoiding any A.C inverter.<br>
+Just buy the PoE(Power over Ethernet) which powers up all your items from 12v avoiding any A.C inverter.<br>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -173,15 +173,15 @@ This project aims to replace the original Starlink router by utilizing a built-i
   </a>
 </div>
 
-Depending on your Hardware model, download its official OpenWRT image from the [OpenWRT Website](https://openwrt.org/toh/start).
+Depending on your SBC model,check its compatibility and download its official OpenWRT image from the [OpenWRT Website - Table of Hardware](https://openwrt.org/toh/start).
 - Clone the repository from GitHub:
 ```sh
 git clone --branch master https://github.com/davixdedem/StarlinuX.git
 ```
-- Download the appropriate OpenWRT image for your Modem/Router.
+- Download the appropriate OpenWRT image for your SBC.
 - Flash the OpenWRT image following its dedicated instructions.
-- Power up your Modem/Router.
-- Plug an Ethernet cable into the Ethernet port on the Router and connect it to your laptop/computer.<br>
+- Power up your SBC.
+- Plug an Ethernet cable into the Ethernet port on the SBC and connect it to your laptop/computer.<br>
 - Verify that you can access OpenWRT by pinging its default IP address:<br>
   *(You may disconnect your Wi-Fi interface in order to be sure to reach your Router via cable)*<br>
 ```sh
@@ -195,7 +195,7 @@ cd StarlinuX/auto_install
 ```sh
 ssh root@192.168.1.1 'ash -s' < First.sh 2>&1
 ```
-- <b>Now connect your Hardware to Starlink in place of the original Router.</b>
+- <b>Now connect your SBC to Starlink in place of the original Router.</b>
 - Connect to the Wi-Fi:
 ```sh
 SSID: StarlinuX
@@ -205,7 +205,7 @@ Password: starlinux
 ```sh
 ssh root@192.168.1.1 'ash -s' < Second.sh 2>&1 && bash Third.sh
 ```
-- Once all the scripts have been executed, your Modem/router should be configured and connected to Starlink, you can now use our <b>Android application</b>!
+- Once all the scripts have been executed, your new Modem/Router should be configured and connected to Starlink, you can now use our <b>Android application</b>!
 
 ## Installation
 <div align="left">
@@ -222,7 +222,7 @@ ssh root@192.168.1.1 'ash -s' < Second.sh 2>&1 && bash Third.sh
   </a>
 </div>
 
-- Download the Pi-Starlink application from the <a href="https://play.google.com/store/apps/details?id=com.magix.pistarlink">Play Store</a>.<br>
+- Download the StarlinuX application from the <a href="https://github.com/davixdedem/StarlinuX/releases/" target="_blank">Last Releases</a> .<br>
 - Install it on your Smartphone.<br>
 - Connect it to the <b>StarlinuX</b> Wi-Fi using the following default credentials:<br>
   ```sh
@@ -243,7 +243,7 @@ ssh root@192.168.1.1 'ash -s' < Second.sh 2>&1 && bash Third.sh
 - Network: Wi-Fi or Mobile Data<br>
 
 ### Minimum Requirements for your Modem/Router.
-- All the Hardwares listed here: [Table of Hardware - OpenWRT](https://openwrt.org/toh/start).
+- All the SBCs listed here: [Table of Hardware - OpenWRT](https://openwrt.org/toh/start).
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -255,7 +255,7 @@ ssh root@192.168.1.1 'ash -s' < Second.sh 2>&1 && bash Third.sh
 <div align="center"><b>OpenVPN + StarlinuX</b></div><br>
 1. First of all, be sure you've already installed <a href="https://github.com/schwabe/ics-openvpn"><i>OpenVPN for Android</i></a> on your Smartphone.<br>
 2. In StarlinuX, go to the <i><b>Virtual Private Network(VPN)</b></i> section.<br>
-3. Slide the configuration button, StarlinuX will take a few minutes to configure OpenVPN depending on your Raspberry Pi efficiency.<br>
+3. Slide the configuration button, StarlinuX will take a few minutes to configure OpenVPN depending on your SBC efficiency.<br>
 4. Once is done, turn off your Wi-Fi connection and use only your <b>Mobile Network</b>.<br>
 5. Slide the activation button, your smartphone will be assigned a <b>local IPv4 address</b>.<br>
 6. Congrats, you're a virtually home! <br>
@@ -299,7 +299,7 @@ tail -f /var/log/openvpn_status.log
 <div align="center"><b>Wireguard + StarlinuX</b></div><br>
 1. In StarlinuX, go to the <i><b>Virtual Private Network(VPN)</b></i> section.<br>
 2. Choose the Wireguard section.<br>
-3. Slide the configuration button, StarlinuX will take a while to configure Wireguard depending on your Raspberry Pi efficiency.<br>
+3. Slide the configuration button, StarlinuX will take a while to configure Wireguard depending on your SBC efficiency.<br>
 4. Once is done, turn off your Wi-Fi connection and use only your <b>Mobile Network</b>.<br>
 5. Slide the activation button, your smartphone will be assigned a <b>local IPv4 address</b>.<br>
 6. Congrats, you're a virtually home! <br>
