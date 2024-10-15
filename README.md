@@ -178,7 +178,7 @@ Depending on your SBC model,check its compatibility and download its official Op
 git clone --branch master https://github.com/davixdedem/StarlinuX.git
 ```
 - Download the appropriate OpenWRT image for your SBC.
-- Flash the OpenWRT image on the SDCard following its dedicated instructions.
+- Flash the OpenWRT image on the SDCard following the dedicated instructions.
 - Power up your Single Board Computer.
 - Plug an Ethernet cable into the Ethernet port on the SBC and connect it to your laptop/computer.<br>
 - Verify that you can access OpenWRT by pinging its default IP address:<br>
