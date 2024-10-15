@@ -1,54 +1,34 @@
 #!/bin/ash
 
-# Function to check SBC model and set WiFi band
+# Function to check SBC model
 check_sbc_model() {
   local model=$(cat /proc/device-tree/model)
-  echo "Detected SBC: $model"
-  band="2g"  # Defaulting to 2g
+  echo "Detected model: $model"
+  band="2g"
 }
 
 # Function to modify wireless configuration
 modify_wireless_config() {
   local wireless_config="/etc/config/wireless"
-  
+
   echo "Modifying wireless configuration..."
 
   # Enable wireless
-  sed -i "s/option disabled '1'/option disabled '0'/" $wireless_config || {
-    echo "Failed to enable wireless."
-    return 1
-  }
+  sed -i "s/option disabled '1'/option disabled '0'/" $wireless_config
   
   # Set SSID and security
-  sed -i "s/option ssid '.*'/option ssid 'StarlinuX'/" $wireless_config || {
-    echo "Failed to set SSID."
-    return 1
-  }
-  
-  sed -i "s/option encryption '.*'/option encryption 'psk2'/" $wireless_config || {
-    echo "Failed to set encryption."
-    return 1
-  }
-  
+  sed -i "s/option ssid '.*'/option ssid 'StarlinuX'/" $wireless_config
+  sed -i "s/option encryption '.*'/option encryption 'psk2'/" $wireless_config
   # Set band (2g or 5g)
-  sed -i "s/option band '.*'/option band '$band'/" $wireless_config || {
-    echo "Failed to set WiFi band."
-    return 1
-  }
+  sed -i "s/option band '.*'/option band '$band'/" $wireless_config
 
   # Check if 'option key' exists in the configuration file
   if grep -q "option key" "$wireless_config"; then
-      # If it exists, replace the existing key with 'StarlinuX'
-      sed -i "s/option key '.*'/option key 'starlinux'/" "$wireless_config" || {
-        echo "Failed to update key."
-        return 1
-      }
+      # If it exists, replace the existing key with 'pistarlink'
+      sed -i "s/option key '.*'/option key 'starlinux'/" "$wireless_config"
   else
       # If it doesn't exist, add the 'option key' line under the SSID configuration
-      sed -i "/option ssid 'StarlinuX'/a \    option key 'starlinux'" "$wireless_config" || {
-        echo "Failed to add key."
-        return 1
-      }
+      sed -i "/option ssid 'StarlinuX'/a \    option key 'starlinux'" "$wireless_config"
   fi
   
   echo "Wireless configuration updated successfully!"
@@ -65,6 +45,7 @@ modify_dhcp_config() {
     # Add the 'wan6' DHCP configuration if it doesn't exist
     echo "Adding DHCP configuration for 'wan6'..."
     cat <<EOL >> $dhcp_config
+
 config dhcp 'wan6'
     option interface 'wan6'
     option ignore '1'
@@ -83,6 +64,7 @@ modify_network_config() {
 
   # Append the required network configuration
   cat <<EOL >> $network_config
+
 config device
 	option name 'br-lan'
 	option type 'bridge'
@@ -283,21 +265,35 @@ config redirect
 	option family 'ipv6'
 	option enabled '0'
 
-config rule
-	option name 'Reject-Internet-Access'
-	option src 'lan'
-	option dest 'wan'
-	option target 'REJECT'
+config rule 'ovpn'
+	option name 'Allow-OpenVPN'
+	option src 'wan'
+	option dest_port '1194'
+	option proto 'udp'
+	option target 'ACCEPT'
 EOL
 
-  echo "Firewall configuration hardcoded successfully!"
+  echo "Firewall configuration applied successfully!"
 }
 
-# Main execution flow
+# Main script execution
+echo "Starting SBC wireless, DHCP, network, and firewall configuration..."
+
+# Check the SBC model and set band accordingly
 check_sbc_model
+
+# Modify the wireless configuration based on the model
 modify_wireless_config
+
+# Modify the DHCP configuration to include 'wan6'
 modify_dhcp_config
+
+# Modify the network configuration with the provided settings
 modify_network_config
+
+# Configure the firewall with hardcoded rules
 configure_firewall
 
-echo "Configuration completed! Connect StarlinuX to your Starlink Dish."
+# Restart network and firewall services to apply changes
+echo "Configuration completed successfully! Connect StarlinuX to your Starlink Dish."
+poweroff
