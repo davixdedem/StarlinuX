@@ -76,59 +76,76 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_height="match_parent">
 
-            <ImageView
-                android:id="@+id/sbc_text_name"
-                android:layout_width="100sp"
-                android:alpha="0.5"
-                android:layout_height="match_parent"
-                android:layout_weight="0"
-                android:src="@drawable/logo2" />
+            <!-- WebView with a fixed height of 300dp -->
+            <WebView
+                android:id="@+id/webView"
+                android:layout_width="match_parent"
+                android:layout_height="350dp"
+                android:layout_gravity="bottom"
+                tools:ignore="WebViewLayout" />
 
-            <TextView
-                android:id="@+id/sbc_btn_info"
-                android:layout_width="wrap_content"
+            <!-- Overlay layout at the top of the WebView -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="5sp"
-                android:textSize="15sp"
-                android:text="@string/closed_angular_symbol"
-                android:textColor="@color/teal_700" />
+                android:orientation="vertical"
+                android:layout_gravity="top"> <!-- Stays at the top -->
 
-        </LinearLayout>
+                <!-- Horizontal layout for image and button -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+                    <ImageView
+                        android:id="@+id/sbc_text_name"
+                        android:layout_gravity="left"
+                        android:layout_width="130sp"
+                        android:alpha="0.5"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0"
+                        android:src="@drawable/logo2" />
 
-            <TextView
-                android:id="@+id/sbc_text_status"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/sbc_status_disconnected"
-                android:textColor="@color/white"
-                android:textSize="30sp" />
+                    <TextView
+                        android:id="@+id/sbc_btn_info"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5sp"
+                        android:textSize="15sp"
+                        android:text="@string/closed_angular_symbol"
+                        android:textColor="@color/teal_700" />
+                </LinearLayout>
 
-            <ImageView
-                android:id="@+id/board_status_icon"
-                android:layout_marginTop="5dp"
-                android:layout_width="40dp"
-                android:layout_height="match_parent"
-                android:src="@drawable/offline_dot" />
+                <!-- Horizontal layout for status and icon -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
-        </LinearLayout>
+                    <TextView
+                        android:id="@+id/sbc_text_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/sbc_status_disconnected"
+                        android:textColor="@color/white"
+                        android:textSize="30sp" />
 
-        <WebView
-            android:id="@+id/webView"
-            android:layout_width="match_parent"
-            android:layout_height="300dp"
-            tools:ignore="WebViewLayout" >
+                    <ImageView
+                        android:id="@+id/board_status_icon"
+                        android:layout_marginTop="5dp"
+                        android:layout_width="40dp"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/offline_dot" />
+                </LinearLayout>
 
-        </WebView>
+            </LinearLayout>
+
+        </FrameLayout>
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -160,6 +177,8 @@
 
         <ScrollView
             android:layout_marginTop="10sp"
+            android:scrollbars="vertical"
+            android:fadeScrollbars="false"
             android:layout_marginBottom="10sp"
             android:layout_width="match_parent"
             android:layout_height="match_parent">

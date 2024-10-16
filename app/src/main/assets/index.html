@@ -77,6 +77,7 @@
         document.body.appendChild(renderer.domElement);
 
         controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
         controls.enableZoom = false;
         controls.enablePan = false;
         controls.minDistance = 4.5;
@@ -91,15 +92,6 @@
             // Get the current azimuth angle
             const currentAzimuth = controls.getAzimuthalAngle();
 
-            // Clamp the azimuth angle to the defined limits
-            // if (currentAzimuth < minAzimuthAngle) {
-            //    controls.minAzimuthAngle = minAzimuthAngle;
-            //    controls.maxAzimuthAngle = maxAzimuthAngle;
-            // }
-            // if (currentAzimuth > maxAzimuthAngle) {
-            //    controls.minAzimuthAngle = minAzimuthAngle;
-            //    controls.maxAzimuthAngle = maxAzimuthAngle;
-            // }
         });
 
         window.addEventListener('resize', onWindowResize);
@@ -244,6 +236,7 @@
             controlsChanged = false;
         }
         renderer.render(scene, camera);
+        controls.update()
     }
 
     async function callAndroidFunction() {

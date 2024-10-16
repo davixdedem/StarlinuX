@@ -313,8 +313,10 @@ class HomeFragment : Fragment(), MyVpnServiceCallback {
         /*Binding Raspberry Pi info buttons*/
         binding.sbcTextName.setOnClickListener {
             if (isBoardReachable) {
-                /*Call the OpenWRT Api in order to popule the system board information*/
-                callOpenWRTApi()
+                GlobalScope.launch(Dispatchers.IO) {
+                    /*Call the OpenWRT Api in order to popule the system board information*/
+                    callOpenWRTApi()
+                }
 
                 /*Call the OpenWRT Api in order to popule the system storage information*/
                 callOpenWRTStorageApi()
@@ -2748,8 +2750,8 @@ class HomeFragment : Fragment(), MyVpnServiceCallback {
                                 val leaseObject = vpnArray.getJSONObject(i)
 
                                 val commonName = leaseObject.optString("Common Name", "Unknown")
-                                val virtualAddress = leaseObject.optString("Virtual Address", "Unknown")
-                                val realAddress = leaseObject.optString("Real Address", "Unknown")
+                                val virtualAddress = leaseObject.optString("IPv4 Address", "Unknown")
+                                val realAddress = leaseObject.optString("IPv6 Address", "Unknown")
 
                                 val lease = DhcpLease(
                                     hostname = commonName,
