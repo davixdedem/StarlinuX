@@ -82,5 +82,7 @@
     <string name="Changeable_credentials">Please note that username and password are changeable on the Router only, follow <a href="https://openwrt.org/docs/guide-user/troubleshooting/root_password_reset">instructions</a>.</string>
     <string name="about_openvpn">OpenVPN is an open-source VPN protocol that provides secure point-to-point or site-to-site connections. It uses SSL/TLS for key exchange, allowing encrypted data transfer over the internet. It\'s widely used for its flexibility, security, and support for various platforms.</string>
     <string name="about_wireguard">WireGuard is a modern, open-source VPN protocol designed for simplicity, speed, and security. It uses state-of-the-art cryptography, offering faster performance and more robust security compared to OpenVPN.</string>
+    <string name="first_boot">First Boot</string>
+    <string name="about_starlinux">Welcome to StarlinuX! \n\n This app requires an active <b>Starlink</b> Dish in <b>bypass mode</b>, \n be sure you\'ve already setup everything as explained at: \n <a href="https://github.com/davixdedem/StarlinuX">\nhttps://github.com/davixdedem/StarlinuX</a> \n</string>
 
 </resources>

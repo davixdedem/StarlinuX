@@ -11,11 +11,9 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import com.magix.pistarlink.ui.home.HomeFragment
 import com.magix.pistarlink.ui.home.MyVpnServiceCallback
 import com.magix.pistarlink.ui.home.WgTunnel
 import com.wireguard.android.backend.GoBackend
-import com.wireguard.android.backend.GoBackend.VpnService
 import com.wireguard.android.backend.Tunnel
 import com.wireguard.config.Config
 import com.wireguard.config.InetEndpoint
@@ -25,7 +23,6 @@ import com.wireguard.config.Peer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.net.InetAddress

@@ -2,6 +2,7 @@ package com.magix.pistarlink.ui.home
 
 import android.Manifest
 import android.animation.ObjectAnimator
+import android.app.ActionBar
 import android.app.Activity
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -48,7 +49,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.magix.pistarlink.BuildConfig
 import com.magix.pistarlink.DbHandler
-import com.magix.pistarlink.MyVpnService
 import com.magix.pistarlink.OpenWRTApi
 import com.magix.pistarlink.R
 import com.magix.pistarlink.databinding.FragmentHomeBinding
@@ -1250,6 +1250,112 @@ class HomeFragment : Fragment(), MyVpnServiceCallback {
         }
         /*** END - DDNS FRAGMENT ***/
 
+        /*** START - FIRST BOOT FRAGMENT ***/
+        /*Binding configuration slide button*/
+        binding.fragmentFirstBoot.starlinuxStartSlide.onSlideCompleteListener =
+            object : SlideToActView.OnSlideCompleteListener {
+                override fun onSlideComplete(view: SlideToActView) {
+                    Log.d("StarlinuX-FirstBoot", "Starting with StarlinuX.")
+                    // Fade out each view, change visibility or layout, then fade it back in if needed
+
+                    // 1. homeMainScrollview (fade in)
+                    binding.homeMainScrollview.animate()
+                        .alpha(0f) // Fade out
+                        .setDuration(300)
+                        .withEndAction {
+                            binding.homeMainScrollview.visibility = View.VISIBLE // Change visibility
+                            binding.homeMainScrollview.animate()
+                                .alpha(1f) // Fade in
+                                .setDuration(300)
+                                .start()
+                        }
+                        .start()
+
+                    // 2. fragmentFirstBoot (no fade in needed, just set to GONE)
+                    binding.fragmentFirstBoot.root.animate()
+                        .alpha(0f) // Fade out
+                        .setDuration(300)
+                        .withEndAction {
+                            binding.fragmentFirstBoot.root.visibility = View.GONE // Set to GONE
+                        }
+                        .start()
+
+                    // 3. sbcTextStatus (fade in)
+                    binding.sbcTextStatus.animate()
+                        .alpha(0f) // Fade out
+                        .setDuration(300)
+                        .withEndAction {
+                            binding.sbcTextStatus.visibility = View.VISIBLE // Change visibility
+                            binding.sbcTextStatus.animate()
+                                .alpha(1f) // Fade in
+                                .setDuration(300)
+                                .start()
+                        }
+                        .start()
+
+                    // 4. sbcTextName (fade in)
+                    binding.sbcTextName.animate()
+                        .alpha(0f) // Fade out
+                        .setDuration(300)
+                        .withEndAction {
+                            binding.sbcTextName.visibility = View.VISIBLE // Change visibility
+                            binding.sbcTextName.animate()
+                                .alpha(1f) // Fade in
+                                .setDuration(300)
+                                .start()
+                        }
+                        .start()
+
+                    // 5. sbcBtnInfo (fade in)
+                    binding.sbcBtnInfo.animate()
+                        .alpha(0f) // Fade out
+                        .setDuration(300)
+                        .withEndAction {
+                            binding.sbcBtnInfo.visibility = View.VISIBLE // Change visibility
+                            binding.sbcBtnInfo.animate()
+                                .alpha(1f) // Fade in
+                                .setDuration(300)
+                                .start()
+                        }
+                        .start()
+
+                    // 6. boardStatusIcon (fade in)
+                    binding.boardStatusIcon.animate()
+                        .alpha(0f) // Fade out
+                        .setDuration(300)
+                        .withEndAction {
+                            binding.boardStatusIcon.visibility = View.VISIBLE // Change visibility
+                            binding.boardStatusIcon.animate()
+                                .alpha(1f) // Fade in
+                                .setDuration(300)
+                                .start()
+                        }
+                        .start()
+
+                    // 7. homeMainLayout (fade out, change layoutParams, then fade in)
+                    binding.homeMainLayout.animate()
+                        .alpha(0f) // Fade out
+                        .setDuration(300)
+                        .withEndAction {
+                            // Change layout parameters
+                            binding.homeMainLayout.layoutParams = ActionBar.LayoutParams(
+                                ActionBar.LayoutParams.MATCH_PARENT,
+                                ActionBar.LayoutParams.WRAP_CONTENT
+                            )
+
+                            // Fade back in
+                            binding.homeMainLayout.animate()
+                                .alpha(1f) // Fade in
+                                .setDuration(300)
+                                .start()
+                        }
+                        .start()
+
+                    dbHandler.updateConfiguration("first_boot", "0")
+                }
+            }
+        /*** END - FIRST BOOT FRAGMENT ***/
+
         /*** START - PORT FORWARDING FRAGMENT ***/
         /*Applying effect to PF buttons*/
         binding.pwSectionText.setOnTouchListener { view, motionEvent ->
@@ -2021,6 +2127,21 @@ class HomeFragment : Fragment(), MyVpnServiceCallback {
                     )
                 }
             }
+        }
+
+        /*Check if is fist boot*/
+        val isFirstBoot = dbHandler.getConfiguration("first_boot")
+        if (isFirstBoot == "1"){
+            binding.homeMainScrollview.visibility = View.GONE
+            binding.fragmentFirstBoot.root.visibility = View.VISIBLE
+            binding.sbcTextStatus.visibility = View.GONE
+            binding.sbcTextName.visibility = View.GONE
+            binding.sbcBtnInfo.visibility = View.GONE
+            binding.boardStatusIcon.visibility = View.GONE
+            binding.homeMainLayout.layoutParams = ActionBar.LayoutParams(
+                ActionBar.LayoutParams.MATCH_PARENT,
+                ActionBar.LayoutParams.MATCH_PARENT
+            )
         }
 
     }
