@@ -20,7 +20,7 @@ modify_wireless_config() {
   sed -i "s/option ssid '.*'/option ssid 'StarlinuX'/" $wireless_config
   sed -i "s/option encryption '.*'/option encryption 'psk2'/" $wireless_config
   # Set band (2g or 5g)
-  sed -i "s/option band '.*'/option band '$band'/" $wireless_config
+  #sed -i "s/option band '.*'/option band '$band'/" $wireless_config
 
   # Check if 'option key' exists in the configuration file
   if grep -q "option key" "$wireless_config"; then
