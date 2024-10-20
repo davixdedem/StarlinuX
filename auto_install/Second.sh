@@ -4,7 +4,8 @@
 
 # Enabling APIs
 echo "Enabling necessary APIs..."
-opkg update 
+opkg update
+opkg install luci
 opkg install luci-mod-rpc luci-lib-ipkg luci-compat 
 /etc/init.d/uhttpd restart
 
